@@ -1,0 +1,2 @@
+include ':app', ':tonnfcclientandroid'
+rootProject.name='TonNfcClientAndroid'
