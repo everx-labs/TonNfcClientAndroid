@@ -283,8 +283,8 @@ And also some special functions are available in CardActivationApi. They are nec
     {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
     
     **Functions related to Card Keychain:**
-
-Inside TON Wallet applet we implemented small flexible independent keychain. It allows to store some user's keys and secrets.
+    
+    Inside TON Wallet applet we implemented small flexible independent keychain. It allows to store some user's keys and secrets.
 
 - resetKeyChain()
 
