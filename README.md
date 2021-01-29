@@ -153,3 +153,106 @@ When user gets NFC TON Labs security card  at the first time, the applet on the 
 To activate the card user must have three secret hex strings authenticationPassword, commonSecret, initialVector. There is a bijection between serial number (SN) printed on the card and the tuple (authenticationPassword, commonSecret, initialVector). These strings he is going to get from Tracking Smartcontract deployed for his NFC TON Labs security card .
 
 Let's suppose the user somehow got authenticationPassword, commonSecret, initialVector. Then to activate the card he may use the following exemplary snippet.
+
+import com.tonnfccard.api.CardCoinManagerApi;
+import com.tonnfccard.api.CardActivationApi;
+import com.tonnfccard.api.nfc.NfcApduRunner;
+
+....
+
+private NfcApduRunner nfcApduRunner;
+private CardActivationApi cardActivationApi;
+private CardCoinManagerApi cardCoinManagerNfcApi;
+private static final String DEFAULT_PIN = "5555";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(android.example.myapplication.R.layout.activity_main);
+				addListenerOnButton();
+
+				...
+
+        try {
+            nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
+            cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
+            cardActivationApi = new CardActivationApi(getApplicationContext(),  nfcApduRunner);
+				}
+        catch (Exception e) {
+            Log.e("TAG", e.getMessage());
+        }
+
+				...
+    }
+
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        try {
+            if (nfcApduRunner.setCardTag(intent)) {
+                Toast.makeText(this, "NFC hardware touched", Toast.LENGTH_SHORT).show();
+            }
+        }
+        catch (Exception e) {
+            Log.e("TAG", "Error happened : " + e.getMessage());
+        }
+    }
+
+		public void addListenerOnButton() {
+
+        button = (Button) findViewById(android.example.myapplication.R.id.button1);
+
+        button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                try {
+										// here we already have authenticationPassword, commonSecret, initialVector
+
+                    String jsonStr = cardCoinManagerNfcApi.getRootKeyStatusAndGetJson();
+                    JSONObject jObject = new JSONObject(jsonStr);
+										String seedStatus = jObject.getString("message");
+
+										if (seedStatus.equals("not generated")) {
+											cardCoinManagerNfcApi.generateSeedAndGetJson(DEFAULT_PIN);
+										}
+
+										jsonStr = cardActivationApi.getTonAppletStateAndGetJson();
+										jObject = new JSONObject(jsonStr);
+										String appletState = jObject.getString("message");
+										
+										if (!state.equals("TonWalletApplet waits two-factor authorization.")) {
+												return;
+												//throw "Incorret applet state"
+										}
+
+										jsonStr = cardActivationApi.getHashOfCommonSecretAndGetJson();
+										JSONObject jObject = new JSONObject(jsonStr);
+										String hashOfCommonSecret = jObject.getString("message"); // SHA256 has
+										// check that hashOfCommonSecret is correct based on the data from smartcontract
+
+										jsonStr = cardActivationApi.hashOfEncryptedPasswordAndGetJson();
+										JSONObject jObject = new JSONObject(jsonStr);
+										String hashOfEncryptedPassword = jObject.getString("message"); // SHA256 has
+										// check that hashOfEncryptedPassword is correct based on the data from smartcontract
+
+										String newPin = "7777";
+										jsonStr = cardActivationApi.turnOnWalletAndGetJson(newPin, authenticationPassword, commonSecret, initialVector);
+										JSONObject jObject = new JSONObject(jsonStr);
+										appletState = jObject.getString("message");
+
+										Log.d("TAG", "Card response : " + appletState);
+										if (!state.equals("TonWalletApplet is personalized.")) {
+												throw new Exception("Incorret applet state after activation : " + appletState)
+										}
+
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("TAG", "Error happened : " + e.getMessage());
+                }
+            }
+        });
+
+	    }
