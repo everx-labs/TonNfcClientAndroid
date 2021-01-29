@@ -82,15 +82,15 @@ To make it work you should go through the following steps.
 
 		@Override
 		public void onNewIntent(Intent intent) {
-        		super.onNewIntent(intent);
-        		try {
-            			if (nfcApduRunner.setCardTag(intent)) {
-                			Toast.makeText(this, "NFC hardware touched", Toast.LENGTH_SHORT).show();
-            			}
-        		}
-        		catch (Exception e) {
-            			Log.e("TAG", "Error happened : " + e.getMessage());
-        		}
+			super.onNewIntent(intent);
+			try {
+				if (nfcApduRunner.setCardTag(intent)) {
+					Toast.makeText(this, "NFC hardware touched", Toast.LENGTH_SHORT).show();
+				}
+			}
+			catch (Exception e) {
+				Log.e("TAG", "Error happened : " + e.getMessage());
+			}
 		}
 
 
