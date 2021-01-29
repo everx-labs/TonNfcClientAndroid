@@ -1154,4 +1154,374 @@ Any trouble with input data that you feed into library functions as arguments. F
 "status": "fail"
 }
 
+## CARD_RESPONSE_DATA_ERRORS
 
+This sublist of errors is about additional checking of data that comes into Android library from the card. We check all responses from card: i.e. their formats, lengthes, ranges in some cases. Normally errors of such type must not happen. Please report if you would get one of them.
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40000",
+"message": "Sault response from card must have length 32. Current length is ",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40001",
+"message": "Applet state response from card must have length 1. Current length is ",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40002",
+"message": "Unknown applet state = ",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40003",
+"message": "Recovery data hash must have length 32.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40004",
+"message": "Recovery data length byte array must have length 2.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40005",
+"message": "Recovery data length must be > 0 and <= 2048.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40006",
+"message": "Response from IS_RECOVERY_DATA_SET card operation must have length 1.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40007",
+"message": "Recovery data portion must have length = ",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40008",
+"message": "Hash of encrypted password must have length 32.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40009",
+"message": "Hash of encrypted common secret must have length 32.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40010",
+"message": "Card two-factor authorization failed: Hash of encrypted common secret is invalid.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40011",
+"message": "Card two-factor authorization failed: Hash of encrypted password is invalid.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40012",
+"message": "Signature must have length 64.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40013",
+"message": "Public key must have length 32.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40014",
+"message": "Response from GET_NUMBER_OF_KEYS card operation must have length 2.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40015",
+"message": "Number of keys in keychain must be >= 0 and <= 1023",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40016",
+"message": "Response from GET_OCCUPIED_SIZE card operation must have length 2.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40017",
+"message": "Response from GET_FREE_SIZE_RESPONSE card operation must have length 2.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40018",
+"message": "Occupied size of keys can not be negative",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40019",
+"message": "Free size of keys can not be negative",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40020",
+"message": "Response from GET_KEY_INDEX_IN_STORAGE_AND_LEN card operation must have length 4.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40021",
+"message": "Key index must be >= 0 and <= 1022.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40022",
+"message": "Key length (in keychain) must be > 0 and <= 8192.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40023",
+"message": "Response from DELETE_KEY_CHUNK card operation must have length 1.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40024",
+"message": "Response from DELETE_KEY_CHUNK card operation must have value 0 or 1.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40025",
+"message": "Response from DELETE_KEY_RECORD card operation must have length 1.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40026",
+"message": "Response from DELETE_KEY_RECORD card operation must have value 0 or 1.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40027",
+"message": "Response from GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS card operation must have length 2.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40028",
+"message": "Response from GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS card operation can not be negative.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40029",
+"message": "Response from GET_DELETE_KEY_RECORD card operation must have length 2.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40030",
+"message": "Response from GET_DELETE_KEY_RECORD_NUM_OF_PACKETS card operation can not be negative.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40031",
+"message": "After ADD_KEY card operation number of keys must be increased by 1.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40032",
+"message": "After ADD_KEY card operation number of keys must not be changed.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40033",
+"message": "Response from SEND_CHUNK card operation must have length 2.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40034",
+"message": "Hash of key (from keychain) must have length 32.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40035",
+"message": "Response from INITIATE_DELETE_KEY card operation must have length 2.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40036",
+"message": "Key data portion must have length = ",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40037",
+"message": "Serial number must have length 24.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40038",
+"message": "Response from GET_PIN_TLT (GET_PIN_RTL) must have length > 0.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40039",
+"message": "Response from GET_PIN_TLT (GET_PIN_RTL) must have value >= 0 and <= 10.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40040",
+"message": "Response from GET_ROOT_KEY_STATUS must have length > 0.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40041",
+"message": "Response from GET_DEVICE_LABEL must have length = 32.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40042",
+"message": "Response from GET_CSN_VERSION must have length > 0.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40043",
+"message": "Response from GET_SE_VERSION must have length > 0.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40044",
+"message": "Response from GET_AVAILABLE_MEMORY must have length > 0.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: incorrect response from card",
+"errorTypeId": "4",
+"errorCode": "40045",
+"message": "Response from GET_APPLET_LIST must have length > 0.",
+"status": "fail"
+}
