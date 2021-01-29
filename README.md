@@ -286,7 +286,9 @@ Here there is full list list of functions provided by TonNfcClientAndroid librar
 ### Common functions
 
 * getTonAppletState()
+
 	This function returns state of TON Wallet applet.
+	
 	Exemplary responses:
 	{"message":"TonWalletApplet waits two-factor authorization.","status":"ok"}
 
