@@ -273,3 +273,23 @@ The main functionality provided by NFC TON Labs security card is Ed25519 signatu
 
 **Important note:** The important point for ed25519 signature request is that it is under an additional protection against MITM attack. In above example function cardCryptoApi.verifyPinAndSignAndGetJson() sends two critical APDU commads into the card : VERIFY_PIN and SIGN_SHORT_MESSAGE. For protection the data fields of these APDUs are signed by HMAC SHA256 symmetric signature. The key for it is elaborated based on user's authentication data (see Card activation section). This key is saved into Android Keystore and then it is used by the app to sign APDU commands data fields. Usually after correct card activation in the app (call of cardActivationApi.turnOnWalletAndGetJson) this key is produced and saved into keystore. So no extra code is required it work.
 
+Another situation is possible. Let's suppose you activated the card earlier. After that you reinstalled the app working with NFC TON Labs security card (or you started using new Android device). In this case Android Keystore does not have the key to sign APDU commands. So you must create it.
+
+	String jsonStr = cardCryptoApi.createKeyForHmac(authenticationPassword, commonSecret, serialNumber);
+	JSONObject jObject = new JSONObject(jsonStr);
+	String status = jObject.getString("message"); // must be == "done"
+	
+## Full functions list 
+
+Here there is full list list of functions provided by TonNfcClientAndroid library to make different requests to the card. These functions are naturally divided into several groups. There are five groups and respectively five classes providing an API for you: CardActivationApi,  CardCryptoApi,  CardKeyChainApi, RecoveryDataApi , CardCoinManagerApi. And there is an ancestor TonWalletApi for the first four of them (except of CardCoinManagerApi). It contains some common functions.
+
+### Common functions
+
++ getTonAppletState()
+
+This function returns state of TON Wallet applet.
+
+Exemplary responses:
+
+{"message":"TonWalletApplet waits two-factor authorization.","status":"ok"}
+
