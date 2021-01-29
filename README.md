@@ -44,4 +44,36 @@ For this to work you must have an appropriate nfc_tech_filter.xml file in your x
     			</tech-list>
 		</resources>
 		
-To get the full picture of how AndroidManifest.xml must look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/ .
+To get the full picture of how AndroidManifest.xml must look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/.
+
+
+## Usage (Simple example)
+
+Let's suppose you want to work with NFC TON Labs security card in your MainActivity class. And you want to make a simple request to the card: ask it to return the maximum number of card's PIN tries into Android app. For this request there is a corresponding APDU command supporting by the card. And there is a corresponding function in TonNfcClientAndroid library that sends this APDU to the card and makes postprocessing of card's response for you. 
+
+To make it work you should go through the following steps.
+
++ Make the following imports in your MainActivity.
+
+		import com.tonnfccard.api.CardCoinManagerApi;
+		import com.tonnfccard.api.nfc.NfcApduRunner;
+		
++ Add the snippet looking like this:
+
+		private NfcApduRunner nfcApduRunner;
+		private CardCoinManagerApi cardCoinManagerNfcApi;
+		
+		@Override
+    		protected void onCreate(Bundle savedInstanceState) {
+        		super.onCreate(savedInstanceState);
+        		setContentView(android.example.myapplication.R.layout.activity_main);
+			...
+       			try {
+            			nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
+            			cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
+        		}
+        		catch (Exception e) {
+            			Log.e("TAG", e.getMessage());
+        		}
+			...
+    		}
