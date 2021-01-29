@@ -114,5 +114,34 @@ To make it work you should go through the following steps.
             			}
         		});
     		}
+		
+Here json variable contains the response from card wrapped into json of the following simple format: 
+		
+		{"message":"done","status":"ok"}
+		
+"message" field in jsons produced by the library always contains payload in the case of success. And in the case of fail this field will contain error message.
+
+In above snippet in the case of any exception happened during work of cardCoinManagerNfcApi.getMaxPinTriesAndGetJson() we will come into catch block. Message inside exception e is always in json format. And here you may find the full list of json error messages that can be thrown by the library.
+
+Again to get the full picture of howthe simplest MainActivity may look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/ .
+
+## Test work with the card
+
+After you prepared the appliction run it on your Android device (not simulator). Then you need to establish NFC connection. For this hold the card to the top of the smartphone (field near te camera) as close as possible. Usually smartphone vibrates after establishing a connection. And if you see above example you must get the toast with the message "NFC hardware touched". It means that NFC connection is established. To keep connection alive you must not move card and smartphone and they should have physical contact.
+
+After NFC connection is ready we can send command to te card. Push the button to make request getMaxPinTries. Check your Logcat console in Android Studio. You must here the following output.
+
+		===============================================================
+		===============================================================
+		>>> Send apdu  00 A4 04 00 
+		(SELECT_COIN_MANAGER)
+		SW1-SW2: 9000, No error., response data bytes: 				6F5C8408A000000151000000A550734A06072A864886FC6B01600C060A2A864886FC6B02020101630906072A864886FC6B03640B06092A864886FC6B040255650B06092B8510864864020103660C060A2B060104012A026E01029F6501FF
+		===============================================================
+		===============================================================
+		 >>> Send apdu  80 CB 80 00 05 DFFF028103 
+		(GET_PIN_TLT)
+ 		SW1-SW2: 9000, No error., response data bytes: 0A
+ 
+ 		Card response : {"message":"10","status":"ok"}
 
 
