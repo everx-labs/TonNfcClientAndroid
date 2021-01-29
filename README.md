@@ -77,3 +77,20 @@ To make it work you should go through the following steps.
 			}
 			...
 		}
+
++ Also you must take care of onNewIntent method. It intercepts the intent created after card (tag) connection. And you must extract  the data about your tag from the intent. You need it to start work with the tag.
+
+		@Override
+		public void onNewIntent(Intent intent) {
+        		super.onNewIntent(intent);
+        		try {
+            			if (nfcApduRunner.setCardTag(intent)) {
+                			Toast.makeText(this, "NFC hardware touched", Toast.LENGTH_SHORT).show();
+            			}
+        		}
+        		catch (Exception e) {
+            			Log.e("TAG", "Error happened : " + e.getMessage());
+        		}
+    		}
+
+
