@@ -17,6 +17,12 @@ Let's suppose you have an Android project. To use TonNfcClientAndroid library in
 			}
 		}
 	
-+ Add the dependency andreplace here Tag by the necessary version.	
++ Add the dependency andreplace here Tag by the necessary version.
+
+		dependencies {
+			implementation 'com.github.tonlabs:TonNfcClientAndroid:Tag'
+		}
+		
+	        	
 		
 
