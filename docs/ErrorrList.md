@@ -1525,3 +1525,61 @@ This sublist of errors is about additional checking of data that comes into Andr
 "message": "Response from GET_APPLET_LIST must have length > 0.",
 "status": "fail"
 }
+
+## IMPROPER_APPLET_STATE_ERROR
+
+Before sending some APDU command into applet Android code  usually checks applet state. If in current applet state this command is not supported then Android code throws  a error and does not even try to send this APDU into applet (But If it would send it then card will produce 6D00 error).
+
+For example if you would try to request hash of enrypted common secret or encrypted password in personalized applet state, you will see smth like this.
+
+{
+"errorType": "Native code fail: improper applet state",
+"errorTypeId": "5",
+"errorCode": "50000",
+"message": "APDU command is not supported",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: improper applet state",
+"errorTypeId": "5",
+"errorCode": "50001",
+"message": "Applet must be in mode that waits authorization. Now it is: ",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: improper applet state",
+"errorTypeId": "5",
+"errorCode": "50002",
+"message": "Applet must be in personalized mode. Now it is: ",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: improper applet state",
+"errorTypeId": "5",
+"errorCode": "50003",
+"message": "Applet must be in mode for deleting key. Now it is ",
+"status": "fail"
+}
+
+## HMAC_KEY_ERROR
+
+Here there is a list of possible errors that can happen during work with hmac keys living in Android Keystore.
+
+{
+"errorType": "Native code fail: hmac key issue",
+"errorTypeId": "6",
+"errorCode": "60000",
+"message": "Key for hmac signing for specified serial number does not exist.",
+"status": "fail"
+}
+
+{
+"errorType": "Native code fail: hmac key issue",
+"errorTypeId": "6",
+"errorCode": "60001",
+"message": "Current serial number is not set. Can not select key for hmac.",
+"status": "fail"
+}
