@@ -121,7 +121,7 @@ Here json variable contains the response from card wrapped into json of the foll
 		
 "message" field in jsons produced by the library always contains payload in the case of success. And in the case of fail this field will contain error message.
 
-In above snippet in the case of any exception happened during work of cardCoinManagerNfcApi.getMaxPinTriesAndGetJson() we will come into catch block. Message inside exception e is always in json format. And in [a link](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/docs/ErrorrList.md) you may find the full list of json error messages that can be thrown by the library.
+In above snippet in the case of any exception happened during work of cardCoinManagerNfcApi.getMaxPinTriesAndGetJson() we will come into catch block. Message inside exception e is always in json format. And in [error list](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/docs/ErrorrList.md) you may find the full list of json error messages that can be thrown by the library.
 
 Again to get the full picture of howthe simplest MainActivity may look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/ .
 
