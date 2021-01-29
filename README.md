@@ -135,7 +135,7 @@ After NFC connection is ready we can send command to te card. Push the button to
 		===============================================================
 		>>> Send apdu  00 A4 04 00 
 		(SELECT_COIN_MANAGER)
-		SW1-SW2: 9000, No error., response data bytes: 				6F5C8408A000000151000000A550734A06072A864886FC6B01600C060A2A864886FC6B02020101630906072A864886FC6B03640B06092A864886FC6B040255650B06092B8510864864020103660C060A2B060104012A026E01029F6501FF
+		SW1-SW2: 9000, No error., response data bytes: 	6F5C8408A000000151000000A...
 		===============================================================
 		===============================================================
 		 >>> Send apdu  80 CB 80 00 05 DFFF028103 
@@ -144,4 +144,12 @@ After NFC connection is ready we can send command to te card. Push the button to
  
  		Card response : {"message":"10","status":"ok"}
 
+Here you see the log of APDU commands sent to the card and their responses in raw format. And in the end there is a final wrapped response.
 
+## Card activation
+
+When user gets NFC TON Labs security card  at the first time, the applet on the card is in a special state. It waits for user authentication. And the main functionality of applet is blocked for now. So you must authenticate the user, i.e. go through procedure of card activation.
+
+To activate the card user must have three secret hex strings authenticationPassword, commonSecret, initialVector. There is a bijection between serial number (SN) printed on the card and the tuple (authenticationPassword, commonSecret, initialVector). These strings he is going to get from Tracking Smartcontract deployed for his NFC TON Labs security card .
+
+Let's suppose the user somehow got authenticationPassword, commonSecret, initialVector. Then to activate the card he may use the following exemplary snippet.
