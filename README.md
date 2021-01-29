@@ -271,4 +271,5 @@ The main functionality provided by NFC TON Labs security card is Ed25519 signatu
 		jObject = new JSONObject(jsonStr);
 		String signature = jObject.getString("message");
 
+** Important note: ** The important point for ed25519 signature request is that it is under an additional protection against MITM attack. In above example function cardCryptoApi.verifyPinAndSignAndGetJson() sends two critical APDU commads into the card : VERIFY_PIN and SIGN_SHORT_MESSAGE. For protection the data fields of these APDUs are signed by HMAC SHA256 symmetric signature. The key for it is elaborated based on user's authentication data (see Card activation section). This key is saved into Android Keystore and then it is used by the app to sign APDU commands data fields. Usually after correct card activation in the app (call of cardActivationApi.turnOnWalletAndGetJson) this key is produced and saved into keystore. So no extra code is required it work.
 
