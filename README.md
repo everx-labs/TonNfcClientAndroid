@@ -9,9 +9,10 @@ The library now is published onto  https://jitpack.io, see https://jitpack.io/#t
 Let's suppose you have an Android project. To use TonNfcClientAndroid library in your project you must go through the following steps.
 
 + Add it in your root build.gradle at the end of repositories
+	
+	
 
-	allprojects {
-	}
+	allprojects {}	
 
 + Add the dependency
 
@@ -19,4 +20,7 @@ Let's suppose you have an Android project. To use TonNfcClientAndroid library in
 
 For this to work you must have an appropriate nfc_tech_filter.xml file in your xml subfolder.
 
-    print 'Hello, World!'
+	print 'Hello, World!'
+	
+	allprojects {}	
+
