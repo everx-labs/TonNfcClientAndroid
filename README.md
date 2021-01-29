@@ -245,3 +245,30 @@ private static final String DEFAULT_PIN = "5555";
             }
         });
 	}
+	
+## Request ED25519 signature
+
+The main functionality provided by NFC TON Labs security card is Ed25519 signature. You may request public key and request the signature for some message.
+
+		//Create these two objects.
+		nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
+		CardCryptoApi cardCryptoApi = new CardCryptoApi(getApplicationContext(), nfcApduRunner);
+
+		....
+
+		//Get public key for given hdIndex
+		String hdInd = "1";
+		String jsonStr = cardCryptoApi.getPublicKeyAndGetJson(hdIndex);
+		jObject = new JSONObject(jsonStr);
+		String pkInHex = jObject.getString("message");
+
+		....
+
+		//Sign a message for given hdIndex
+		String msg = "A10D";
+		String pin = "5555";
+		jsonStr = cardCryptoApi.verifyPinAndSignAndGetJson(msg, hdInd, pin);
+		jObject = new JSONObject(jsonStr);
+		String signature = jObject.getString("message");
+
+
