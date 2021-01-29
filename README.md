@@ -91,6 +91,6 @@ To make it work you should go through the following steps.
         		catch (Exception e) {
             			Log.e("TAG", "Error happened : " + e.getMessage());
         		}
-    		}
+		}
 
 
