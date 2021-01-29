@@ -8,4 +8,4 @@ The library now is published onto  https://jitpack.io, see https://jitpack.io/#t
 
 Let's suppose you have an Android project. To use TonNfcClientAndroid library in your project you must go through the following steps.
 
-<пробел><пробел><пробел><пробел>print 'Hello, World!'
+    print 'Hello, World!'
