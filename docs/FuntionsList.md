@@ -281,3 +281,161 @@ And also some special functions are available in CardActivationApi. They are nec
     *Exemplary response:*
 
     {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
+    
+    **Functions related to Card Keychain:**
+
+Inside TON Wallet applet we implemented small flexible independent keychain. It allows to store some user's keys and secrets.
+
+- resetKeyChain()
+
+    Clear keychain, i.e. remove all stored keys.
+
+    *Response:*
+
+    {"message":"done","status":"ok"}
+
+- getKeyChainDataAboutAllKeys()
+
+    Return list of pairs (keyHmac, keyLength)  in json format.
+
+    *Exemplary response:*
+
+- getKeyChainInfo()
+
+    Return json characterizing the state of keychain. 
+
+    *Exemplary response:*
+
+    {"numberOfKeys":0,"occupiedSize":0,"freeSize":32767,"status":"ok"}
+
+- getNumberOfKeys()
+
+    Return number of keys in card keychain.
+
+    *Exemplary response:*
+
+    {"message":"1","status":"ok"}
+
+- getOccupiedStorageSize()
+
+    Return the volume of occupied size in card keychain (in bytes).
+
+    *Exemplary response:*
+
+    {"message":"0","status":"ok"}
+
+- getFreeStorageSize()
+
+    Return the volume of free size in card keychain (in bytes).
+
+    *Exemplary response:*
+
+    {"message":"32767","status":"ok"}
+
+- getKeyFromKeyChain(keyHmac)
+
+    Read key from card keychain based on its hmac.
+
+    *Arguments requirements:*
+
+    keyHmac — hex string of length 64.
+
+    *Exemplary response:*
+
+    {"message":"001122334455","status":"ok"}
+
+- addKeyIntoKeyChain(newKey)
+
+    Save new key into card keychain.
+
+    *Arguments requirements:*
+
+    neyKey — hex string of even length ≥ 2 and ≤ 16384.
+
+    *Response:*
+
+    {"message":"EFBF24AC1563B34ADB0FFE0B0A53659E72E26765704C109C95346EEAA1D4BEAF","status":"ok"}
+
+    where "message" contains hmac of newKey.
+
+- deleteKeyFromKeyChain(keyHmac)
+
+    Delete key from card keychain based on its hmac.
+
+    *Arguments requirements:*
+
+    keyHmac — hex string of length 64.
+
+    *Exemplary response:*
+
+    {"message":"5","status":"ok"}
+
+    where "message" field contains the number of remaining keys
+
+- finishDeleteKeyFromKeyChainAfterInterruption()
+
+    Finish the process of deleting key from card keychain. It may be necessary if previous DELETE operation was occassionally interrupted.
+
+    *Exemplary response:*
+
+    {"message":"5","status":"ok"}
+
+    where "message" field contains the number of remaining keys
+
+- changeKeyInKeyChain(newKey, oldKeyHmac)
+
+    Replace existing key by  new key. The length of new key must be equal to length of old key.
+
+    *Arguments requirements:*
+
+    newKey — hex string of even length ≥ 2 and ≤ 16384. 
+
+    oldKeyHmac — hex string of length 64.
+
+    *Response:*
+
+    {"message":"EFBF24AC1563B34ADB0FFE0B0A53659E72E26765704C109C95346EEAA1D4BEAF","status":"ok"}
+
+    where "message" contains hmac of newKey.
+
+- getIndexAndLenOfKeyInKeyChain(keyHmac)
+
+    Read index (inside internal applet storage) and length of key by its hmac.
+
+    *Arguments requirements:*
+
+    keyHmac — hex string of length 64.
+
+- checkAvailableVolForNewKey(keySize)
+
+    Check if there is enough free volume in card keychain to add new key of length = keySize
+
+    *Arguments requirements:*
+
+    keySize — numeric string representing short value > 0 and ≤ 8192.
+
+    *Response:*
+
+    {"message":"done","status":"ok"}
+
+- checkKeyHmacConsistency(keyHmac)
+
+    *Response:*
+
+    {"message":"done","status":"ok"}
+
+- getHmac(index)
+
+    Get hmac of key in card keychain by its index. 
+
+    *Arguments requirements:*
+
+    index — numerical string storing a number ≥ 0 and ≤1023.
+
+    *Exemplary response:*
+
+    {"message":"EFBF24AC1563B34ADB0FFE0B0A53659E72E26765704C109C95346EEAA1D4BEAF","status":"ok"}
+
+- getDeleteKeyRecordNumOfPackets
+
+- getDeleteKeyChunkNumOfPackets
