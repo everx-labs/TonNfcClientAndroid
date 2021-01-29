@@ -93,4 +93,26 @@ To make it work you should go through the following steps.
 			}
 		}
 
++ And finally let's make the request to the card. In our simple example we send it after pressing some button. So the activity for the button may look as follows.
+
+
+		public void addListenerOnButton() {
+        		button = (Button) findViewById(android.example.myapplication.R.id.button1);
+
+        		button.setOnClickListener(new View.OnClickListener() {
+
+            			@Override
+            			public void onClick(View arg0) {
+                			try {
+                    				String json = cardCoinManagerNfcApi.getMaxPinTriesAndGetJson();
+                    				Log.d("TAG", "Card response : " + json);
+                			}
+                			catch (Exception e) {
+                    				e.printStackTrace();
+                    				Log.e("TAG", "Error happened : " + e.getMessage());
+                			}
+            			}
+        		});
+    		}
+
 
