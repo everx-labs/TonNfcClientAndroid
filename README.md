@@ -169,10 +169,8 @@ private static final String DEFAULT_PIN = "5555";
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(android.example.myapplication.R.layout.activity_main);
-				addListenerOnButton();
-
-				...
-
+	addListenerOnButton();
+	...
         try {
             nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
             cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
@@ -181,8 +179,7 @@ private static final String DEFAULT_PIN = "5555";
         catch (Exception e) {
             Log.e("TAG", e.getMessage());
         }
-
-				...
+	...
     }
 
 
@@ -198,54 +195,47 @@ private static final String DEFAULT_PIN = "5555";
             Log.e("TAG", "Error happened : " + e.getMessage());
         }
     }
-
-		public void addListenerOnButton() {
-
-        button = (Button) findViewById(android.example.myapplication.R.id.button1);
-
-        button.setOnClickListener(new View.OnClickListener() {
-
+    
+    public void addListenerOnButton() {
+    	button = (Button) findViewById(android.example.myapplication.R.id.button1);
+	button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View arg0) {
-                try {
-										// here we already have authenticationPassword, commonSecret, initialVector
-
-                    String jsonStr = cardCoinManagerNfcApi.getRootKeyStatusAndGetJson();
-                    JSONObject jObject = new JSONObject(jsonStr);
-										String seedStatus = jObject.getString("message");
-
-										if (seedStatus.equals("not generated")) {
-											cardCoinManagerNfcApi.generateSeedAndGetJson(DEFAULT_PIN);
-										}
-
-										jsonStr = cardActivationApi.getTonAppletStateAndGetJson();
-										jObject = new JSONObject(jsonStr);
-										String appletState = jObject.getString("message");
-										
-										if (!state.equals("TonWalletApplet waits two-factor authorization.")) {
-												return;
-												//throw "Incorret applet state"
-										}
-
-										jsonStr = cardActivationApi.getHashOfCommonSecretAndGetJson();
-										JSONObject jObject = new JSONObject(jsonStr);
-										String hashOfCommonSecret = jObject.getString("message"); // SHA256 has
-										// check that hashOfCommonSecret is correct based on the data from smartcontract
-
-										jsonStr = cardActivationApi.hashOfEncryptedPasswordAndGetJson();
-										JSONObject jObject = new JSONObject(jsonStr);
-										String hashOfEncryptedPassword = jObject.getString("message"); // SHA256 has
-										// check that hashOfEncryptedPassword is correct based on the data from smartcontract
-
-										String newPin = "7777";
-										jsonStr = cardActivationApi.turnOnWalletAndGetJson(newPin, authenticationPassword, commonSecret, initialVector);
-										JSONObject jObject = new JSONObject(jsonStr);
-										appletState = jObject.getString("message");
-
-										Log.d("TAG", "Card response : " + appletState);
-										if (!state.equals("TonWalletApplet is personalized.")) {
-												throw new Exception("Incorret applet state after activation : " + appletState)
-										}
+	    public void onClick(View arg0) {
+	    	try {
+			// here we already have authenticationPassword, commonSecret, initialVector
+			String jsonStr = cardCoinManagerNfcApi.getRootKeyStatusAndGetJson();
+			JSONObject jObject = new JSONObject(jsonStr);
+			String seedStatus = jObject.getString("message");
+			if (seedStatus.equals("not generated")) {
+				cardCoinManagerNfcApi.generateSeedAndGetJson(DEFAULT_PIN);
+			}
+			jsonStr = cardActivationApi.getTonAppletStateAndGetJson();
+			jObject = new JSONObject(jsonStr);
+			String appletState = jObject.getString("message");
+			
+			if (!state.equals("TonWalletApplet waits two-factor authorization.")) {
+				return; //throw "Incorret applet state"
+			}
+			
+			jsonStr = cardActivationApi.getHashOfCommonSecretAndGetJson();
+			JSONObject jObject = new JSONObject(jsonStr);
+			String hashOfCommonSecret = jObject.getString("message"); // SHA256 has
+			// check that hashOfCommonSecret is correct based on the data from smartcontract
+			
+			jsonStr = cardActivationApi.hashOfEncryptedPasswordAndGetJson();
+			jObject = new JSONObject(jsonStr);
+			String hashOfEncryptedPassword = jObject.getString("message"); // SHA256 has
+			// check that hashOfEncryptedPassword is correct based on the data from smartcontract
+			
+			String newPin = "7777";
+			jsonStr = cardActivationApi.turnOnWalletAndGetJson(newPin, authenticationPassword, commonSecret, initialVector);
+			jObject = new JSONObject(jsonStr);
+			appletState = jObject.getString("message");
+			Log.d("TAG", "Card response : " + appletState);
+			
+			if (!state.equals("TonWalletApplet is personalized.")) {
+				throw new Exception("Incorret applet state after activation : " + appletState)
+			}
 
                 }
                 catch (Exception e) {
