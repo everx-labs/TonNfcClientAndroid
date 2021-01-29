@@ -67,4 +67,13 @@ To make it work you should go through the following steps.
 		protected void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 			setContentView(android.example.myapplication.R.layout.activity_main);
+			...
+			try {
+				nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
+				cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
+			}
+			catch (Exception e) {
+				Log.e("TAG", e.getMessage());
+			}
+			...
 		}
