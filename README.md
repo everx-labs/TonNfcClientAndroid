@@ -8,4 +8,12 @@ The library now is published onto  https://jitpack.io, see https://jitpack.io/#t
 
 Let's suppose you have an Android project. To use TonNfcClientAndroid library in your project you must go through the following steps.
 
+0. Add it in your root build.gradle at the end of repositories
+
+0. Add the dependency
+
+0. You must take care of AndroidManifest.xml. It must contain some stuff related to NFC. You must add the following snippets.
+
+For this to work you must have an appropriate nfc_tech_filter.xml file in your xml subfolder.
+
     print 'Hello, World!'
