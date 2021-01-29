@@ -244,5 +244,4 @@ private static final String DEFAULT_PIN = "5555";
                 }
             }
         });
-
-	    }
+	}
