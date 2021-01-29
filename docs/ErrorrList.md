@@ -25,6 +25,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -34,6 +35,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -43,6 +45,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -52,6 +55,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -61,6 +65,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -70,6 +75,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -79,6 +85,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -88,6 +95,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -97,6 +105,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -106,6 +115,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -115,6 +125,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -124,6 +135,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -133,6 +145,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -142,6 +155,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -151,6 +165,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -160,6 +175,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -169,6 +185,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -178,6 +195,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -187,6 +205,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -196,6 +215,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -205,6 +225,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -214,6 +235,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -223,6 +245,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -232,6 +255,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -241,6 +265,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -250,6 +275,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -259,6 +285,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -268,6 +295,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -277,6 +305,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -286,6 +315,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -295,6 +325,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -304,6 +335,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -313,6 +345,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -322,6 +355,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -331,6 +365,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -340,6 +375,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -349,6 +385,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -358,6 +395,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -367,6 +405,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -376,6 +415,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -385,6 +425,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -394,6 +435,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -403,6 +445,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -412,6 +455,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -421,6 +465,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -430,6 +475,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -439,6 +485,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -457,6 +504,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -466,6 +514,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -475,6 +524,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -484,6 +534,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -493,6 +544,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -511,6 +563,7 @@ Here there are errors produced by NFC card (Ton wallet applet itself). So Androi
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
