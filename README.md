@@ -10,11 +10,7 @@ Let's suppose you have an Android project. To use TonNfcClientAndroid library in
 
 + Add it in your root build.gradle at the end of repositories
 
-    allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
+	allprojects {
 	}
 
 + Add the dependency
