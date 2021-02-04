@@ -17,5 +17,17 @@
         android:layout_height="wrap_content"
         android:text="Activate card" />
 
+    <Button
+        android:id="@+id/getPk"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Get ed25519 public key" />
+
+    <Button
+        android:id="@+id/sign"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Get ed25519 signature" />
+
 </LinearLayout>
 

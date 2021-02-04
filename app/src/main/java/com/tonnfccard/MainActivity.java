@@ -15,7 +15,9 @@ import android.widget.Toast;
 
 import com.tonnfccard.api.CardActivationApi;
 import com.tonnfccard.api.CardCoinManagerApi;
+import com.tonnfccard.api.CardCryptoApi;
 import com.tonnfccard.api.nfc.NfcApduRunner;
+
 import static com.tonnfccard.api.utils.JsonHelper.*;
 import static com.tonnfccard.api.utils.ResponsesConstants.*;
 import static com.tonnfccard.smartcard.TonWalletAppletConstants.*;
@@ -36,9 +38,12 @@ public class MainActivity extends AppCompatActivity {
     private NfcApduRunner nfcApduRunner;
     private CardCoinManagerApi cardCoinManagerNfcApi;
     private CardActivationApi cardActivationApi;
+    private CardCryptoApi cardCryptoApi;
 
     Button buttonGetMaxPinTries;
     Button buttonActivateCard;
+    Button buttonPk;
+    Button buttonSign;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,11 +51,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         addListenerOnGetMaxPinTriesButton();
         addListenerOnActivateCardButton();
+        addListenerOnGetPkButton();
+        addListenerOnSignButton();
         try {
             Context activity = getApplicationContext();
             nfcApduRunner = NfcApduRunner.getInstance(activity);
             cardCoinManagerNfcApi = new CardCoinManagerApi(activity,  nfcApduRunner);
             cardActivationApi = new CardActivationApi(activity,  nfcApduRunner);
+            cardCryptoApi =  new CardCryptoApi(activity,  nfcApduRunner);
         }
         catch (Exception e) {
             Log.e("TAG", e.getMessage());
@@ -81,6 +89,58 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     String response = cardCoinManagerNfcApi.getMaxPinTriesAndGetJson();
                     Log.d("TAG", "Card response : " + response);
+
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("TAG", "Error happened : " + e.getMessage());
+                }
+            }
+
+        });
+
+    }
+
+    public void addListenerOnSignButton() {
+
+        buttonSign = findViewById(R.id.sign);
+
+        buttonSign.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                try {
+                    String status = cardCryptoApi.createKeyForHmacAndGetJson(PASSWORD, COMMON_SECRET, SERIAL_NUMBER);
+                    Log.d("TAG", "status : " + status);
+
+                    String hdIndex = "234";
+                    String msg = "000011";
+                    String response = cardCryptoApi.verifyPinAndSignAndGetJson(msg, hdIndex, DEFAULT_PIN);
+                    Log.d("TAG", "Card response (ed25519 signature) : " + response);
+
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("TAG", "Error happened : " + e.getMessage());
+                }
+            }
+
+        });
+
+    }
+
+    public void addListenerOnGetPkButton() {
+
+        buttonPk = findViewById(R.id.getPk);
+
+        buttonPk.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                try {
+                    String hdIndex = "1";
+                    String response = cardCryptoApi.getPublicKeyAndGetJson(hdIndex);
+                    Log.d("TAG", "Card response (ed25519 public key) : " + response);
 
                 }
                 catch (Exception e) {
