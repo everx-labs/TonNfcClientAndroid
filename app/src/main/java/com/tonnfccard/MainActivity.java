@@ -1,14 +1,10 @@
 package com.tonnfccard;
 
+import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.util.Log;
 import android.view.View;
@@ -17,24 +13,44 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.tonnfccard.api.CardActivationApi;
 import com.tonnfccard.api.CardCoinManagerApi;
 import com.tonnfccard.api.nfc.NfcApduRunner;
+import static com.tonnfccard.api.utils.JsonHelper.*;
+import static com.tonnfccard.api.utils.ResponsesConstants.*;
+import static com.tonnfccard.smartcard.TonWalletAppletConstants.*;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String DEFAULT_PIN = "5555";
+
+    // Hardcoded for now activation data
+    private static final String SERIAL_NUMBER = "504394802433901126813236";
+    private static final String COMMON_SECRET = "7256EFE7A77AFC7E9088266EF27A93CB01CD9432E0DB66D600745D506EE04AC4";
+    private static final String IV = "1A550F4B413D0E971C28293F9183EA8A";
+    private static final String PASSWORD =  "F4B072E1DF2DB7CF6CD0CD681EC5CD2D071458D278E6546763CBB4860F8082FE14418C8A8A55E2106CBC6CB1174F4BA6D827A26A2D205F99B7E00401DA4C15ACC943274B92258114B5E11C16DA64484034F93771547FBE60DA70E273E6BD64F8A4201A9913B386BCA55B6678CFD7E7E68A646A7543E9E439DD5B60B9615079FE";
+
     private NfcApduRunner nfcApduRunner;
     private CardCoinManagerApi cardCoinManagerNfcApi;
+    private CardActivationApi cardActivationApi;
 
-    Button button;
+    Button buttonGetMaxPinTries;
+    Button buttonActivateCard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        addListenerOnButton();
+        addListenerOnGetMaxPinTriesButton();
+        addListenerOnActivateCardButton();
         try {
-            nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
-            cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
+            Context activity = getApplicationContext();
+            nfcApduRunner = NfcApduRunner.getInstance(activity);
+            cardCoinManagerNfcApi = new CardCoinManagerApi(activity,  nfcApduRunner);
+            cardActivationApi = new CardActivationApi(activity,  nfcApduRunner);
         }
         catch (Exception e) {
             Log.e("TAG", e.getMessage());
@@ -54,27 +70,80 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void addListenerOnButton() {
+    public void addListenerOnGetMaxPinTriesButton() {
 
-        button = (Button) findViewById(R.id.button1);
+        buttonGetMaxPinTries = findViewById(R.id.getMaxPinTries);
 
-        button.setOnClickListener(new View.OnClickListener() {
+        buttonGetMaxPinTries.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
                 try {
-                    String json = cardCoinManagerNfcApi.getMaxPinTriesAndGetJson();
-                    Log.d("TAG", "Card response : " + json);
+                    String response = cardCoinManagerNfcApi.getMaxPinTriesAndGetJson();
+                    Log.d("TAG", "Card response : " + response);
+
                 }
                 catch (Exception e) {
                     e.printStackTrace();
-                    Log.e("TAG", "Error happened : " + e.getStackTrace().toString());
+                    Log.e("TAG", "Error happened : " + e.getMessage());
                 }
             }
 
         });
 
     }
+
+
+    public void addListenerOnActivateCardButton() {
+
+        buttonActivateCard = findViewById(R.id.activateCard);
+
+        buttonActivateCard.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                try {
+                    String seedStatus = extractMessage(cardCoinManagerNfcApi.getRootKeyStatusAndGetJson());
+                    if (seedStatus.equals(NOT_GENERATED_MSG)) {
+                        cardCoinManagerNfcApi.generateSeedAndGetJson(DEFAULT_PIN);
+                    }
+
+                    String appletState = extractMessage(cardActivationApi.selectTonWalletAppletAndGetTonAppletStateAndGetJson());
+
+                    if (!appletState.equals(WAITE_AUTHORIZATION_MSG)) {
+                        throw new Exception("Incorret applet state : " + appletState);
+                    }
+
+                    String hashOfEncryptedCommonSecret = extractMessage(cardActivationApi.getHashOfEncryptedCommonSecretAndGetJson());
+                    String hashOfEncryptedPassword = extractMessage(cardActivationApi.getHashOfEncryptedPasswordAndGetJson());
+
+                    Log.d("TAG", "hashOfEncryptedCommonSecret : " + hashOfEncryptedCommonSecret);
+                    Log.d("TAG", "hashOfEncryptedPassword : " + hashOfEncryptedPassword);
+
+                    String newPin = "7777";
+
+                    appletState = extractMessage(cardActivationApi.turnOnWalletAndGetJson(newPin, PASSWORD, COMMON_SECRET, IV));
+
+                    Log.d("TAG", "Card response (state) : " + appletState);
+
+                    if (!appletState.equals(PERSONALIZED_STATE_MSG)) {
+                        throw new Exception("Incorrect applet state after activation : " + appletState);
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("TAG", "Error happened : " + e.getMessage());
+                }
+            }
+
+        });
+    }
+
+    private String extractMessage(String jsonStr) throws JSONException {
+        JSONObject jObject = new JSONObject(jsonStr);
+        return jObject.getString(MESSAGE_FIELD);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -86,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
+        // automatically handle clicks on the Home/Up buttonGetMaxPinTries, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 

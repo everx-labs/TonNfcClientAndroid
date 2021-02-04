@@ -51,6 +51,12 @@ public class TonWalletAppletConstants {
      ****************************************
      */
 
+    public static final String INSTALLED_STATE_MSG =  "TonWalletApplet is invalid (is not personalized)";
+    public static final String PERSONALIZED_STATE_MSG = "TonWalletApplet is personalized.";
+    public static final String WAITE_AUTHORIZATION_MSG =  "TonWalletApplet waits two-factor authorization.";
+    public static final String DELETE_KEY_FROM_KEYCHAIN_MSG = "TonWalletApplet is personalized and waits finishing key deleting from keychain.";
+    public static final String BLOCKED_MSG = "TonWalletApplet is blocked.";
+
     public static final List<TonWalletAppletStates> ALL_APPLET_STATES = Arrays.asList(TonWalletAppletStates.values());
     public static final List<TonWalletAppletStates> INSTALLED_STATE = Arrays.asList(TonWalletAppletStates.INSTALLED);
     public static final List<TonWalletAppletStates> PERSONALIZED_STATE = Arrays.asList(TonWalletAppletStates.PERSONALIZED);
