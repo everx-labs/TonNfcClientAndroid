@@ -87,14 +87,14 @@ import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getReset
 import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getSendKeyChunkAPDU;
 
 public class CardKeyChainApi extends TonWalletApi {
-  private static final String KEY_INDEX_FIELD = "index";
-  private static final String KEY_LENGTH_FIELD = "length";
-  private static final String KEY_HMAC_FIELD = "hmac";
-  private static final String NUMBER_OF_KEYS_FIELD = "numberOfKeys";
-  private static final String OCCUPIED_SIZE_FIELD = "occupiedSize";
-  private static final String FREE_SIZE_FIELD = "freeSize";
-  private static final String KEYS_DATA_FIELD = "keysData";
-  private static final String TAG = "CardKeyChainNfcApi";
+  public static final String KEY_INDEX_FIELD = "index";
+  public static final String KEY_LENGTH_FIELD = "length";
+  public static final String KEY_HMAC_FIELD = "hmac";
+  public static final String NUMBER_OF_KEYS_FIELD = "numberOfKeys";
+  public static final String OCCUPIED_SIZE_FIELD = "occupiedSize";
+  public static final String FREE_SIZE_FIELD = "freeSize";
+  public static final String KEYS_DATA_FIELD = "keysData";
+  public static final String TAG = "CardKeyChainNfcApi";
 
   private List<String> keyMacs = new ArrayList<>();
 
@@ -510,7 +510,7 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   private void checkAvailableVolForNewKey(short keySize) throws Exception {
-    TonWalletAppletStates appletState = selectTonWalletAppletAndGetTonAppletState();
+    TonWalletAppletStates appletState = getTonAppletState();
     if (appletState != TonWalletAppletStates.PERSONALIZED)
       throw new Exception(ERROR_MSG_APPLET_IS_NOT_PERSONALIZED + appletState.getDescription() + ".");
     reselectKeyForHmac();
@@ -519,7 +519,7 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   private void initiateChangeOfKey(byte[] index) throws Exception {
-    TonWalletAppletStates appletState = selectTonWalletAppletAndGetTonAppletState();
+    TonWalletAppletStates appletState = getTonAppletState();
     if (appletState != TonWalletAppletStates.PERSONALIZED)
       throw new Exception(ERROR_MSG_APPLET_IS_NOT_PERSONALIZED + appletState.getDescription() + ".");
     reselectKeyForHmac();
@@ -548,9 +548,10 @@ public class CardKeyChainApi extends TonWalletApi {
 
   private int deleteKeyFromKeyChain(byte[] macBytes) throws Exception {
     JSONObject jsonObject = getIndexAndLenOfKeyInKeyChain(macBytes);
-    byte[] index = BYTE_ARR_HELPER.bytes(jsonObject.getInt(KEY_INDEX_FIELD));
-
-    initiateDeleteOfKey(index);
+    byte[] ind = new byte[2];
+    short indVal = (short) jsonObject.getInt(KEY_INDEX_FIELD);
+    BYTE_ARR_HELPER.setShort(ind, (short)0, indVal);
+    initiateDeleteOfKey(ind);
 
     int deleteKeyChunkIsDone = 0;
     while (deleteKeyChunkIsDone == 0) {
@@ -564,7 +565,7 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   private int finishDeleteKeyFromKeyChainAfterInterruption() throws Exception {
-    TonWalletAppletStates appletState = selectTonWalletAppletAndGetTonAppletState();
+    TonWalletAppletStates appletState = getTonAppletState();
     if (appletState != TonWalletAppletStates.DELETE_KEY_FROM_KEYCHAIN_MODE)
       throw new Exception(ERROR_MSG_APPLET_DOES_NOT_WAIT_TO_DELETE_KEY + appletState.getDescription() + ".");
 
@@ -582,7 +583,7 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   private void initiateDeleteOfKey(byte[] index) throws Exception {
-    TonWalletAppletStates appletState = selectTonWalletAppletAndGetTonAppletState();
+    TonWalletAppletStates appletState = getTonAppletState();
     if (appletState !=  TonWalletAppletStates.PERSONALIZED)
       throw new Exception(ERROR_MSG_APPLET_IS_NOT_PERSONALIZED + appletState.getDescription() + ".");
     reselectKeyForHmac();
@@ -591,9 +592,9 @@ public class CardKeyChainApi extends TonWalletApi {
     if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != INITIATE_DELETE_KEY_LE)
       throw new Exception(ERROR_MSG_INITIATE_DELETE_KEY_RESPONSE_LEN_INCORRECT);
     byte[] response = rapdu.getData();
-    int len = BYTE_ARR_HELPER.makeShort(response, 2);
+  /*  int len = BYTE_ARR_HELPER.makeShort(response, 0);
     if (len <= 0 || len > MAX_KEY_SIZE_IN_KEYCHAIN)
-      throw new Exception(ERROR_MSG_KEY_LENGTH_INCORRECT);
+      throw new Exception(ERROR_MSG_KEY_LENGTH_INCORRECT);*/
   }
 
   private int deleteKeyChunk() throws Exception {
@@ -684,7 +685,9 @@ public class CardKeyChainApi extends TonWalletApi {
   private byte[] getKeyFromKeyChain(byte[] macBytes) throws Exception {
     JSONObject jsonObject = getIndexAndLenOfKeyInKeyChain(macBytes);
     int keyLen = jsonObject.getInt(KEY_LENGTH_FIELD);
-    byte[] ind = BYTE_ARR_HELPER.bytes(jsonObject.getInt(KEY_INDEX_FIELD));
+    byte[] ind = new byte[2];
+    short indVal = (short) jsonObject.getInt(KEY_INDEX_FIELD);
+    BYTE_ARR_HELPER.setShort(ind, (short)0, indVal);
     return getKeyFromKeyChain(keyLen, ind);
   }
 
@@ -766,7 +769,10 @@ public class CardKeyChainApi extends TonWalletApi {
     int keyLen = jsonObject.getInt(KEY_LENGTH_FIELD);
     if (keyLen != newKeyBytes.length)
       throw new IllegalArgumentException(ERROR_MSG_NEW_KEY_LEN_INCORRECT + keyLen + ".");
-    initiateChangeOfKey(BYTE_ARR_HELPER.bytes(jsonObject.getInt(KEY_INDEX_FIELD)));
+    byte[] ind = new byte[2];
+    short indVal = (short) jsonObject.getInt(KEY_INDEX_FIELD);
+    BYTE_ARR_HELPER.setShort(ind, (short)0, indVal);
+    initiateChangeOfKey(ind);
     changeKey(newKeyBytes);
     return BYTE_ARR_HELPER.hex(HMAC_HELPER.computeMac(newKeyBytes));
   }

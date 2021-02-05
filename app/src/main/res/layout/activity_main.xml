@@ -29,5 +29,11 @@
         android:layout_height="wrap_content"
         android:text="Get ed25519 signature" />
 
+    <Button
+        android:id="@+id/testKeychain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="testKeychain" />
+
 </LinearLayout>
 

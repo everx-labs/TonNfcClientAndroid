@@ -145,7 +145,7 @@ public class CardActivationApi extends TonWalletApi {
   private TonWalletAppletStates turnOnWallet(byte[] newPinBytes, byte[] password, byte[] commonSecret, byte[] initialVector) throws Exception {
     apduRunner.sendCoinManagerAppletAPDU(RESET_WALLET_APDU);
     apduRunner.sendAPDU(getGenerateSeedAPDU(DEFAULT_PIN));
-    TonWalletAppletStates appletState = selectTonWalletAppletAndGetTonAppletState();
+    TonWalletAppletStates appletState = getTonAppletState();
     if (appletState != TonWalletAppletStates.WAITE_AUTHORIZATION_MODE)
       throw new Exception(ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHORIZATION + appletState.getDescription());
     boolean status = verifyHashOfEncryptedCommonSecret(password, commonSecret, initialVector);
@@ -156,9 +156,9 @@ public class CardActivationApi extends TonWalletApi {
       throw new Exception(ERROR_MSG_HASH_OF_ENCRYPTED_PASSWORD_RESPONSE_INCORRECT);
     verifyPassword(password, initialVector);
     apduRunner.sendCoinManagerAppletAPDU(getChangePinAPDU(DEFAULT_PIN, newPinBytes));
-    String serialNumber = STR_HELPER.makeDigitalString(selectTonWalletAppletAndGetSerialNumber());
+    String serialNumber = STR_HELPER.makeDigitalString(getSerialNumber());
     createKeyForHmac(password, commonSecret, serialNumber);
-    return selectTonWalletAppletAndGetTonAppletState();
+    return getTonAppletState();
   }
 
   private boolean selectTonWalletAppletAndAndVerifyHashOfCommonSecret(byte[] commonSecret) throws Exception {

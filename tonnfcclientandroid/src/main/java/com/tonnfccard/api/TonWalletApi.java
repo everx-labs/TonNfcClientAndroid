@@ -85,11 +85,11 @@ public class TonWalletApi {
     this.apduRunner = apduRunner;
   }
 
-  public void selectTonWalletAppletAndGetSerialNumber(final NfcCallback callback) {
+  public void getSerialNumber(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = selectTonWalletAppletAndGetSerialNumberAndGetJson();
+          String json = getSerialNumberAndGetJson();
           resolveJson(json, callback);
           Log.d(TAG, "getSerialNumber response : " + json);
         } catch (Exception e) {
@@ -99,16 +99,16 @@ public class TonWalletApi {
     }).start();
   }
 
-  public String selectTonWalletAppletAndGetSerialNumberAndGetJson() throws Exception {
-    String response = STR_HELPER.makeDigitalString(selectTonWalletAppletAndGetSerialNumber());
+  public String getSerialNumberAndGetJson() throws Exception {
+    String response = STR_HELPER.makeDigitalString(getSerialNumber());
     return JSON_HELPER.createResponseJson(response);
   }
 
-  public void selectTonWalletAppletAndGetTonAppletState(final NfcCallback callback) {
+  public void getTonAppletState(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = selectTonWalletAppletAndGetTonAppletStateAndGetJson();
+          String json = getTonAppletStateAndGetJson();
           resolveJson(json, callback);
           Log.d(TAG, "getTonAppletState response : " + json);
         } catch (Exception e) {
@@ -118,8 +118,8 @@ public class TonWalletApi {
     }).start();
   }
 
-  public String selectTonWalletAppletAndGetTonAppletStateAndGetJson() throws Exception {
-    TonWalletAppletStates state = selectTonWalletAppletAndGetTonAppletState();
+  public String getTonAppletStateAndGetJson() throws Exception {
+    TonWalletAppletStates state = getTonAppletState();
     return JSON_HELPER.createResponseJson(state.getDescription());
   }
 
@@ -340,7 +340,7 @@ public class TonWalletApi {
   }
 
   void reselectKeyForHmac() throws Exception {
-    String serialNumber = STR_HELPER.makeDigitalString(selectTonWalletAppletAndGetSerialNumber());
+    String serialNumber = STR_HELPER.makeDigitalString(getSerialNumber());
     selectKeyForHmac(serialNumber);
   }
 
@@ -393,12 +393,12 @@ public class TonWalletApi {
     return BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetSaultBytes());
   }
 
-  TonWalletAppletStates selectTonWalletAppletAndGetTonAppletState() throws Exception {
+  TonWalletAppletStates getTonAppletState() throws Exception {
     byte[] state = apduRunner.sendTonWalletAppletAPDU(GET_APP_INFO_APDU).getData();
     return TonWalletAppletStates.findByStateValue(state[0]);
   }
 
-  byte[] selectTonWalletAppletAndGetSerialNumber() throws Exception {
+  byte[] getSerialNumber() throws Exception {
     byte[] serialNumber = apduRunner.sendTonWalletAppletAPDU(GET_SERIAL_NUMBER_APDU).getData();
     if (serialNumber.length != SERIAL_NUMBER_SIZE) throw new Exception(ERROR_MSG_GET_SERIAL_NUMBER_RESPONSE_LEN_INCORRECT);
     return serialNumber;
