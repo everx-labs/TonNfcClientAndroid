@@ -1,5 +1,7 @@
 package com.tonnfccard.api.callback;
 
+import android.util.Log;
+
 public class NfcCallback {
   private NfcResolver resolve;
   private NfcRejecter reject;
@@ -20,6 +22,5 @@ public class NfcCallback {
   public NfcRejecter getReject() {
     return reject;
   }
-
 
 }

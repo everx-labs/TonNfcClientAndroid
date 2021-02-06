@@ -47,5 +47,23 @@
         android:layout_height="wrap_content"
         android:text="getRecovery" />
 
+    <Button
+        android:id="@+id/checkIfNfcSupported"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="checkIfNfcSupported" />
+
+    <Button
+        android:id="@+id/checkIfNfcEnabled"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="checkIfNfcEnabled" />
+
+    <Button
+        android:id="@+id/openNfcSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="openNfcSettings" />
+
 </LinearLayout>
 

@@ -18,6 +18,7 @@ import com.tonnfccard.api.CardCoinManagerApi;
 import com.tonnfccard.api.CardCryptoApi;
 import com.tonnfccard.api.CardKeyChainApi;
 import com.tonnfccard.api.RecoveryDataApi;
+import com.tonnfccard.api.NfcApi;
 import com.tonnfccard.api.nfc.NfcApduRunner;
 import com.tonnfccard.utils.ByteArrayHelper;
 
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private CardCryptoApi cardCryptoApi;
     private CardKeyChainApi cardKeyChainApi;
     private RecoveryDataApi recoveryDataApi;
+    private NfcApi nfcApi;
 
     private SecureRandom sr = new SecureRandom();
     private KeyGenerator kg;
@@ -75,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
     Button buttonTryKeychain;
     Button buttonAddRecoveryData;
     Button buttonGetRecoveryData;
+    Button buttonCheckIfNfcSupported;
+    Button buttonCheckIfNfcEnabled;
+    Button buttonOpenNfcSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +92,9 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnTryKeychainButton();
         addListenerOnAddRecoveryDataButton();
         addListenerOnGetRecoveryDataButton();
+        addListenerOnCheckIfNfcSupportedButton();
+        addListenerOnCheckIfNfcEnabledButton();
+        addListenerOnOpenNfcSettingsButton();
         try {
             Context activity = getApplicationContext();
             nfcApduRunner = NfcApduRunner.getInstance(activity);
@@ -95,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
             cardCryptoApi =  new CardCryptoApi(activity,  nfcApduRunner);
             cardKeyChainApi = new CardKeyChainApi(activity,  nfcApduRunner);
             recoveryDataApi = new RecoveryDataApi(activity,  nfcApduRunner);
+            nfcApi = new NfcApi(activity);
 
             kg = KeyGenerator.getInstance("AES");
             kg.init(AES_KEY_SIZE);
@@ -116,6 +125,72 @@ public class MainActivity extends AppCompatActivity {
         catch (Exception e) {
             Log.e("TAG", "Error happened : " + e.getMessage());
         }
+    }
+
+    public void addListenerOnOpenNfcSettingsButton() {
+
+        buttonOpenNfcSettings = findViewById(R.id.openNfcSettings);
+
+        buttonOpenNfcSettings.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                try {
+                    String response = nfcApi.openNfcSettingsAndGetJson();
+                    Log.d("TAG", "openNfcSettings response : " + response);
+
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("TAG", "Error happened : " + e.getMessage());
+                }
+            }
+
+        });
+    }
+
+    public void addListenerOnCheckIfNfcEnabledButton() {
+
+        buttonCheckIfNfcEnabled = findViewById(R.id.checkIfNfcEnabled);
+
+        buttonCheckIfNfcEnabled.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                try {
+                    String response = nfcApi.checkIfNfcEnabledAndGetJson();
+                    Log.d("TAG", "checkIfNfcEnabled response : " + response);
+
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("TAG", "Error happened : " + e.getMessage());
+                }
+            }
+
+        });
+    }
+
+    public void addListenerOnCheckIfNfcSupportedButton() {
+
+        buttonCheckIfNfcSupported = findViewById(R.id.checkIfNfcSupported);
+
+        buttonCheckIfNfcSupported.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                try {
+                    String response = nfcApi.checkIfNfcSupportedAndGetJson();
+                    Log.d("TAG", "checkIfNfcSupported response : " + response);
+
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("TAG", "Error happened : " + e.getMessage());
+                }
+            }
+
+        });
     }
 
     public void addListenerOnAddRecoveryDataButton() {

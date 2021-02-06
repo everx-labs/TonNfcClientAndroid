@@ -1,6 +1,7 @@
 package com.tonnfccard.api;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.security.keystore.KeyProperties;
 import android.security.keystore.KeyProtection;
 import android.util.Log;
@@ -33,6 +34,7 @@ import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_COMMON_SECRE
 import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_COMMON_SECRET_NOT_HEX;
 import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_GET_SERIAL_NUMBER_RESPONSE_LEN_INCORRECT;
 import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN;
+import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_NO_CONTEXT;
 import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_PASSWORD_LEN_INCORRECT;
 import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_PASSWORD_NOT_HEX;
 import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_SAULT_RESPONSE_LEN_INCORRECT;
@@ -53,7 +55,7 @@ import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_SERI
 
 public class TonWalletApi {
   private static final String SERIAl_NUMBERS_FIELD = "serial_number_field";
-  private static final String TAG = "TonNfcApi";
+  private static final String TAG = "TonWalletApi";
 
   protected static final StringHelper STR_HELPER = StringHelper.getInstance();
   protected static final JsonHelper JSON_HELPER = JsonHelper.getInstance();
@@ -83,6 +85,25 @@ public class TonWalletApi {
   TonWalletApi(Context activity, ApduRunner apduRunner) {
     this.activity = activity;
     this.apduRunner = apduRunner;
+  }
+
+  public void disconnectCard(final NfcCallback callback) {
+    new Thread(new Runnable() {
+      public void run() {
+        try {
+          String json = disconnectCardAndGetJson();
+          resolveJson(json, callback);
+          Log.d(TAG, "disconnectCard response : " + json);
+        } catch (Exception e) {
+          EXCEPTION_HELPER.handleException(e, callback, TAG);
+        }
+      }
+    }).start();
+  }
+
+  public String disconnectCardAndGetJson()  throws Exception {
+    apduRunner.disconnectCard();
+    return JSON_HELPER.createResponseJson(DONE_MSG);
   }
 
   public void getSerialNumber(final NfcCallback callback) {
@@ -140,26 +161,6 @@ public class TonWalletApi {
   public String getSaultAndGetJson() throws Exception {
     return JSON_HELPER.createResponseJson(getSaultHex());
   }
-
-  public void disconnectCard(final NfcCallback callback) {
-    new Thread(new Runnable() {
-      public void run() {
-        try {
-          String json = disconnectCardAndGetJson();
-          resolveJson(json, callback);
-          Log.d(TAG, "disconnectCard response : " + json);
-        } catch (Exception e) {
-          EXCEPTION_HELPER.handleException(e, callback, TAG);
-        }
-      }
-    }).start();
-  }
-
-  public String disconnectCardAndGetJson()  throws Exception {
-    apduRunner.disconnectCard();
-    return JSON_HELPER.createResponseJson(DONE_MSG);
-  }
-
 
   public void getAllSerialNumbers(final NfcCallback callback) {
     new Thread(new Runnable() {
