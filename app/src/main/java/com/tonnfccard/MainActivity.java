@@ -17,19 +17,35 @@ import com.tonnfccard.api.CardActivationApi;
 import com.tonnfccard.api.CardCoinManagerApi;
 import com.tonnfccard.api.CardCryptoApi;
 import com.tonnfccard.api.CardKeyChainApi;
+import com.tonnfccard.api.RecoveryDataApi;
 import com.tonnfccard.api.nfc.NfcApduRunner;
+import com.tonnfccard.utils.ByteArrayHelper;
 
 import static com.tonnfccard.api.CardKeyChainApi.NUMBER_OF_KEYS_FIELD;
 import static com.tonnfccard.api.utils.JsonHelper.*;
+import static com.tonnfccard.utils.ByteArrayHelper.*;
 import static com.tonnfccard.api.utils.ResponsesConstants.*;
 import static com.tonnfccard.smartcard.TonWalletAppletConstants.*;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import java.security.SecureRandom;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
+
 public class MainActivity extends AppCompatActivity {
 
+
     private static final String DEFAULT_PIN = "5555";
+
+    // AES parameters
+    private static final int AES_KEY_SIZE = 128; // in bits
+    private static final int AES_COUNTER_SIZE = 16; // in bytes
 
     // Hardcoded for now activation data
     private static final String SERIAL_NUMBER = "504394802433901126813236";
@@ -37,17 +53,28 @@ public class MainActivity extends AppCompatActivity {
     private static final String IV = "1A550F4B413D0E971C28293F9183EA8A";
     private static final String PASSWORD =  "F4B072E1DF2DB7CF6CD0CD681EC5CD2D071458D278E6546763CBB4860F8082FE14418C8A8A55E2106CBC6CB1174F4BA6D827A26A2D205F99B7E00401DA4C15ACC943274B92258114B5E11C16DA64484034F93771547FBE60DA70E273E6BD64F8A4201A9913B386BCA55B6678CFD7E7E68A646A7543E9E439DD5B60B9615079FE";
 
+    private static final String SURF_PUBLIC_KEY = "B81F0E0E07416DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A";
+    private static final String MULTISIG_ADDR = "A11F0E0E07416DAB6C320ECC6BF3DBA48A70121C5251CC31B1D8F8A1B36E0F2F";
+
     private NfcApduRunner nfcApduRunner;
     private CardCoinManagerApi cardCoinManagerNfcApi;
     private CardActivationApi cardActivationApi;
     private CardCryptoApi cardCryptoApi;
     private CardKeyChainApi cardKeyChainApi;
+    private RecoveryDataApi recoveryDataApi;
+
+    private SecureRandom sr = new SecureRandom();
+    private KeyGenerator kg;
+    private SecretKey key;
+    private byte[] counter = new byte[AES_COUNTER_SIZE];
 
     Button buttonGetMaxPinTries;
     Button buttonActivateCard;
     Button buttonPk;
     Button buttonSign;
     Button buttonTryKeychain;
+    Button buttonAddRecoveryData;
+    Button buttonGetRecoveryData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnGetPkButton();
         addListenerOnSignButton();
         addListenerOnTryKeychainButton();
+        addListenerOnAddRecoveryDataButton();
+        addListenerOnGetRecoveryDataButton();
         try {
             Context activity = getApplicationContext();
             nfcApduRunner = NfcApduRunner.getInstance(activity);
@@ -65,6 +94,11 @@ public class MainActivity extends AppCompatActivity {
             cardActivationApi = new CardActivationApi(activity,  nfcApduRunner);
             cardCryptoApi =  new CardCryptoApi(activity,  nfcApduRunner);
             cardKeyChainApi = new CardKeyChainApi(activity,  nfcApduRunner);
+            recoveryDataApi = new RecoveryDataApi(activity,  nfcApduRunner);
+
+            kg = KeyGenerator.getInstance("AES");
+            kg.init(AES_KEY_SIZE);
+            key = kg.generateKey();
         }
         catch (Exception e) {
             Log.e("TAG", e.getMessage());
@@ -82,6 +116,106 @@ public class MainActivity extends AppCompatActivity {
         catch (Exception e) {
             Log.e("TAG", "Error happened : " + e.getMessage());
         }
+    }
+
+    public void addListenerOnAddRecoveryDataButton() {
+
+        buttonAddRecoveryData = findViewById(R.id.addRecoveryData);
+
+        buttonAddRecoveryData.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                try {
+                    String response = recoveryDataApi.resetRecoveryDataAndGetJson();
+                    Log.d("TAG", "resetRecoveryData response : " + response);
+
+                    response = recoveryDataApi.isRecoveryDataSetAndGetJson();
+                    Log.d("TAG", "isRecoveryDataSet response : " + response);
+
+                    JSONObject recoveryData = new JSONObject();
+                    recoveryData.put("surfPublicKey", SURF_PUBLIC_KEY);
+                    recoveryData.put("multisigAddress", MULTISIG_ADDR);
+                    recoveryData.put("p1", PASSWORD);
+                    recoveryData.put("cs", COMMON_SECRET);
+
+                    Log.d("TAG", "recoveryData : " + recoveryData.toString());
+
+                    byte[] recoveryDataBytes = recoveryData.toString().getBytes(StandardCharsets.UTF_8);
+                    Log.d("TAG", "recoveryDataBytes length : " + recoveryDataBytes.length);
+
+                    Cipher aesCtr = Cipher.getInstance("AES/CTR/NoPadding");
+                    sr.nextBytes(counter);
+                    aesCtr.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(counter));
+
+                    byte[] encryptedRecoveryDataBytes = aesCtr.doFinal(recoveryDataBytes);
+
+                    String encryptedRecoveryDataHex = ByteArrayHelper.getInstance().hex(encryptedRecoveryDataBytes);
+
+                    Log.d("TAG", "encryptedRecoveryDataHex : " + encryptedRecoveryDataHex);
+
+                    response = recoveryDataApi.addRecoveryDataAndGetJson(encryptedRecoveryDataHex );
+                    Log.d("TAG", "addRecoveryData response : " + response);
+
+                    response = recoveryDataApi.isRecoveryDataSetAndGetJson();
+                    Log.d("TAG", "isRecoveryDataSet response : " + response);
+
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("TAG", "Error happened : " + e.getMessage());
+                }
+            }
+
+        });
+
+    }
+
+    public void addListenerOnGetRecoveryDataButton() {
+
+        buttonGetRecoveryData = findViewById(R.id.getRecoveryData);
+
+        buttonGetRecoveryData.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                try {
+
+                    String response = recoveryDataApi.isRecoveryDataSetAndGetJson();
+                    Log.d("TAG", "isRecoveryDataSet response : " + response);
+
+                    String status = extractMessage(response);
+                    if (status.equals("true")) {
+                        response = recoveryDataApi.getRecoveryDataAndGetJson();
+                        Log.d("TAG", "getRecoveryData response : " + response);
+                        String encryptedRecoveryDataHex = extractMessage(response);
+
+                        Log.d("TAG", "encryptedRecoveryDataHex : " + encryptedRecoveryDataHex);
+
+                        byte[] encryptedRecoveryDataBytes = ByteArrayHelper.getInstance().bytes(encryptedRecoveryDataHex);
+                        Log.d("TAG", "encryptedRecoveryDataBytes length : " + encryptedRecoveryDataBytes.length);
+
+                        Cipher aesCtr = Cipher.getInstance("AES/CTR/NoPadding");
+                        aesCtr.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(counter));
+
+                        byte[] recoveryDataBytes = aesCtr.doFinal(encryptedRecoveryDataBytes);
+
+                        String recoveryData = new String(recoveryDataBytes, StandardCharsets.UTF_8);
+
+                        Log.d("TAG", "Got recoveryData from card : " + recoveryData);
+                    }
+                    else {
+                        Log.d("TAG", "Recovery data is no set yet.");
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("TAG", "Error happened : " + e.getMessage());
+                }
+            }
+
+        });
+
     }
 
     public void addListenerOnTryKeychainButton() {
