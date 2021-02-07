@@ -274,13 +274,13 @@ These functions are naturally divided into four groups. And there are respective
 
     {"message":"done","status":"ok"}
 
-### II. CardActivationApi functions
+### CardActivationApi functions
 
 When user gets NFC TON Labs security card  at the first time, the applet on the card is in a special state. It waits for user authentication. And the main functionality of applet is blocked for now. At this point you may call all functions from previous subsections. 
 
 And also some special functions are available in CardActivationApi. They are necessary to complete card activation (see Card activation section). 
 
-- turnOnWallet(String newPin, String password, String commonSecret, String initialVector)
+- **turnOnWallet(String newPin, String password, String commonSecret, String initialVector)**
 
     This function makes TON Labs wallet applet activation. After its succesfull call applet will be in working personalized state (so getTonAppletState() will return {"message":"TonWalletApplet is personalized.","status":"ok"}).
 
@@ -300,7 +300,7 @@ And also some special functions are available in CardActivationApi. They are nec
 
     {"message":"TonWalletApplet is personalized.","status":"ok"}
 
-- getHashOfEncryptedCommonSecret()
+- **getHashOfEncryptedCommonSecret()**
 
     Return SHA256 hash of encrypted common secret.
 
@@ -308,7 +308,7 @@ And also some special functions are available in CardActivationApi. They are nec
 
     {"message":"EFBF24AC1563B34ADB0FFE0B0A53659E72E26765704C109C95346EEAA1D4BEAF","status":"ok"}
 
-- getHashOfEncryptedPassword()
+- **getHashOfEncryptedPassword()**
 
     Return SHA256 hash of encrypted password.
 
@@ -316,11 +316,11 @@ And also some special functions are available in CardActivationApi. They are nec
 
     {"message":"26D4B03C0C0E168DC33E48BBCEB457C21364658C9D487341827BBFFB4D8B38F3","status":"ok"}
 
-### III. CardCryptoApi functions
+### CardCryptoApi functions
 
 Here there are functions related to ed25519 signature.
 
-- getPublicKeyForDefaultPath()
+- **getPublicKeyForDefaultPath()**
 
     Return public key for HD path m/44'/396'/0'/0'/0'
 
@@ -328,7 +328,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
 
-- verifyPin(String pin)
+- **verifyPin(String pin)**
 
     Make pin verification.
 
@@ -340,7 +340,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"done","status":"ok"}
 
-- signForDefaultHdPath(String dataForSigning)
+- **signForDefaultHdPath(String dataForSigning)**
 
     Make  data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
 
@@ -352,7 +352,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"2D6A2749DD5AF5BB356220BFA06A0C624D5814438F37983322BBAD762EFB4759CFA927E6735B7CD556196894F3CE077ADDD6B49447B8B325ADC494B82DC8B605","status":"ok"}
 
-- sign(String dataForSigning, String index)
+- **sign(String dataForSigning, String index)**
 
     Make data signing by key for HD path m/44'/396'/0'/0'/index'. Prior to call this function you must call verifyPin.
 
@@ -366,7 +366,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"13FB836213B12BBD41209273F81BCDCF7C226947B18128F73E9A6E96C84B30C3288E51C622C045488981B6544D02D0940DE54D68A0A78BC2A5F9523B8757B904","status":"ok"}
 
-- getPublicKey(String index)
+- **getPublicKey(String index)**
 
     Return public key for HD path m/44'/396'/0'/0'/index'.
 
@@ -378,7 +378,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
 
-- verifyPinAndSignForDefaultHdPath(String dataForSigning, String pin)
+- **verifyPinAndSignForDefaultHdPath(String dataForSigning, String pin)**
 
     Make  pin verification data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
 
@@ -392,7 +392,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"2D6A2749DD5AF5BB356220BFA06A0C624D5814438F37983322BBAD762EFB4759CFA927E6735B7CD556196894F3CE077ADDD6B49447B8B325ADC494B82DC8B605","status":"ok"}
 
-- verifyPinAndSign(String dataForSigning, String index, String pin)
+- **verifyPinAndSign(String dataForSigning, String index, String pin)**
 
     Make pin verification and data signing by key for HD path m/44'/396'/0'/0'/index'.
 
@@ -408,9 +408,9 @@ Here there are functions related to ed25519 signature.
 
     {"message":"13FB836213B12BBD41209273F81BCDCF7C226947B18128F73E9A6E96C84B30C3288E51C622C045488981B6544D02D0940DE54D68A0A78BC2A5F9523B8757B904","status":"ok"}
 
-### IV. RecoveryDataApi functions
+### RecoveryDataApi functions
 
-- getRecoveryDataLen()
+- **getRecoveryDataLen()**
 
     Read actual recovery data length.
 
@@ -418,7 +418,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"7","status":"ok"}
 
-- getRecoveryDataHash()
+- **getRecoveryDataHash()**
 
     Read recovery data SHA256 hash.
 
@@ -426,7 +426,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
 
-- getRecoveryData()
+- **getRecoveryData()**
 
     Read  recovery data from TON Wallet applet.
 
@@ -434,7 +434,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"00112233445566","status":"ok"}
 
-- addRecoveryData(String recoveryData)
+- **addRecoveryData(String recoveryData)**
 
     Save recovery data into applet. 
 
@@ -446,7 +446,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"done","status":"ok"}
 
-- isRecoveryDataSet()
+- **isRecoveryDataSet()**
 
     Return 'true'/'false' if recovery data exists/does not exist.
 
@@ -456,7 +456,7 @@ Here there are functions related to ed25519 signature.
 
     2) If we did not add recovery data, then: {"message":"false","status":"ok"}
 
-- resetRecoveryData()
+- **resetRecoveryData()**
 
     Clear recovery data.
 
@@ -464,9 +464,9 @@ Here there are functions related to ed25519 signature.
 
     {"message":"done","status":"ok"}
 
-### V. CardKeyChainApi functions
+### CardKeyChainApi functions
 
-- resetKeyChain()
+- **resetKeyChain()**
 
     Clear keychain, i.e. remove all stored keys.
 
@@ -474,7 +474,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"done","status":"ok"}
 
-- getKeyChainDataAboutAllKeys()
+- **getKeyChainDataAboutAllKeys()**
 
     Return list of pairs (keyHmac, keyLength)  in json format.
 
@@ -482,7 +482,7 @@ Here there are functions related to ed25519 signature.
 
     {"keysData":[{"hmac":"D7E0DFB66A2F72AAD7D66D897C805D307EE1F1CB8077D3B8CF1A942D6A5AC2FF","length":"6"},{"hmac":"D31D1D600F8E5B5951275B9C6DED079011FD852ABB62C14A2EECA2E6924452C0","length":"3"}],"status":"ok"}
 
-- getKeyChainInfo()
+- **getKeyChainInfo()**
 
     Return json characterizing the state of keychain. 
 
@@ -490,7 +490,7 @@ Here there are functions related to ed25519 signature.
 
     {"numberOfKeys":0,"occupiedSize":0,"freeSize":32767,"status":"ok"}
 
-- getNumberOfKeys()
+- **getNumberOfKeys()**
 
     Return number of keys in card keychain.
 
@@ -498,7 +498,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"1","status":"ok"}
 
-- getOccupiedStorageSize()
+- **getOccupiedStorageSize()**
 
     Return the volume of occupied size in card keychain (in bytes).
 
@@ -506,7 +506,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"0","status":"ok"}
 
-- getFreeStorageSize()
+- **getFreeStorageSize()**
 
     Return the volume of free size in card keychain (in bytes).
 
@@ -514,7 +514,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"32767","status":"ok"}
 
-- getKeyFromKeyChain(String keyHmac)
+- **getKeyFromKeyChain(String keyHmac)**
 
     Read key from card keychain based on its hmac.
 
@@ -526,7 +526,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"001122334455","status":"ok"}
 
-- addKeyIntoKeyChain(String newKey)
+- **addKeyIntoKeyChain(String newKey)**
 
     Save new key into card keychain.
 
@@ -540,7 +540,7 @@ Here there are functions related to ed25519 signature.
 
     where "message" contains hmac of newKey.
 
-- deleteKeyFromKeyChain(String keyHmac)
+- **deleteKeyFromKeyChain(String keyHmac)**
 
     Delete key from card keychain based on its hmac.
 
@@ -554,7 +554,7 @@ Here there are functions related to ed25519 signature.
 
     where "message" field contains the number of remaining keys
 
-- finishDeleteKeyFromKeyChainAfterInterruption()
+- **finishDeleteKeyFromKeyChainAfterInterruption()**
 
     Finish the process of deleting key from card keychain. It may be necessary if previous DELETE operation was occassionally interrupted (like card disconnection).
 
@@ -564,7 +564,7 @@ Here there are functions related to ed25519 signature.
 
     where "message" field contains the number of remaining keys
 
-- changeKeyInKeyChain(String newKey, String oldKeyHmac)
+- **changeKeyInKeyChain(String newKey, String oldKeyHmac)**
 
     Replace existing key by new key. The length of new key must be equal to length of old key.
 
@@ -580,7 +580,7 @@ Here there are functions related to ed25519 signature.
 
     where "message" contains hmac of newKey.
 
-- getIndexAndLenOfKeyInKeyChain(String keyHmac)
+- **getIndexAndLenOfKeyInKeyChain(String keyHmac)**
 
     Read index (inside internal applet storage) and length of key by its hmac.
 
@@ -592,7 +592,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"{\"index\":1,\"length\":3}","status":"ok"}
 
-- checkAvailableVolForNewKey(Short keySize)
+- **checkAvailableVolForNewKey(Short keySize)**
 
     Check if there is enough free volume in card keychain to add new key of length = keySize. If there is no enough space then it throws an exception
 
@@ -604,7 +604,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"done","status":"ok"}
 
-- checkKeyHmacConsistency(String keyHmac)
+- **checkKeyHmacConsistency(String keyHmac)**
 
     Checks if card's keychain stores a key with such keyHmac and if this hmac really corresponds to the key.
 
@@ -612,7 +612,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"done","status":"ok"}
 
-- getHmac(String index)
+- **getHmac(String index)**
 
     Get hmac of key in card keychain by its index. 
 
@@ -624,7 +624,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"EFBF24AC1563B34ADB0FFE0B0A53659E72E26765704C109C95346EEAA1D4BEAF","status":"ok"}
 
-- getDeleteKeyRecordNumOfPackets()
+- **getDeleteKeyRecordNumOfPackets()**
 
     Returns the number of keys records packets that must be deleted to finish deleting of key.
 
@@ -632,7 +632,7 @@ Here there are functions related to ed25519 signature.
 
     {"message":"2","status":"ok"}
 
-- getDeleteKeyChunkNumOfPackets()
+- **getDeleteKeyChunkNumOfPackets()**
 
     Returns the number of keys chunks packets that must be deleted to finish deleting of key.
 
