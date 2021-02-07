@@ -298,7 +298,30 @@ And use the following code to start card activation (for example add it as butto
 	
 	
     
-    
+## About applet states and provided functionality
+
+Applet installed onto NFC TON Labs security card may be in the one of the following states (modes):
+
+1. TonWalletApplet waits two-factor authorization.
+2. TonWalletApplet is personalized.
+3. TonWalletApplet is blocked.
+4. TonWalletApplet is personalized and waits finishing key deleting from keychain.
+
+**Some details of states transitions:**
+
+- When user gets the card at the first time, applet must be in the state 1 (see previous section).
+- If user would try to pass incorrect activation data more than 20 times, then applet state will be switched on state 3. And this is irreversable. In this state all functionality of applet is blocked and one may call only getTonAppletState and getSerialNumber (see the below section Full functions list for more details).
+- After correct activation (≤ 20 attempts to pass activation data) applet goes into state 2. And after this one can not go back to state 1. State 1 becomes unreachable. And at state 2 the main applet functionality is available.
+- If user started operation of deleting a key from card's keychain, then applet is switched on state 4. And it stays in this state until the current delete operation will not be finished. After correct finishing of delete operation applet goes back into state 2. The other way to go back into state 2 is to call resetKeychain function (see the details below).
+- Applet in states 2, 4 may be switched into state 3 in the case if HMAC SHA256 signature verification was failed by applet 20 times successively (more details below).
+
+The functionality provided by NFC TON Labs security card can be divided into several groups.
+
+- Module for card activation (available in state 1).
+- Crypto module providing ed22519 signature  (available in states 2, 4).
+- Module for maintaining recovery data  (available in states 2, 4).
+- Keychain module  (available in states 2, 4).
+- CoinManager module providing some auxiliary functions (available in any state).
 	
 	
 ## Request ED25519 signature
