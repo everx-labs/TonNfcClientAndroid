@@ -180,11 +180,21 @@ In this [document](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/do
 
 _Note:_ In above snippet in the case of any exception happened during work of cardCoinManagerNfcApi.getMaxPinTriesAndGetJson() we will come into catch block. Message inside exception e is always in json format. 	
 
+### String format
+
+The majority of input data passed into TonNfcClientAndroid library is represented by hex strings of even length > 0. These hex strings are naturally converted into byte arrays inside the library, like: "0A0A" → new byte[]{10, 10}. 
+
+And also the payload produced by the card and wrapped into json responses is also usually represented by hex strings of even length > 0.  For example, this is a response from getPublicKey function  returning ed25519 public key.
+
+	{"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
+
+Here B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A is a 32 bytes length ed25519 public key in hex format.
+
 ## Test work with the card
 
-After you prepared the appliction run it on your Android device (not simulator). Then you need to establish NFC connection. For this hold the card to the top of the smartphone (field near te camera) as close as possible. Usually smartphone vibrates after establishing a connection. And if you see above example you must get the toast with the message "NFC hardware touched". It means that NFC connection is established. To keep connection alive you must not move card and smartphone and they should have physical contact.
+After you prepared the application, you may run it on your Android device (not simulator). Then you need to establish NFC connection. For this hold the card to the top of the smartphone (field near the camera) as close as possible. Usually smartphone vibrates after establishing a connection. And if you use above example, you must get the toast with the message "NFC hardware touched". It means that NFC connection is established. To keep connection alive you must not move the card and smartphone and they should have physical contact.
 
-After NFC connection is ready we can send command to te card. Push the button to make request getMaxPinTries. Check your Logcat console in Android Studio. You must here the following output.
+After NFC connection is ready we can send APDU command to the card. For above example push the button to make request getMaxPinTries. Check your Logcat console in Android Studio. You must find the following output:
 
 		===============================================================
 		===============================================================
@@ -203,11 +213,17 @@ Here you see the log of APDU commands sent to the card and their responses in ra
 
 ## Card activation
 
-When user gets NFC TON Labs security card  at the first time, the applet on the card is in a special state. It waits for user authentication. And the main functionality of applet is blocked for now. So you must authenticate the user, i.e. go through procedure of card activation.
+When user gets NFC TON Labs security card  at the first time, the applet on the card is in a special state.  The main functionality of applet is blocked for now. Applet waits for user authentication. To pass authentication user must have three secret hex strings **authenticationPassword, commonSecret, initialVector**. The tuple **(authenticationPassword, commonSecret, initialVector)** is called _card activation data._  The user is going to get (using debots) his activation data from Tracking Smartcontract deployed for his security card.
 
-To activate the card user must have three secret hex strings authenticationPassword, commonSecret, initialVector. There is a bijection between serial number (SN) printed on the card and the tuple (authenticationPassword, commonSecret, initialVector). These strings he is going to get from Tracking Smartcontract deployed for his NFC TON Labs security card .
+At this step not only the card waits for user authentication. The user also authenticates the card by verification of some hashes.
 
-Let's suppose the user somehow got authenticationPassword, commonSecret, initialVector. Then to activate the card he may use the following exemplary snippet.
+*Note:* There is a bijection between serial number (SN) printed on the card and activation data.
+
+The detailed about card activation and related workflow is [here]().
+
+For now let's suppose the user somehow got activation data into his application from debot (the details of working with debot will be given later). Then to activate the card he may use the following exemplary snippet.
+
+
 
 import com.tonnfccard.api.CardCoinManagerApi;
 import com.tonnfccard.api.CardActivationApi;
