@@ -219,7 +219,7 @@ At this step not only the card waits for user authentication. The user also auth
 
 *Note:* There is a bijection between serial number (SN) printed on the card and activation data.
 
-The detailed about card activation and related workflow is [here]().
+The detailed info about card activation and related workflow is [here]().
 
 For now let's suppose the user somehow got activation data into his application from debot (the details of working with debot will be given later). Then to activate the card he may use the following exemplary snippet.
 
