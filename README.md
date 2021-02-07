@@ -245,9 +245,9 @@ For now let's suppose the user somehow got activation data into his application 
 	private static final String PASSWORD  = "F4B072E1DF2DB7CF6CD0CD681EC5CD2D071458D278E6546763CBB4860F8082FE14418C8A8A55E2106CBC6CB1174F4BA6D827A26A2D205F99B7E00401DA4C15ACC943274B92258114B5E11C16DA64484034F93771547FBE60DA70E273E6BD64F8A4201A9913B386BCA55B6678CFD7E7E68A646A7543E9E439DD5B60B9615079FE";
 
 	Button buttonActivateCard;
-
-    	@Override
-    	protected void onCreate(Bundle savedInstanceState) {
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
         	super.onCreate(savedInstanceState);
         	setContentView(android.example.myapplication.R.layout.activity_main);
 		addListenerOnActivateCardButton();
