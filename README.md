@@ -268,6 +268,8 @@ For now let's suppose the user somehow got activation data into his application 
 	  // Take the code for handling NFC intent fron above snippet
 	}
 	
+	
+	
 	public void addListenerOnActivateCardButton() {
 	  buttonActivateCard = findViewById(R.id.activateCard);
 	  buttonActivateCard.setOnClickListener(new View.OnClickListener() {
@@ -294,17 +296,19 @@ For now let's suppose the user somehow got activation data into his application 
 				throw new Exception("Incorrect applet state after activation : " + appletState);
 			}
 		}
-      		catch (Exception e) {
+		catch (Exception e) {
 			Log.e("TAG", "Error happened : " + e.getMessage());
 		}
-	  }
-       });
-     }
-	
-	private String extractMessage(String jsonStr) throws JSONException {
+	   }
+	});
+      }
+      
+      private String extractMessage(String jsonStr) throws JSONException {
 	  JSONObject jObject = new JSONObject(jsonStr);
 	  return jObject.getString(MESSAGE_FIELD);
-	}
+      }
+	
+	
     
     
 	
