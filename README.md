@@ -18,13 +18,13 @@ Let's suppose you have an Android project. To use TonNfcClientAndroid library in
 		}
 
 	
-+ Add the dependency andreplace here Tag by the necessary version.
++ Add the dependency and replace here Tag by the necessary version.
 
 		dependencies {
 			implementation 'com.github.tonlabs:TonNfcClientAndroid:Tag'
 		}
 		
-+ You must take care of AndroidManifest.xml. It must contain some stuff related to NFC. You must add the following snippets.
++ You must take care of AndroidManifest.xml. It must contain NFC permission and special intent filter. Add the following snippets.
 
 		<uses-permission android:name="android.permission.NFC" />
 		<uses-feature android:name="android.hardware.nfc" android:required="true" />
@@ -35,7 +35,7 @@ Let's suppose you have an Android project. To use TonNfcClientAndroid library in
 		</intent-filter>
 		<meta-data android:name="android.nfc.action.TECH_DISCOVERED" android:resource="@xml/nfc_tech_filter" />
 
-For this to work you must have an appropriate nfc_tech_filter.xml file in your xml subfolder. File nfc_tech_filter.xml must looks as follows.
+For this to work you must have an appropriate nfc_tech_filter.xml file in your xml subfolder (\app\src\main\res\xml). File nfc_tech_filter.xml must looks as follows.
 
 		<?xml version="1.0" encoding="utf-8"?>
 		<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
@@ -45,8 +45,9 @@ For this to work you must have an appropriate nfc_tech_filter.xml file in your x
     			</tech-list>
 		</resources>
 		
-To get the full picture of how AndroidManifest.xml must look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/.
+To get the full picture of how AndroidManifest.xml should look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/ .
 
+_Note:_ minSdkVersion now is 24 to use the library.
 
 ## Usage (Simple example)
 
