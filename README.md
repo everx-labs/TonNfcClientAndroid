@@ -51,9 +51,7 @@ _Note:_ minSdkVersion now is 24 to use the library.
 
 ## Usage (Simple example)
 
-Let's suppose you want to work with NFC TON Labs security card in your MainActivity class. And you want to make a simple request to the card: ask it to return the maximum number of card's PIN tries into Android app. For this request there is a corresponding APDU command supporting by the card. And there is a corresponding function in TonNfcClientAndroid library that sends this APDU to the card and makes postprocessing of card's response for you. 
-
-To make it work you should go through the following steps.
+Let's suppose you want to work with NFC TON Labs security card in your MainActivity class. And you want to make a simple request to the card: return the maximum number of card's PIN tries. For this request there is a special APDU command supported by the card. And there is a corresponding function in TonNfcClientAndroid library sending it to the card and making postprocessing of card's response for you.  To make it work you should go through the following steps.
 
 + Make the following imports in your MainActivity.
 
@@ -75,12 +73,12 @@ To make it work you should go through the following steps.
 				cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
 			}
 			catch (Exception e) {
-				Log.e("TAG", e.getMessage());
+				Log.e("TAG", "Error happened : " + e.getMessage());;
 			}
 			...
 		}
 
-+ Also you must take care of onNewIntent method. It intercepts the intent created after card (tag) connection. And you must extract  the data about your tag from the intent. You need it to start work with the tag.
++ Also take care of onNewIntent method. It intercepts the intent created after NFC card (tag) connection. And you must extract the data about the tag from the intent. You need it to start work with the tag.
 
 		@Override
 		public void onNewIntent(Intent intent) {
@@ -95,7 +93,7 @@ To make it work you should go through the following steps.
 			}
 		}
 
-+ And finally let's make the request to the card. In our simple example we send it after pressing some button. So the activity for the button may look as follows.
++ Finally make the request to the card. In this example we send it after pressing the button. So the activity for the button may look as follows.
 
 
 		public void addListenerOnButton() {
@@ -121,11 +119,50 @@ Here json variable contains the response from card wrapped into json of the foll
 		
 		{"message":"done","status":"ok"}
 		
-"message" field in jsons produced by the library always contains payload in the case of success. And in the case of fail this field will contain error message.
+To get the full picture of how the simplest MainActivity may look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/ .
 
-In above snippet in the case of any exception happened during work of cardCoinManagerNfcApi.getMaxPinTriesAndGetJson() we will come into catch block. Message inside exception e is always in json format. And in [error list](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/docs/ErrorrList.md) you may find the full list of json error messages that can be thrown by the library.
+## More about responses format
 
-Again to get the full picture of howthe simplest MainActivity may look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/ .
+### Case of successful operation
+
+In the case of successful operation with the card any function of TonNfcClientAndroid library always returns json string with two fields "message" and "status". "status" will contain "ok". In the field "message" you will find an expected payload. So jsons may look like this.
+
+	{"message":"done","status":"ok"}
+	{"message":"generated","status":"ok"}
+	{"message":"HMac key to sign APDU data is generated","status":"ok"}
+	{"message":"980133A56A59F3A59F174FD457EB97BE0E3BAD59E271E291C1859C74C795A83368FD8C7405BC37E1C4146F4D175CF36421BF6AD2AFF4329F5A6C6D772247ED03","status":"ok"}
+	etc.
+
+### Case of error
+
+If some error happened then functions of TonNfcClientAndroid library produce error messages wrapped into json strings of special format. The structure of json depends on the  error class. There are two main classes of errors.
+
+#### Applet (card) errors
+
+It is the case when applet (installed on the card) threw some error status word (SW). So Android code just catches it and throws away. The exemplary error json looks like this.
+
+	{
+		"message":"Incorrect PIN (from Ton wallet applet).",
+		"status":"fail",
+		"errorCode":"6F07",
+		"errorTypeId":0,
+		"errorType":"Applet fail: card operation error",
+		"cardInstruction":"VERIFY_PIN",
+		"apdu":"B0 A2 00 00 44 35353538EA579CD62F072B82DA55E9C780FCD0610F88F3FA1DD0858FEC1BB55D01A884738A94113A2D8852AB7B18FFCB9424B66F952A665BF737BEB79F216EEFC3A2EE37 FFFFFFFF "
+	}
+	
+Here:
++ *errorCode* — error status word (SW) produced by the card (applet)
+
++ *cardInstruction* — title of APDU command that failed
+
++ *errorTypeId* — id of error type ( it will always be zero here)
+
++ *errorType* — description of error type 
+
++ *message* — contains error message corresponding to errorCode thrown by the card.
+
++ *apdu* — full text of failed APDU command in hex format
 
 ## Test work with the card
 
