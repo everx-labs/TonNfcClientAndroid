@@ -299,9 +299,9 @@ For now let's suppose the user somehow got activation data into his application 
 		catch (Exception e) {
 			Log.e("TAG", "Error happened : " + e.getMessage());
 		}
-	   }
-	});
-      }
+	    }	
+	 });
+	}
       
       private String extractMessage(String jsonStr) throws JSONException {
 	  JSONObject jObject = new JSONObject(jsonStr);
