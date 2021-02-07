@@ -115,6 +115,7 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_SOURCE_ARRAY_LENGTH_LESS_THAN_TWO = "Source array must have length >= 2.";
   public static final String ERROR_MSG_FIRST_ARRAY_IS_NULL = "First array is null";
   public static final String ERROR_MSG_SECOND_ARRAY_IS_NULL = "Second array is null";
+  public static final String ERROR_MSG_NO_CONTEXT = "Context is null";
 
   public static final String[] ANDROID_INTERNAL_ERRORS = new String[]{
     ERROR_MSG_APDU_EMPTY,
@@ -153,7 +154,8 @@ public class ResponsesConstants {
     ERROR_MSG_OFFSET_IS_NOT_CORRECT,
     ERROR_MSG_SOURCE_ARRAY_LENGTH_LESS_THAN_TWO,
     ERROR_MSG_FIRST_ARRAY_IS_NULL,
-    ERROR_MSG_SECOND_ARRAY_IS_NULL
+    ERROR_MSG_SECOND_ARRAY_IS_NULL,
+          ERROR_MSG_NO_CONTEXT
   };
 
 
@@ -165,7 +167,6 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_NO_NFC = "Nfc hardware is not found for this smartphone.";
   public static final String ERROR_MSG_NO_TAG = "Nfc tag is not found.";
   public static final String ERROR_MSG_NFC_DISCONNECT = "Error happened during NFC tag disconnection.";
-  public static final String ERROR_MSG_NO_CONTEXT = "Context is null";
   public static final String ERROR_TRANSCEIVE = "Data transfer via NFC failed. Probably NFC connection was lost.";
   public static final String ERROR_BAD_RESPONSE = "Response from the card is too short. It must contain at least 2 bytes.";
 
@@ -175,7 +176,6 @@ public class ResponsesConstants {
     ERROR_MSG_NO_NFC,
     ERROR_MSG_NO_TAG,
     ERROR_MSG_NFC_DISCONNECT,
-    ERROR_MSG_NO_CONTEXT,
     ERROR_TRANSCEIVE,
     ERROR_BAD_RESPONSE
   };
