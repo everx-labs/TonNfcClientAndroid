@@ -530,36 +530,28 @@ And use the following code to test recovery data adding (for example add it as b
  There is an exemplary short code snippet demonstrating the way of getting recovery data from the card.
  
  	try {
-      		String response = recoveryDataApi.isRecoveryDataSetAndGetJson();
-      		Log.d("TAG", "isRecoveryDataSet response : " + response);
-		
+		String response = recoveryDataApi.isRecoveryDataSetAndGetJson();
+		Log.d("TAG", "isRecoveryDataSet response : " + response);
 		String status = extractMessage(response);
-		if (status.equals("true")) {
-			response = recoveryDataApi.getRecoveryDataAndGetJson();
-        		Log.d("TAG", "getRecoveryData response : " + response);
-        		String encryptedRecoveryDataHex = extractMessage(response);
-
-        		Log.d("TAG", "encryptedRecoveryDataHex : " + encryptedRecoveryDataHex);
-
-        		byte[] encryptedRecoveryDataBytes = ByteArrayHelper.getInstance().bytes(encryptedRecoveryDataHex);
-        		Log.d("TAG", "encryptedRecoveryDataBytes length : " + encryptedRecoveryDataBytes.length);
-
-        		Cipher aesCtr = Cipher.getInstance("AES/CTR/NoPadding");
-        		aesCtr.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(counter));
-
-        		byte[] recoveryDataBytes = aesCtr.doFinal(encryptedRecoveryDataBytes);
-
-        		String recoveryData = new String(recoveryDataBytes, StandardCharsets.UTF_8);
-
-        		Log.d("TAG", "Got recoveryData from card : " + recoveryData);
-      		}
-      		else {
-        		Log.d("TAG", "Recovery data is no set yet.");
-      		}
-    	}
-    	catch (Exception e) {
-        	Log.e("TAG", "Error happened : " + e.getMessage());
-    	}
+		if (status.equals("false")) {
+			Log.d("TAG", "Recovery data is no set yet.");
+			return
+		}
+		
+		response = recoveryDataApi.getRecoveryDataAndGetJson();
+		Log.d("TAG", "getRecoveryData response : " + response);
+		String encryptedRecoveryDataHex = extractMessage(response);
+		byte[] encryptedRecoveryDataBytes = ByteArrayHelper.getInstance().bytes(encryptedRecoveryDataHex);
+		
+		Cipher aesCtr = Cipher.getInstance("AES/CTR/NoPadding");
+		aesCtr.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(counter));
+		byte[] recoveryDataBytes = aesCtr.doFinal(encryptedRecoveryDataBytes);
+		String recoveryData = new String(recoveryDataBytes, StandardCharsets.UTF_8);
+		Log.d("TAG", "Got recoveryData from card : " + recoveryData);
+	}
+	catch (Exception e) {
+		Log.e("TAG", "Error happened : " + e.getMessage());
+	}
 
 ## Full functions list 
 
