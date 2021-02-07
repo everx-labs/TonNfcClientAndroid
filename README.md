@@ -456,6 +456,44 @@ And use the following code to test work with keychain.
         	Log.e("TAG", "Error happened : " + e.getMessage());
 	}
 	
+## Recovery module
+
+This module is to store/maintain the data for recovering service: multisignature wallet address (hex string of length 64), TON Labs Surf public key (hex string of length 64) and part of card's activation data: authenticationPassword (hex string of length 256), commonSecret(hex string of length 64). This data will allow to recover access to multisignature wallet in the case when user has lost Android device with installed Surf application and also a seed phrase for Surf account. More details about recovery service can be found here.
+
+There is an snippet demonstrating the structure of recovery data and the way of adding it into NFC TON Labs security card.
+
+	import com.tonnfccard.api.RecoveryDataApi;
+	import com.tonnfccard.api.nfc.NfcApduRunner;
+	import com.tonnfccard.utils.ByteArrayHelper;
+	...
+	private static final int AES_KEY_SIZE = 128; // in bits
+	private static final int AES_COUNTER_SIZE = 16; // in bytes
+	
+	private static final String SURF_PUBLIC_KEY = "B81F0E0E07416DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A";
+	private static final String MULTISIG_ADDR = "A11F0E0E07416DAB6C320ECC6BF3DBA48A70121C5251CC31B1D8F8A1B36E0F2F";
+
+	private RecoveryDataApi recoveryDataApi;
+	private SecureRandom sr = new SecureRandom();
+	private KeyGenerator kg;
+	private SecretKey key;
+	private byte[] counter = new byte[AES_COUNTER_SIZE];
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		...
+		try {
+			Context activity = getApplicationContext();
+			nfcApduRunner = NfcApduRunner.getInstance(activity);
+			recoveryDataApi = new RecoveryDataApi(activity,  nfcApduRunner);
+			kg = KeyGenerator.getInstance("AES");
+			kg.init(AES_KEY_SIZE);
+			key = kg.generateKey();
+		}
+		catch (Exception e) {
+			Log.e("TAG", e.getMessage());
+		}
+	}
+
 ## Full functions list 
 
 The full list of functions provided by the library to communicate with the card you will find [here](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/docs/FuntionsList.md)
