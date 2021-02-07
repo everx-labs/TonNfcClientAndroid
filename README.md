@@ -4,9 +4,9 @@ The library is developed to handle communication of Android smartphones with NFC
 
 ## Installation
 
-The library now is published onto  https://jitpack.io, see https://jitpack.io/#tonlabs/TonNfcClientAndroid.
+The library is published on  https://jitpack.io, see https://jitpack.io/#tonlabs/TonNfcClientAndroid.
 
-Let's suppose you have an Android project. To use TonNfcClientAndroid library in your project you must go through the following steps.
+Let's suppose you have an Android project. To use TonNfcClientAndroid library in the project you must go through the following steps.
 
 + Add it in your root build.gradle at the end of repositories.
 
@@ -16,6 +16,7 @@ Let's suppose you have an Android project. To use TonNfcClientAndroid library in
 				maven { url 'https://jitpack.io' }
 			}
 		}
+
 	
 + Add the dependency andreplace here Tag by the necessary version.
 
