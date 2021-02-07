@@ -268,7 +268,10 @@ For now let's suppose the user somehow got activation data into his application 
 	  // Take the code for handling NFC intent fron above snippet
 	}
 	
-	
+	private String extractMessage(String jsonStr) throws JSONException {
+	  JSONObject jObject = new JSONObject(jsonStr);
+	  return jObject.getString(MESSAGE_FIELD);
+      	}
 	
 	public void addListenerOnActivateCardButton() {
 	  buttonActivateCard = findViewById(R.id.activateCard);
@@ -301,12 +304,9 @@ For now let's suppose the user somehow got activation data into his application 
 		}
 	    }	
 	 });
-	}
+       }
       
-      private String extractMessage(String jsonStr) throws JSONException {
-	  JSONObject jObject = new JSONObject(jsonStr);
-	  return jObject.getString(MESSAGE_FIELD);
-      }
+      
 	
 	
     
