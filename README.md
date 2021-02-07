@@ -359,6 +359,35 @@ The basic functionality provided by NFC TON Labs security card is Ed25519 signat
 		String response = cardCryptoApi.verifyPinAndSignAndGetJson(msg, hdInd, pin);
 
 _Note:_ Functions signForDefaultHdPath, sign are protected by HMAC SHA256 signature (see previous section). But also there is an additional protection for them by PIN code. You have 10 attempts to enter PIN, after 10th fail you will not be able to use existing seed (keys for ed25519) . The only way to unblock these functions is to reset the seed (see resetWallet function) and generate new seed (see generateSeed). After resetting the seed PIN will be also reset to default value 5555.
+
+## Card keychain
+
+Inside NFC TON Labs security card we implemented small flexible independent keychain. It allows to store some user's keys and secrets. The maximum number of keys is 1023, maximum key size — 8192 bytes and the total available volume of storage — 32767 bytes.
+
+Each key has its unique id. This is its HMAC SHA256 signature created using the key elaborated based on card activation data. So id is a hex a string of length 64.
+
+The below snippet demonstrates the work with the keychain. We add one key, then retrieve it from the card. Then we replace it by a new key of the same key. At the end we delete the key.
+
+_Note:_ This test is quite long working. So take care of your NFC connection. To keep it alive your screen must not go out. You may increase timeout for your Android device to achieve this.
+
+	import com.tonnfccard.api.CardKeyChainApi;
+	...
+	private CardKeyChainApi cardKeyChainApi;
+	private NfcApduRunner nfcApduRunner;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		...
+		try {
+			Context activity = getApplicationContext();
+			nfcApduRunner = NfcApduRunner.getInstance(activity);
+			cardKeyChainApi = new CardKeyChainApi(activity,  nfcApduRunner);
+		}
+		catch (Exception e) {
+			Log.e("TAG", "Error happened : " + e.getMessage());
+		}
+		...
+	}
 	
 ## Full functions list 
 
