@@ -225,97 +225,57 @@ For now let's suppose the user somehow got activation data into his application 
 
 
 
-import com.tonnfccard.api.CardCoinManagerApi;
-import com.tonnfccard.api.CardActivationApi;
-import com.tonnfccard.api.nfc.NfcApduRunner;
+	import com.tonnfccard.api.CardCoinManagerApi;
+	import com.tonnfccard.api.CardActivationApi;
+	import com.tonnfccard.api.nfc.NfcApduRunner;
+	import static com.tonnfccard.api.utils.JsonHelper.*;
+	import static com.tonnfccard.api.utils.ResponsesConstants.*;
+	import static com.tonnfccard.smartcard.TonWalletAppletConstants.*;
+	import org.json.JSONException;
+	import org.json.JSONObject;
 
-....
+	....
 
-private NfcApduRunner nfcApduRunner;
-private CardActivationApi cardActivationApi;
-private CardCoinManagerApi cardCoinManagerNfcApi;
-private static final String DEFAULT_PIN = "5555";
+	private NfcApduRunner nfcApduRunner;
+	private CardActivationApi cardActivationApi;
+	private CardCoinManagerApi cardCoinManagerNfcApi;
+	private static final String DEFAULT_PIN = "5555";
+	private static final String COMMON_SECRET = "7256EFE7A77AFC7E9088266EF27A93CB01CD9432E0DB66D600745D506EE04AC4";
+	private static final String IV = "1A550F4B413D0E971C28293F9183EA8A";
+	private static final String PASSWORD  = "F4B072E1DF2DB7CF6CD0CD681EC5CD2D071458D278E6546763CBB4860F8082FE14418C8A8A55E2106CBC6CB1174F4BA6D827A26A2D205F99B7E00401DA4C15ACC943274B92258114B5E11C16DA64484034F93771547FBE60DA70E273E6BD64F8A4201A9913B386BCA55B6678CFD7E7E68A646A7543E9E439DD5B60B9615079FE";
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(android.example.myapplication.R.layout.activity_main);
-	addListenerOnButton();
-	...
-        try {
-            nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
-            cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
-            cardActivationApi = new CardActivationApi(getApplicationContext(),  nfcApduRunner);
-				}
-        catch (Exception e) {
-            Log.e("TAG", e.getMessage());
-        }
-	...
-    }
+	Button buttonActivateCard;
+
+    	@Override
+    	protected void onCreate(Bundle savedInstanceState) {
+        	super.onCreate(savedInstanceState);
+        	setContentView(android.example.myapplication.R.layout.activity_main);
+		addListenerOnActivateCardButton();
+		...
+        	try {
+            		nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
+            		cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
+            		cardActivationApi = new CardActivationApi(getApplicationContext(),  nfcApduRunner);
+		}
+        	catch (Exception e) {
+            		Log.e("TAG", e.getMessage());
+        	}
+		...
+    	}
 
 
-    @Override
-    public void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        try {
-            if (nfcApduRunner.setCardTag(intent)) {
-                Toast.makeText(this, "NFC hardware touched", Toast.LENGTH_SHORT).show();
-            }
-        }
-        catch (Exception e) {
-            Log.e("TAG", "Error happened : " + e.getMessage());
-        }
-    }
-    
-    public void addListenerOnButton() {
-    	button = (Button) findViewById(android.example.myapplication.R.id.button1);
-	button.setOnClickListener(new View.OnClickListener() {
-            @Override
-	    public void onClick(View arg0) {
-	    	try {
-			// here we already have authenticationPassword, commonSecret, initialVector
-			String jsonStr = cardCoinManagerNfcApi.getRootKeyStatusAndGetJson();
-			JSONObject jObject = new JSONObject(jsonStr);
-			String seedStatus = jObject.getString("message");
-			if (seedStatus.equals("not generated")) {
-				cardCoinManagerNfcApi.generateSeedAndGetJson(DEFAULT_PIN);
-			}
-			jsonStr = cardActivationApi.getTonAppletStateAndGetJson();
-			jObject = new JSONObject(jsonStr);
-			String appletState = jObject.getString("message");
-			
-			if (!state.equals("TonWalletApplet waits two-factor authorization.")) {
-				return; //throw "Incorret applet state"
-			}
-			
-			jsonStr = cardActivationApi.getHashOfCommonSecretAndGetJson();
-			JSONObject jObject = new JSONObject(jsonStr);
-			String hashOfCommonSecret = jObject.getString("message"); // SHA256 has
-			// check that hashOfCommonSecret is correct based on the data from smartcontract
-			
-			jsonStr = cardActivationApi.hashOfEncryptedPasswordAndGetJson();
-			jObject = new JSONObject(jsonStr);
-			String hashOfEncryptedPassword = jObject.getString("message"); // SHA256 has
-			// check that hashOfEncryptedPassword is correct based on the data from smartcontract
-			
-			String newPin = "7777";
-			jsonStr = cardActivationApi.turnOnWalletAndGetJson(newPin, authenticationPassword, commonSecret, initialVector);
-			jObject = new JSONObject(jsonStr);
-			appletState = jObject.getString("message");
-			Log.d("TAG", "Card response : " + appletState);
-			
-			if (!state.equals("TonWalletApplet is personalized.")) {
-				throw new Exception("Incorret applet state after activation : " + appletState)
-			}
-
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e("TAG", "Error happened : " + e.getMessage());
-                }
-            }
-        });
+    	@Override
+    	public void onNewIntent(Intent intent) {
+        	// Take the code for handling NFC intent fron above snippet
+    	}
+	
+	private String extractMessage(String jsonStr) throws JSONException {
+		JSONObject jObject = new JSONObject(jsonStr);
+  		return jObject.getString(MESSAGE_FIELD);
 	}
+    
+    
+	
 	
 ## Request ED25519 signature
 
