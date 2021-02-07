@@ -164,6 +164,22 @@ Here:
 
 + *apdu* — full text of failed APDU command in hex format
 
+#### Android errors
+
+It is the case when error happened in Android code itself. The basic examples: troubles with NFC connection or incorrect format of input data passed into TonNfcClientAndroid library from the outside world. The exemplary error json looks like this.
+
+	{
+		"errorType": "Native code fail: incorrect format of input data",
+		"errorTypeId": "3",
+		"errorCode": "30006",
+		"message": "Pin must be a numeric string of length 4.",
+		"status": "fail"
+	}
+	
+In this [document](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/docs/ErrorrList.md) you may find the full list of json error messages (and their full classification) that can be thrown by the library.
+
+_Note:_ In above snippet in the case of any exception happened during work of cardCoinManagerNfcApi.getMaxPinTriesAndGetJson() we will come into catch block. Message inside exception e is always in json format. 	
+
 ## Test work with the card
 
 After you prepared the appliction run it on your Android device (not simulator). Then you need to establish NFC connection. For this hold the card to the top of the smartphone (field near te camera) as close as possible. Usually smartphone vibrates after establishing a connection. And if you see above example you must get the toast with the message "NFC hardware touched". It means that NFC connection is established. To keep connection alive you must not move card and smartphone and they should have physical contact.
