@@ -248,8 +248,8 @@ For now let's suppose the user somehow got activation data into his application 
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        	super.onCreate(savedInstanceState);
-        	setContentView(android.example.myapplication.R.layout.activity_main);
+		super.onCreate(savedInstanceState);
+		setContentView(android.example.myapplication.R.layout.activity_main);
 		addListenerOnActivateCardButton();
 		...
         	try {
