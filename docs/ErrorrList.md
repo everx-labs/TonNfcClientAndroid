@@ -866,6 +866,14 @@ Here there are some internal errors that may happen inside Android code. It mean
 "status": "fail"
 }
 
+{
+"errorType": "Android code fail: internal error",
+"errorTypeId": "1",
+"errorCode": "10036",
+"message": "Context is null",
+"status": "fail"
+}
+
 ## ANDROID_NFC_ERRORS
 
 Here there is a list of any troubles with NFC hardware and connection. (one example: when you forgot to connect the card).
@@ -914,14 +922,6 @@ Here there is a list of any troubles with NFC hardware and connection. (one exam
 "errorType": "Android code fail: NFC error",
 "errorTypeId": "2",
 "errorCode": "20005",
-"message": "Context is null",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: NFC error",
-"errorTypeId": "2",
-"errorCode": "20006",
 "message": "Data transfer via NFC failed. Probably NFC connection was lost.",
 "status": "fail"
 }
@@ -929,7 +929,7 @@ Here there is a list of any troubles with NFC hardware and connection. (one exam
 {
 "errorType": "Android code fail: NFC error",
 "errorTypeId": "2",
-"errorCode": "20007",
+"errorCode": "20006",
 "message": "Response from the card is too short. It must contain at least 2 bytes.",
 "status": "fail"
 }
