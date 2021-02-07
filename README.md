@@ -535,9 +535,8 @@ And use the following code to test recovery data adding (for example add it as b
 		String status = extractMessage(response);
 		if (status.equals("false")) {
 			Log.d("TAG", "Recovery data is no set yet.");
-			return
+			return;
 		}
-		
 		response = recoveryDataApi.getRecoveryDataAndGetJson();
 		Log.d("TAG", "getRecoveryData response : " + response);
 		String encryptedRecoveryDataHex = extractMessage(response);
@@ -551,6 +550,29 @@ And use the following code to test recovery data adding (for example add it as b
 	}
 	catch (Exception e) {
 		Log.e("TAG", "Error happened : " + e.getMessage());
+	}
+
+## About NfcCallback	
+
+For each card operation now there is a pair of functions. The first one returns json response or throws a exception containing json error message. The second function does the same work, but it puts json response/json error message into callback. For this we defined NfcCallback.
+
+	public class NfcCallback {
+  		private NfcResolver resolve;
+  		private NfcRejecter reject;
+
+  		public NfcCallback(NfcResolver resolve, NfcRejecter reject) {
+    			set(resolve, reject);
+  		}
+	}
+
+	@FunctionalInterface
+	public interface NfcRejecter {
+  		void reject(String errorMsg);
+	}
+
+	@FunctionalInterface
+	public interface NfcResolver {
+  		void resolve(Object value);
 	}
 
 ## Full functions list 
