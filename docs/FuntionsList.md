@@ -162,7 +162,7 @@ These functions are naturally divided into four groups. And there are respective
 
 ### TonWalletApi functions
 
-#### Common functions
+#### 1) Common functions
 
 - getTonAppletState()
 
