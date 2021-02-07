@@ -494,6 +494,39 @@ There is an snippet demonstrating the structure of recovery data and the way of 
 		}
 	}
 
+And use the following code to test recovery data adding (for example add it as button action).
+
+ 	try {
+        	String response = recoveryDataApi.resetRecoveryDataAndGetJson();
+        	Log.d("TAG", "resetRecoveryData response : " + response);
+
+        	response = recoveryDataApi.isRecoveryDataSetAndGetJson();
+        	Log.d("TAG", "isRecoveryDataSet response : " + response);
+
+        	JSONObject recoveryData = new JSONObject();
+        	recoveryData.put("surfPublicKey", SURF_PUBLIC_KEY);
+        	recoveryData.put("multisigAddress", MULTISIG_ADDR);
+	      	recoveryData.put("p1", PASSWORD);
+        	recoveryData.put("cs", COMMON_SECRET);
+		byte[] recoveryDataBytes = recoveryData.toString().getBytes(StandardCharsets.UTF_8);
+		
+		Cipher aesCtr = Cipher.getInstance("AES/CTR/NoPadding");
+		sr.nextBytes(counter);
+		aesCtr.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(counter));
+		
+		byte[] encryptedRecoveryDataBytes = aesCtr.doFinal(recoveryDataBytes);
+		String encryptedRecoveryDataHex = ByteArrayHelper.getInstance().hex(encryptedRecoveryDataBytes);
+
+		response = recoveryDataApi.addRecoveryDataAndGetJson(encryptedRecoveryDataHex );
+        	Log.d("TAG", "addRecoveryData response : " + response);
+
+        	response = recoveryDataApi.isRecoveryDataSetAndGetJson();
+        	Log.d("TAG", "isRecoveryDataSet response : " + response);
+      }
+      catch (Exception e) {
+        Log.e("TAG", "Error happened : " + e.getMessage());
+      }
+
 ## Full functions list 
 
 The full list of functions provided by the library to communicate with the card you will find [here](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/docs/FuntionsList.md)
