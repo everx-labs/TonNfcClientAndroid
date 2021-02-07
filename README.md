@@ -246,27 +246,27 @@ For now let's suppose the user somehow got activation data into his application 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-	  ...
-	  try {
-	  	nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
-		cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
-		cardActivationApi = new CardActivationApi(getApplicationContext(),  nfcApduRunner);
-	  }
-	  catch (Exception e) {
-	  	Log.e("TAG", e.getMessage());
-	  }
-	  ...
+		...
+		try {
+	  		nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
+			cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
+			cardActivationApi = new CardActivationApi(getApplicationContext(),  nfcApduRunner);
+	  	}
+	  	catch (Exception e) {
+	  		Log.e("TAG", e.getMessage());
+	  	}
+	  	...
 	}
 	
 	@Override
 	public void onNewIntent(Intent intent) {
-	  // Take the code for handling NFC intent fron above snippet
+		// Take the code for handling NFC intent fron above snippet
 	}
 	
-	private String extractMessage(String jsonStr) throws JSONException {
-	  JSONObject jObject = new JSONObject(jsonStr);
-	  return jObject.getString(MESSAGE_FIELD);
-      	}
+	private String extractMessage(String jsonStr) throws JSONException { 
+		JSONObject jObject = new JSONObject(jsonStr);
+		return jObject.getString(MESSAGE_FIELD);
+	}
 	
 	
       
