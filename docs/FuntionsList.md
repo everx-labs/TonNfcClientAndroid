@@ -1,6 +1,40 @@
-Here there is full list list of functions provided by TonNfcClientAndroid library to make different requests to the card. These functions are naturally divided into several groups. There are five groups and respectively five classes providing an API for you: CardActivationApi,  CardCryptoApi,  CardKeyChainApi, RecoveryDataApi , CardCoinManagerApi. And there is an ancestor TonWalletApi for the first four of them (except of CardCoinManagerApi). It contains some common functions.
+# Full functions list
 
-These function are available in CardActivationApi,  CardCryptoApi,  CardKeyChainApi, RecoveryDataApi, TonWalletApi.
+Here there is full functions list provided by TonNfcClientAndroid library to make different requests to NFC TON Labs Security cards. 
+
+Previously we said that for each card operation there was a pair of functions. One of them puts result/error message into callback, the second does not. For example there is getSerialNumberAndGetJson() function returning json string and getSerialNumber(NfcCallback callback) returning void and putting the same json into callback. They do the same work. So for short we just give the full list of functions omitting "AndGetJson" suffix and argument NfcCallback callback. We provide only essential information about input data format requirements and possible responses.
+
+## NFC related functions
+
+Here there are functions to check/change the state of your NFC hardware.  In TonNfcClientAndroid library there is a class NfcApi for this.
+
+- **checkIfNfcSupported()**
+
+    Check if your Android device has NFC hardware. 
+
+    *Responses:*
+
+    {"message":"true","status":"ok"}
+
+    {"message":"false","status":"ok"}
+
+- **checkIfNfcEnabled()**
+
+    Check if NFC option is turned on for your Android device.
+
+    *Responses:*
+
+    {"message":"true","status":"ok"}
+
+    {"message":"false","status":"ok"}
+
+- **openNfcSettings()**
+
+    Open "Settings" panel to mantain NFC option.
+
+    *Response:*
+
+    {"message":"done","status":"ok"}
 
 ## Common functions
 
