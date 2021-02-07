@@ -46,7 +46,7 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
     *Arguments requirements:*
 
-    1) label — hex string of length 64, example: '005815A3942073A6ADC70C035780FDD09DF09AFEEA4173B92FE559C34DCA0550'
+    label — hex string of length 64, example: '005815A3942073A6ADC70C035780FDD09DF09AFEEA4173B92FE559C34DCA0550'
 
     *Response:*
 
