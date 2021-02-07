@@ -261,16 +261,16 @@ For now let's suppose the user somehow got activation data into his application 
 	  	Log.e("TAG", e.getMessage());
 	  }
 	  ...
-    	}
+	}
 	
 	@Override
 	public void onNewIntent(Intent intent) {
-		// Take the code for handling NFC intent fron above snippet
+	  // Take the code for handling NFC intent fron above snippet
 	}
 	
 	private String extractMessage(String jsonStr) throws JSONException {
-		JSONObject jObject = new JSONObject(jsonStr);
-		return jObject.getString(MESSAGE_FIELD);
+	  JSONObject jObject = new JSONObject(jsonStr);
+	  return jObject.getString(MESSAGE_FIELD);
 	}
     
     
