@@ -268,6 +268,39 @@ For now let's suppose the user somehow got activation data into his application 
 	  // Take the code for handling NFC intent fron above snippet
 	}
 	
+	public void addListenerOnActivateCardButton() {
+	  buttonActivateCard = findViewById(R.id.activateCard);
+	  buttonActivateCard.setOnClickListener(new View.OnClickListener() {
+	    @Override
+	    public void onClick(View arg0) {
+	    	try {
+			String seedStatus = extractMessage(cardCoinManagerNfcApi.getRootKeyStatusAndGetJson());
+			if (seedStatus.equals(NOT_GENERATED_MSG)) {
+				cardCoinManagerNfcApi.generateSeedAndGetJson(DEFAULT_PIN);
+			}
+			String appletState = extractMessage(cardActivationApi.selectTonWalletAppletAndGetTonAppletStateAndGetJson());
+			if (!appletState.equals(WAITE_AUTHORIZATION_MSG)) {
+				throw new Exception("Incorret applet state : " + appletState);
+			}
+			
+			String hashOfEncryptedCommonSecret = extractMessage(cardActivationApi.getHashOfEncryptedCommonSecretAndGetJson());
+			String hashOfEncryptedPassword = extractMessage(cardActivationApi.getHashOfEncryptedPasswordAndGetJson());
+			String newPin = "7777";
+			appletState = extractMessage(cardActivationApi.turnOnWalletAndGetJson(newPin, PASSWORD, COMMON_SECRET, IV));
+			
+			Log.d("TAG", "Card response (state) : " + appletState);
+			
+			if (!appletState.equals(PERSONALIZED_STATE_MSG)) {
+				throw new Exception("Incorrect applet state after activation : " + appletState);
+			}
+		}
+      		catch (Exception e) {
+			Log.e("TAG", "Error happened : " + e.getMessage());
+		}
+	  }
+       });
+     }
+	
 	private String extractMessage(String jsonStr) throws JSONException {
 	  JSONObject jObject = new JSONObject(jsonStr);
 	  return jObject.getString(MESSAGE_FIELD);
