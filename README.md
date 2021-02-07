@@ -184,7 +184,7 @@ _Note:_ In above snippet in the case of any exception happened during work of ca
 
 The majority of input data passed into TonNfcClientAndroid library is represented by hex strings of even length > 0. These hex strings are naturally converted into byte arrays inside the library, like: "0A0A" → new byte[]{10, 10}. 
 
-And also the payload produced by the card and wrapped into json responses is also usually represented by hex strings of even length > 0.  For example, this is a response from getPublicKey function  returning ed25519 public key.
+And also the payload produced by the card and wrapped into json responses is usually represented by hex strings of even length > 0.  For example, this is a response from getPublicKey function  returning ed25519 public key.
 
 	{"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
 
