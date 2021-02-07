@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     Button buttonCheckIfNfcSupported;
     Button buttonCheckIfNfcEnabled;
     Button buttonOpenNfcSettings;
+    Button buttonGetKeyChainDataAboutAllKeys;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnCheckIfNfcSupportedButton();
         addListenerOnCheckIfNfcEnabledButton();
         addListenerOnOpenNfcSettingsButton();
+        addListenerOnGetKeyChainDataAboutAllKeysButton();
         try {
             Context activity = getApplicationContext();
             nfcApduRunner = NfcApduRunner.getInstance(activity);
@@ -125,6 +127,58 @@ public class MainActivity extends AppCompatActivity {
         catch (Exception e) {
             Log.e("TAG", "Error happened : " + e.getMessage());
         }
+    }
+
+    public void addListenerOnGetKeyChainDataAboutAllKeysButton() {
+
+        buttonGetKeyChainDataAboutAllKeys = findViewById(R.id.getKeyChainDataAboutAllKeys);
+
+        buttonGetKeyChainDataAboutAllKeys.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                try {
+                    String status = cardCryptoApi.createKeyForHmacAndGetJson(PASSWORD, COMMON_SECRET, SERIAL_NUMBER);
+                    Log.d("TAG", "status : " + status);
+
+                    String response = cardKeyChainApi.resetKeyChainAndGetJson();
+                    Log.d("TAG", "resetKeyChain response : " + response);
+
+                    response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+                    Log.d("TAG", "getKeyChainInfo response : " + response);
+
+                    String keyInHex = "001122334455";
+                    response = cardKeyChainApi.addKeyIntoKeyChainAndGetJson(keyInHex);
+                    Log.d("TAG", "addKeyIntoKeyChain response : " + response);
+
+                    String keyHmac = extractMessage(response);
+                    Log.d("TAG", "keyHmac : " + response);
+
+                    keyInHex = "667788";
+                    response = cardKeyChainApi.addKeyIntoKeyChainAndGetJson(keyInHex);
+                    Log.d("TAG", "addKeyIntoKeyChain response : " + response);
+
+                    keyHmac = extractMessage(response);
+                    Log.d("TAG", "keyHmac : " + response);
+
+                    response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+                    Log.d("TAG", "getKeyChainInfo response : " + response);
+
+                    response = cardKeyChainApi.getIndexAndLenOfKeyInKeyChainAndGetJson(keyHmac);
+                    Log.d("TAG", "getIndexAndLenOfKeyInKeyChain : " + response);
+
+                    response = cardKeyChainApi.getKeyChainDataAboutAllKeysAndGetJson();
+                    Log.d("TAG", "getKeyChainDataAboutAllKeys : " + response);
+
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("TAG", "Error happened : " + e.getMessage());
+                }
+            }
+
+        });
+
     }
 
     public void addListenerOnOpenNfcSettingsButton() {

@@ -36,6 +36,12 @@
         android:text="testKeychain" />
 
     <Button
+        android:id="@+id/getKeyChainDataAboutAllKeys"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="getKeyChainDataAboutAllKeys" />
+
+    <Button
         android:id="@+id/addRecoveryData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

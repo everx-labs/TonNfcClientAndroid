@@ -295,11 +295,11 @@ public class CardKeyChainApi extends TonWalletApi {
     return JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
   }
 
-  public void finishDeleteKeyFromKeyChainAfterInterruption(final String keyHmac, final NfcCallback callback) {
+  public void finishDeleteKeyFromKeyChainAfterInterruption(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson(keyHmac);
+          String json = finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson();
           resolveJson(json, callback);
           Log.d(TAG, "finishDeleteKeyFromKeyChainAfterInterruption response (number of remained keys) : " + json);
         } catch (Exception e) {
@@ -309,11 +309,11 @@ public class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
-  public String finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson(String keyHmac) throws Exception {
-    if (!STR_HELPER.isHexString(keyHmac))
+  public String finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson() throws Exception {
+    /*if (!STR_HELPER.isHexString(keyHmac))
       throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
     if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
-      throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
+      throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);*/
     int numOfKeys = finishDeleteKeyFromKeyChainAfterInterruption();
     return JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
   }
@@ -677,7 +677,7 @@ public class CardKeyChainApi extends TonWalletApi {
     reselectKeyForHmac();
     byte[] sault = getSaultBytes();
     RAPDU rapdu =  apduRunner.sendAPDU(getGetHmacAPDU(ind, sault));
-    if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != HMAC_SHA_SIG_SIZE)
+    if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != (HMAC_SHA_SIG_SIZE + 2))
       throw new Exception(ERROR_MSG_GET_HMAC_RESPONSE_LEN_INCORRECT);
     return rapdu.getData();
   }
