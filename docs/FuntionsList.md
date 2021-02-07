@@ -2,7 +2,7 @@
 
 Here there is full functions list provided by TonNfcClientAndroid library to make different requests to NFC TON Labs Security cards. 
 
-Previously we said that for each card operation there was a pair of functions. One of them puts result/error message into callback, the second does not. For example there is getSerialNumberAndGetJson() function returning json string and getSerialNumber(NfcCallback callback) returning void and putting the same json into callback. They do the same work. So for short we just give the full list of functions omitting "AndGetJson" suffix and argument NfcCallback callback. We provide only essential information about input data format requirements and possible responses.
+In [readme](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/README.md) (see section about NfcCallback) we said that for each card operation there was a pair of functions. One of them puts result/error message into callback, the second does not. For example there is getSerialNumberAndGetJson() function returning json string and getSerialNumber(NfcCallback callback) returning void and putting the same json into callback. They do the same work. So for short we just give the full list of functions omitting "AndGetJson" suffix and argument NfcCallback callback. We provide only essential information about input data format requirements and possible responses.
 
 ## NFC related functions
 
