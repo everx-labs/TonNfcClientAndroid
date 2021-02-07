@@ -575,6 +575,20 @@ For each card operation now there is a pair of functions. The first one returns 
   		void resolve(Object value);
 	}
 
+To use you must override NfcRejecter and NfcResolver interfaces.
+
+For example let's look at operation getMaxPinTries. Previously we tried it already. There are two functions for it.
+
+	public String getMaxPinTriesAndGetJson() throws Exception
+
+	public void getMaxPinTries(final NfcCallback callback)
+	
+Example of work with NfcCallback.
+
+	import com.facebook.react.bridge.Promise;
+	...
+	cardCoinManagerNfcApi.getMaxPinTries(NfcCallback(promise::resolve, promise::reject));
+	
 ## Full functions list 
 
 The full list of functions provided by the library to communicate with the card you will find [here](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/docs/FuntionsList.md)
