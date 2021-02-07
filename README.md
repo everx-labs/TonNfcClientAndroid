@@ -388,6 +388,72 @@ _Note:_ This test is quite long working. So take care of your NFC connection. To
 		}
 		...
 	}
+	private String extractMessage(String jsonStr) throws JSONException {
+		//as in previous snippet
+	}
+
+And use the following code to test work with keychain.
+
+	try {
+		String status = cardCryptoApi.createKeyForHmacAndGetJson(PASSWORD, COMMON_SECRET, SERIAL_NUMBER);
+        	Log.d("TAG", "status : " + status);
+
+        	String response = cardKeyChainApi.resetKeyChainAndGetJson();
+        	Log.d("TAG", "resetKeyChain response : " + response);
+
+        	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+        	Log.d("TAG", "getKeyChainInfo response : " + response);
+
+        	String keyInHex = "001122334455";
+	      	response = cardKeyChainApi.addKeyIntoKeyChainAndGetJson(keyInHex);
+        	Log.d("TAG", "addKeyIntoKeyChain response : " + response);
+
+        	String keyHmac = extractMessage(response);
+        	Log.d("TAG", "keyHmac : " + response);
+
+        	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+        	Log.d("TAG", "getKeyChainInfo response : " + response);
+
+        	response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(keyHmac);
+        	String keyFromCard = extractMessage(response);
+        	Log.d("TAG", "keyFromCard : " + response);
+
+        	if (!keyInHex.equals(keyFromCard)) {
+			throw  new Exception("Bad key from card : " + keyFromCard);
+        	}
+
+        	String newKeyInHex = "00AA22334466";
+        	response = cardKeyChainApi.changeKeyInKeyChainAndGetJson(newKeyInHex, keyHmac);
+        	Log.d("TAG", "changeKeyInKeyChain response : " + response);
+        	String newKeyHmac = extractMessage(response);
+
+        	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+        	Log.d("TAG", "getKeyChainInfo response : " + response);
+
+        	response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(newKeyHmac);
+        	String newKeyFromCard = extractMessage(response);
+        	Log.d("TAG", "keyFromCard : " + response);
+
+        	if (!newKeyInHex.equals(newKeyFromCard)) {
+			throw  new Exception("Bad key from card : " + newKeyFromCard);
+        	}
+
+        	response = cardKeyChainApi.deleteKeyFromKeyChainAndGetJson(newKeyHmac);
+        	Log.d("TAG", "deleteKeyFromKeyChain response : " + response);
+
+        	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+        	Log.d("TAG", "getKeyChainInfo response : " + response);
+
+        	JSONObject jObject = new JSONObject(response);
+        	Integer num  =  Integer.parseInt(jObject.getString(NUMBER_OF_KEYS_FIELD));
+
+        	if (num != 0) {
+			throw  new Exception("Bad number of keys : " + num);
+        	}
+	}
+	catch (Exception e) {
+        	Log.e("TAG", "Error happened : " + e.getMessage());
+	}
 	
 ## Full functions list 
 
