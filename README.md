@@ -117,7 +117,7 @@ Let's suppose you want to work with NFC TON Labs security card in your MainActiv
 		
 Here json variable contains the response from card wrapped into json of the following simple format: 
 		
-		{"message":"done","status":"ok"}
+		{"message":"10","status":"ok"}
 		
 To get the full picture of how the simplest MainActivity may look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/ .
 
