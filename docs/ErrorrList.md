@@ -4,7 +4,7 @@ Below there is a full list of json error messages that the library can potential
 
 ## CARD_ERRORS
 
-Here there are errors produced by NFC card (Ton wallet applet itself). So Android code just catches it and throws a error message (or put it into callback). Below there are exemplary jsons in which field "cardInstruction" always equals to  GET_APP_INFO. In reality in this field you may meet any other card instruction (APDU).
+Here there are errors produced by NFC card (TON Labs wallet applet itself). So Android code just catches it and throws a error message (or put it into callback). Below there are exemplary jsons in which field "cardInstruction" always equals to  GET_APP_INFO. In reality in this field you may meet any other card instruction (APDU).
 
 {
 "errorType": "Applet fail: card operation error",
