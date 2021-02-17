@@ -20,11 +20,12 @@ allprojects {
 
 	
 + Add the dependency and replace here Tag by the necessary version.
+```ruby
+dependencies {
+	implementation 'com.github.tonlabs:TonNfcClientAndroid:Tag'
+}
+```
 
-		dependencies {
-			implementation 'com.github.tonlabs:TonNfcClientAndroid:Tag'
-		}
-		
 + You must take care of AndroidManifest.xml. It must contain NFC permission and special intent filter. Add the following snippets.
 
 		<uses-permission android:name="android.permission.NFC" />
@@ -37,7 +38,7 @@ allprojects {
 		<meta-data android:name="android.nfc.action.TECH_DISCOVERED" android:resource="@xml/nfc_tech_filter" />
 
 For this to work you must have an appropriate nfc_tech_filter.xml file in your xml subfolder (\app\src\main\res\xml). File nfc_tech_filter.xml must looks as follows.
-
+```xml
 		<?xml version="1.0" encoding="utf-8"?>
 		<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     			<tech-list>
@@ -45,6 +46,7 @@ For this to work you must have an appropriate nfc_tech_filter.xml file in your x
         			<tech>android.nfc.tech.NfcA</tech>
     			</tech-list>
 		</resources>
+```
 		
 To get the full picture of how AndroidManifest.xml should look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/ .
 
