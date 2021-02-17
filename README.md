@@ -9,13 +9,14 @@ The library is published on  https://jitpack.io, see https://jitpack.io/#tonlabs
 Let's suppose you have an Android project. To use TonNfcClientAndroid library in the project you must go through the following steps.
 
 + Add it in your root build.gradle at the end of repositories.
-
-		allprojects {
-			repositories {
-				...
-				maven { url 'https://jitpack.io' }
-			}
-		}
+```ruby
+allprojects {
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
+	}
+}
+```
 
 	
 + Add the dependency and replace here Tag by the necessary version.
