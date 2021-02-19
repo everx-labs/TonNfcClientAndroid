@@ -216,7 +216,7 @@ SW1-SW2: 9000, No error., response data bytes: 	6F5C8408A000000151000000A...
 >>> Send apdu  80 CB 80 00 05 DFFF028103 
 (GET_PIN_TLT)
 SW1-SW2: 9000, No error., response data bytes: 0A
- Card response : {"message":"10","status":"ok"}
+Card response : {"message":"10","status":"ok"}
 ```
 
 Here you see the log of APDU commands sent to the card and their responses in raw format. And in the end there is a final wrapped response.
@@ -234,26 +234,24 @@ The detailed info about card activation and related workflow is [here]().
 For now let's suppose the user somehow got activation data into his application from debot (the details of working with debot will be given later). Then to activate the card he may use the following exemplary snippets.
 
 
+```java
+import com.tonnfccard.api.CardCoinManagerApi;
+import com.tonnfccard.api.CardActivationApi;
+import com.tonnfccard.api.nfc.NfcApduRunner;
+import static com.tonnfccard.api.utils.JsonHelper.*;
+import static com.tonnfccard.api.utils.ResponsesConstants.*;
+import static com.tonnfccard.smartcard.TonWalletAppletConstants.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-	import com.tonnfccard.api.CardCoinManagerApi;
-	import com.tonnfccard.api.CardActivationApi;
-	import com.tonnfccard.api.nfc.NfcApduRunner;
-	import static com.tonnfccard.api.utils.JsonHelper.*;
-	import static com.tonnfccard.api.utils.ResponsesConstants.*;
-	import static com.tonnfccard.smartcard.TonWalletAppletConstants.*;
-	import org.json.JSONException;
-	import org.json.JSONObject;
-
-	....
-
-	private NfcApduRunner nfcApduRunner;
-	private CardActivationApi cardActivationApi;
-	private CardCoinManagerApi cardCoinManagerNfcApi;
-	private static final String DEFAULT_PIN = "5555";
-	private static final String SERIAL_NUMBER = "504394802433901126813236";
-	private static final String COMMON_SECRET = "7256EFE7A77AFC7E9088266EF27A93CB01CD9432E0DB66D600745D506EE04AC4";
-	private static final String IV = "1A550F4B413D0E971C28293F9183EA8A";
-	private static final String PASSWORD  = "F4B072E1DF2DB7CF6CD0CD681EC5CD2D071458D278E6546763CBB4860F8082FE14418C8A8A55E2106CBC6CB1174F4BA6D827A26A2D205F99B7E00401DA4C15ACC943274B92258114B5E11C16DA64484034F93771547FBE60DA70E273E6BD64F8A4201A9913B386BCA55B6678CFD7E7E68A646A7543E9E439DD5B60B9615079FE";
+private NfcApduRunner nfcApduRunner;
+private CardActivationApi cardActivationApi;
+private CardCoinManagerApi cardCoinManagerNfcApi;
+private static final String DEFAULT_PIN = "5555";
+private static final String SERIAL_NUMBER = "504394802433901126813236";
+private static final String COMMON_SECRET = "7256EFE7A77AFC7E9088266EF27A93CB01CD9432E0DB66D600745D506EE04AC4";
+private static final String IV = "1A550F4B413D0E971C28293F9183EA8A";
+private static final String PASSWORD  = "F4B072E1DF2DB7CF6CD0CD681EC5CD2D071458D278E6546763CBB4860F8082FE14418C8A8A55E2106CBC6CB1174F4BA6D827A26A2D205F99B7E00401DA4C15ACC943274B92258114B5E11C16DA64484034F93771547FBE60DA70E273E6BD64F8A4201A9913B386BCA55B6678CFD7E7E68A646A7543E9E439DD5B60B9615079FE";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
