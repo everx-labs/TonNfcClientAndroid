@@ -193,7 +193,9 @@ The majority of input data passed into TonNfcClientAndroid library is represente
 
 And also the payload produced by the card and wrapped into json responses is usually represented by hex strings of even length > 0.  For example, this is a response from getPublicKey function  returning ed25519 public key.
 
-	{"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
+```
+{"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
+```
 
 Here B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A is a 32 bytes length ed25519 public key in hex format.
 
@@ -203,18 +205,19 @@ After you prepared the application, you may run it on your Android device (not s
 
 After NFC connection is ready we can send APDU command to the card. For above example push the button to make request getMaxPinTries. Check your Logcat console in Android Studio. You must find the following output:
 
-		===============================================================
-		===============================================================
-		>>> Send apdu  00 A4 04 00 
-		(SELECT_COIN_MANAGER)
-		SW1-SW2: 9000, No error., response data bytes: 	6F5C8408A000000151000000A...
-		===============================================================
-		===============================================================
-		 >>> Send apdu  80 CB 80 00 05 DFFF028103 
-		(GET_PIN_TLT)
- 		SW1-SW2: 9000, No error., response data bytes: 0A
- 
- 		Card response : {"message":"10","status":"ok"}
+```
+===============================================================
+===============================================================
+>>> Send apdu  00 A4 04 00 
+(SELECT_COIN_MANAGER)
+SW1-SW2: 9000, No error., response data bytes: 	6F5C8408A000000151000000A...
+===============================================================
+===============================================================
+>>> Send apdu  80 CB 80 00 05 DFFF028103 
+(GET_PIN_TLT)
+SW1-SW2: 9000, No error., response data bytes: 0A
+ Card response : {"message":"10","status":"ok"}
+```
 
 Here you see the log of APDU commands sent to the card and their responses in raw format. And in the end there is a final wrapped response.
 
