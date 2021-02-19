@@ -1550,7 +1550,7 @@ This sublist of errors is about additional checking of data that comes into Andr
 
 ## IMPROPER_APPLET_STATE_ERROR
 
-Before sending some APDU command into applet Android code usually checks applet state. If in current applet state this APDU is not supported, then Swift code throws a error and does not even try to send this APDU into applet (But If it would send it then card will produce _6D00_ error).
+Before sending some APDU command into applet Android code usually checks applet state. If in current applet state this APDU is not supported, then Android code throws a error and does not even try to send this APDU into applet (But If it would send it then card will produce _6D00_ error).
 
 ```json
 {
