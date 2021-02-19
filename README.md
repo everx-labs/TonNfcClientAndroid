@@ -505,66 +505,69 @@ And use the following code to test recovery data adding (for example add it as b
  ```
  
  There is an exemplary short code snippet demonstrating the way of getting recovery data from the card.
- 
- 	try {
-		String response = recoveryDataApi.isRecoveryDataSetAndGetJson();
-		Log.d("TAG", "isRecoveryDataSet response : " + response);
-		String status = extractMessage(response);
-		if (status.equals("false")) {
-			Log.d("TAG", "Recovery data is no set yet.");
-			return;
-		}
-		response = recoveryDataApi.getRecoveryDataAndGetJson();
-		Log.d("TAG", "getRecoveryData response : " + response);
-		String encryptedRecoveryDataHex = extractMessage(response);
-		byte[] encryptedRecoveryDataBytes = ByteArrayHelper.getInstance().bytes(encryptedRecoveryDataHex);
-		
-		Cipher aesCtr = Cipher.getInstance("AES/CTR/NoPadding");
-		aesCtr.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(counter));
-		byte[] recoveryDataBytes = aesCtr.doFinal(encryptedRecoveryDataBytes);
-		String recoveryData = new String(recoveryDataBytes, StandardCharsets.UTF_8);
-		Log.d("TAG", "Got recoveryData from card : " + recoveryData);
+ ```java
+ try {
+	String response = recoveryDataApi.isRecoveryDataSetAndGetJson();
+	Log.d("TAG", "isRecoveryDataSet response : " + response);
+	String status = extractMessage(response);
+	if (status.equals("false")) {
+		Log.d("TAG", "Recovery data is no set yet.");
+		return;
 	}
-	catch (Exception e) {
-		Log.e("TAG", "Error happened : " + e.getMessage());
-	}
+	response = recoveryDataApi.getRecoveryDataAndGetJson();
+	Log.d("TAG", "getRecoveryData response : " + response);
+	String encryptedRecoveryDataHex = extractMessage(response);
+	byte[] encryptedRecoveryDataBytes = ByteArrayHelper.getInstance().bytes(encryptedRecoveryDataHex);	
+	Cipher aesCtr = Cipher.getInstance("AES/CTR/NoPadding");
+	aesCtr.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(counter));
+	byte[] recoveryDataBytes = aesCtr.doFinal(encryptedRecoveryDataBytes);
+	String recoveryData = new String(recoveryDataBytes, StandardCharsets.UTF_8);
+	Log.d("TAG", "Got recoveryData from card : " + recoveryData);
+}
+catch (Exception e) {
+	Log.e("TAG", "Error happened : " + e.getMessage());
+}
+```
 
 ## About NfcCallback	
 
 For each card operation now there is a pair of functions. The first one returns json response or throws a exception containing json error message. The second function does the same work, but it puts json response/json error message into callback. For this we defined NfcCallback.
 
-	public class NfcCallback {
-  		private NfcResolver resolve;
-  		private NfcRejecter reject;
+```java
+public class NfcCallback {
+  	private NfcResolver resolve;
+  	private NfcRejecter reject;
+  	public NfcCallback(NfcResolver resolve, NfcRejecter reject) {
+    		set(resolve, reject);
+  	}
+}
 
-  		public NfcCallback(NfcResolver resolve, NfcRejecter reject) {
-    			set(resolve, reject);
-  		}
-	}
+@FunctionalInterface
+public interface NfcRejecter {
+  	void reject(String errorMsg);
+}
 
-	@FunctionalInterface
-	public interface NfcRejecter {
-  		void reject(String errorMsg);
-	}
-
-	@FunctionalInterface
-	public interface NfcResolver {
-  		void resolve(Object value);
-	}
+@FunctionalInterface
+public interface NfcResolver {
+  	void resolve(Object value);
+}
+```
 
 To use you must override NfcRejecter and NfcResolver interfaces.
 
 For example let's look at operation getMaxPinTries. Previously we tried it already. There are two functions for it.
 
-	public String getMaxPinTriesAndGetJson() throws Exception
-
-	public void getMaxPinTries(final NfcCallback callback)
+```java
+public String getMaxPinTriesAndGetJson() throws Exception
+public void getMaxPinTries(final NfcCallback callback)
+```
 	
 Example of work with NfcCallback.
-
-	import com.facebook.react.bridge.Promise;
-	...
-	cardCoinManagerNfcApi.getMaxPinTries(NfcCallback(promise::resolve, promise::reject));
+```java
+import com.facebook.react.bridge.Promise;
+...
+cardCoinManagerNfcApi.getMaxPinTries(NfcCallback(promise::resolve, promise::reject));
+```
 	
 ## Full functions list 
 
