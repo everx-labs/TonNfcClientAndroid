@@ -590,8 +590,9 @@ In below list field "cardInstruction" always equals to  GET_APP_INFO (just as ex
 
 ## ANDROID_INTERNAL_ERRORS
 
-Here there are some internal errors that may happen inside Android code. It means that something wrong happened in library and there is a bug in a library. Please report to the team if you would meet it. Normally they must not be met.
+Here there are some internal errors that may happen inside Android code. It means that something wrong happened and there is a bug in a library. Please report to the team if you would meet it. Normally they must not be met.
 
+```json
 {
 "errorType": "Android code fail: internal error",
 "errorTypeId": "1",
@@ -887,11 +888,13 @@ Here there are some internal errors that may happen inside Android code. It mean
 "message": "Context is null",
 "status": "fail"
 }
+```
 
 ## ANDROID_NFC_ERRORS
 
-Here there is a list of any troubles with NFC hardware and connection. (one example: when you forgot to connect the card).
+Here there is a list of any troubles with NFC hardware and connection. 
 
+```json
 {
 "errorType": "Android code fail: NFC error",
 "errorTypeId": "2",
@@ -947,11 +950,13 @@ Here there is a list of any troubles with NFC hardware and connection. (one exam
 "message": "Response from the card is too short. It must contain at least 2 bytes.",
 "status": "fail"
 }
+```
 
 ## INPUT_DATA_FORMAT_ERRORS
 
-Any trouble with input data that you feed into library functions as arguments. For example encryptedPassword argument for turnOnWallet function now must be a hex string of length 256 (and inside it is transformed into byte array of length 128). If you would sent string of another length you will get error. 
+Any trouble with input data passing into TonNfcClientAndroid API functions. For example, encryptedPassword argument for turnOnWallet function must be a hex string of length 256 (and inside it is transformed into byte array of length 128). If you would send string of another length you will get error.
 
+```json
 {
 "errorType": "Native code fail: incorrect format of input data",
 "errorTypeId": "3",
@@ -1167,11 +1172,13 @@ Any trouble with input data that you feed into library functions as arguments. F
 "message": "Serial number is not a valid numeric string.",
 "status": "fail"
 }
+```
 
 ## CARD_RESPONSE_DATA_ERRORS
 
-This sublist of errors is about additional checking of data that comes into Android library from the card. We check all responses from card: i.e. their formats, lengthes, ranges in some cases. Normally errors of such type must not happen. Please report if you would get one of them.
+This sublist of errors is about additional checking of data that comes into Android from the card. We check all responses from card: i.e. their formats, lengthes, ranges in some cases. Normally errors of such type must not happen. Please report if you would get one of them.
 
+```json
 {
 "errorType": "Native code fail: incorrect response from card",
 "errorTypeId": "4",
@@ -1539,13 +1546,13 @@ This sublist of errors is about additional checking of data that comes into Andr
 "message": "Response from GET_APPLET_LIST must have length > 0.",
 "status": "fail"
 }
+```
 
 ## IMPROPER_APPLET_STATE_ERROR
 
-Before sending some APDU command into applet Android code  usually checks applet state. If in current applet state this command is not supported then Android code throws  a error and does not even try to send this APDU into applet (But If it would send it then card will produce 6D00 error).
+Before sending some APDU command into applet Android code usually checks applet state. If in current applet state this APDU is not supported, then Swift code throws a error and does not even try to send this APDU into applet (But If it would send it then card will produce _6D00_ error).
 
-For example if you would try to request hash of enrypted common secret or encrypted password in personalized applet state, you will see smth like this.
-
+```json
 {
 "errorType": "Native code fail: improper applet state",
 "errorTypeId": "5",
@@ -1577,11 +1584,13 @@ For example if you would try to request hash of enrypted common secret or encryp
 "message": "Applet must be in mode for deleting key. Now it is ",
 "status": "fail"
 }
+```
 
 ## HMAC_KEY_ERROR
 
 Here there is a list of possible errors that can happen during work with hmac keys living in Android Keystore.
 
+```json
 {
 "errorType": "Native code fail: hmac key issue",
 "errorTypeId": "6",
@@ -1597,3 +1606,4 @@ Here there is a list of possible errors that can happen during work with hmac ke
 "message": "Current serial number is not set. Can not select key for hmac.",
 "status": "fail"
 }
+```
