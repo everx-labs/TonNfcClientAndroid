@@ -51,78 +51,76 @@ For this to work you must have an appropriate nfc_tech_filter.xml file in your x
 ```
 		
 To get the full picture of how AndroidManifest.xml should look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/ .
-
 _Note:_ minSdkVersion now is 24 to use the library.
 
 ## Usage (Simple example)
 
-Let's suppose you want to work with NFC TON Labs security card in your MainActivity class. And you want to make a simple request to the card: return the maximum number of card's PIN tries. For this request there is a special APDU command supported by the card. And there is a corresponding function in TonNfcClientAndroid library sending it to the card and making postprocessing of card's response for you.  To make it work you should go through the following steps.
+Let's suppose you want to work with NFC TON Labs security card in your MainActivity class. And you want to make a simple request to the card: return the maximum number of card's PIN tries. For this request there is a special APDU command supported by the card. And there is a corresponding function in TonNfcClientAndroid library sending it to the card and making postprocessing of card's response for you. To make it work you should add the following snippet.
 
-+ Make the following imports in your MainActivity.
+```java
+import com.tonnfccard.api.CardCoinManagerApi;
+import com.tonnfccard.api.nfc.NfcApduRunner;
 
-		import com.tonnfccard.api.CardCoinManagerApi;
-		import com.tonnfccard.api.nfc.NfcApduRunner;
+private NfcApduRunner nfcApduRunner;
+private CardCoinManagerApi cardCoinManagerNfcApi;
 		
-+ Add the snippet looking like this:
-
-		private NfcApduRunner nfcApduRunner;
-		private CardCoinManagerApi cardCoinManagerNfcApi;
-		
-		@Override
-		protected void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			setContentView(android.example.myapplication.R.layout.activity_main);
-			...
-			try {
-				nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
-				cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
-			}
-			catch (Exception e) {
-				Log.e("TAG", "Error happened : " + e.getMessage());;
-			}
-			...
-		}
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	setContentView(android.example.myapplication.R.layout.activity_main);
+	...
+	try {
+		nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
+		cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
+	}
+	catch (Exception e) {
+		Log.e("TAG", "Error happened : " + e.getMessage());;
+	}
+	...
+}
+```
 
 + Also take care of onNewIntent method. It intercepts the intent created after NFC card (tag) connection. And you must extract the data about the tag from the intent. You need it to start work with the tag.
 
-		@Override
-		public void onNewIntent(Intent intent) {
-			super.onNewIntent(intent);
-			try {
-				if (nfcApduRunner.setCardTag(intent)) {
-					Toast.makeText(this, "NFC hardware touched", Toast.LENGTH_SHORT).show();
-				}
-			}
-			catch (Exception e) {
-				Log.e("TAG", "Error happened : " + e.getMessage());
-			}
+```java
+@Override
+public void onNewIntent(Intent intent) {
+	super.onNewIntent(intent);
+	try {
+		if (nfcApduRunner.setCardTag(intent)) {
+			Toast.makeText(this, "NFC hardware touched", Toast.LENGTH_SHORT).show();
 		}
-
+	}
+	catch (Exception e) {
+		Log.e("TAG", "Error happened : " + e.getMessage());
+	}
+}
+```
 + Finally make the request to the card. In this example we send it after pressing the button. So the activity for the button may look as follows.
 
+```java
+public void addListenerOnButton() {
+	button = (Button) findViewById(android.example.myapplication.R.id.button1);
+	button.setOnClickListener(new View.OnClickListener() {
+		@Override
+            	public void onClick(View arg0) {
+			try {
+                    		String json = cardCoinManagerNfcApi.getMaxPinTriesAndGetJson();
+                    		Log.d("TAG", "Card response : " + json);
+                	}
+                	catch (Exception e) {
+                    		e.printStackTrace();
+                    		Log.e("TAG", "Error happened : " + e.getMessage());
+                	}
+            	}
+        });
+}
+```
 
-		public void addListenerOnButton() {
-        		button = (Button) findViewById(android.example.myapplication.R.id.button1);
-
-        		button.setOnClickListener(new View.OnClickListener() {
-
-            			@Override
-            			public void onClick(View arg0) {
-                			try {
-                    				String json = cardCoinManagerNfcApi.getMaxPinTriesAndGetJson();
-                    				Log.d("TAG", "Card response : " + json);
-                			}
-                			catch (Exception e) {
-                    				e.printStackTrace();
-                    				Log.e("TAG", "Error happened : " + e.getMessage());
-                			}
-            			}
-        		});
-    		}
-		
 Here json variable contains the response from card wrapped into json of the following simple format: 
-		
-		{"message":"10","status":"ok"}
+```		
+{"message":"10","status":"ok"}
+```
 		
 To get the full picture of how the simplest MainActivity may look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/ .
 
