@@ -183,7 +183,7 @@ It is the case when error happened in Android code itself. The basic examples: t
 }
 ```	
 
-In this [document](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/docs/ErrorrList.md) you may find the full list of json error messages (and their full classification) that can be thrown by the library.
+In this [document](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/docs/ErrorList.md) you may find the full list of json error messages (and their full classification) that can be thrown by the library.
 
 _Note:_ In above snippet in the case of any exception happened during work of cardCoinManagerNfcApi.getMaxPinTriesAndGetJson() we will come into catch block. Message inside exception e is always in json format. 	
 
@@ -333,8 +333,10 @@ The secret key for HMAC SHA256 is produced based on card activation data (see ab
 
 Another situation is possible. Let's suppose you activated the card earlier. After that you reinstalled the app working with NFC TON Labs security card or you started using new Android device. Then Android keystore does not have the key to sign APDU commands. So you must create it.
 
-     cardCryptoApi.createKeyForHmacAndGetJson(authenticationPassword, commonSecret, serialNumber));
-     
+```java
+cardCryptoApi.createKeyForHmacAndGetJson(authenticationPassword, commonSecret, serialNumber));
+```
+
 You may work with multiple NFC TON Labs security cards. In this case in your Android keystore there is a bunch of keys. Each keys is marked by corresponding SN. And you can get the list of serial numbers for which you have the key in keystore
 
 The list of operations protected by HMAC SHA256:
@@ -347,18 +349,15 @@ The list of operations protected by HMAC SHA256:
 
 The basic functionality provided by NFC TON Labs security card is Ed25519 signature. You may request public key and request the signature for some message.
 
-		//Create these two objects.
-		nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
-		CardCryptoApi cardCryptoApi = new CardCryptoApi(getApplicationContext(), nfcApduRunner);
-		....
-		//Get public key for given hdIndex
-		String hdInd = "1";
-		String response = cardCryptoApi.getPublicKeyAndGetJson(hdInd);
-		....
-		//Sign a message for given hdIndex
-		String msg = "A10D";
-		String pin = "5555";
-		String response = cardCryptoApi.verifyPinAndSignAndGetJson(msg, hdInd, pin);
+```java
+nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
+CardCryptoApi cardCryptoApi = new CardCryptoApi(getApplicationContext(), nfcApduRunner);
+String hdInd = "1";
+String response = cardCryptoApi.getPublicKeyAndGetJson(hdInd);
+String msg = "A10D";
+String pin = "5555";
+String response = cardCryptoApi.verifyPinAndSignAndGetJson(msg, hdInd, pin);
+```
 
 _Note:_ Functions signForDefaultHdPath, sign are protected by HMAC SHA256 signature (see previous section). But also there is an additional protection for them by PIN code. You have 10 attempts to enter PIN, after 10th fail you will not be able to use existing seed (keys for ed25519) . The only way to unblock these functions is to reset the seed (see resetWallet function) and generate new seed (see generateSeed). After resetting the seed PIN will be also reset to default value 5555.
 
@@ -372,162 +371,139 @@ The below snippet demonstrates the work with the keychain. We add one key, then 
 
 _Note:_ This test is quite long working. So take care of your NFC connection. To keep it alive your screen must not go out. You may increase timeout for your Android device to achieve this.
 
-	import com.tonnfccard.api.CardKeyChainApi;
-	...
-	private CardKeyChainApi cardKeyChainApi;
-	private NfcApduRunner nfcApduRunner;
+```java
+import com.tonnfccard.api.CardKeyChainApi;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		...
-		try {
-			Context activity = getApplicationContext();
-			nfcApduRunner = NfcApduRunner.getInstance(activity);
-			cardKeyChainApi = new CardKeyChainApi(activity,  nfcApduRunner);
-		}
-		catch (Exception e) {
-			Log.e("TAG", "Error happened : " + e.getMessage());
-		}
-		...
-	}
-	private String extractMessage(String jsonStr) throws JSONException {
-		//as in previous snippet
-	}
+private CardKeyChainApi cardKeyChainApi;
+private NfcApduRunner nfcApduRunner;
 
-And use the following code to test work with keychain.
-
+@Override
+protected void onCreate(Bundle savedInstanceState) {
 	try {
-		String status = cardCryptoApi.createKeyForHmacAndGetJson(PASSWORD, COMMON_SECRET, SERIAL_NUMBER);
-        	Log.d("TAG", "status : " + status);
-
-        	String response = cardKeyChainApi.resetKeyChainAndGetJson();
-        	Log.d("TAG", "resetKeyChain response : " + response);
-
-        	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
-        	Log.d("TAG", "getKeyChainInfo response : " + response);
-
-        	String keyInHex = "001122334455";
-	      	response = cardKeyChainApi.addKeyIntoKeyChainAndGetJson(keyInHex);
-        	Log.d("TAG", "addKeyIntoKeyChain response : " + response);
-
-        	String keyHmac = extractMessage(response);
-        	Log.d("TAG", "keyHmac : " + response);
-
-        	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
-        	Log.d("TAG", "getKeyChainInfo response : " + response);
-
-        	response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(keyHmac);
-        	String keyFromCard = extractMessage(response);
-        	Log.d("TAG", "keyFromCard : " + response);
-
-        	if (!keyInHex.equals(keyFromCard)) {
-			throw  new Exception("Bad key from card : " + keyFromCard);
-        	}
-
-        	String newKeyInHex = "00AA22334466";
-        	response = cardKeyChainApi.changeKeyInKeyChainAndGetJson(newKeyInHex, keyHmac);
-        	Log.d("TAG", "changeKeyInKeyChain response : " + response);
-        	String newKeyHmac = extractMessage(response);
-
-        	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
-        	Log.d("TAG", "getKeyChainInfo response : " + response);
-
-        	response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(newKeyHmac);
-        	String newKeyFromCard = extractMessage(response);
-        	Log.d("TAG", "keyFromCard : " + response);
-
-        	if (!newKeyInHex.equals(newKeyFromCard)) {
-			throw  new Exception("Bad key from card : " + newKeyFromCard);
-        	}
-
-        	response = cardKeyChainApi.deleteKeyFromKeyChainAndGetJson(newKeyHmac);
-        	Log.d("TAG", "deleteKeyFromKeyChain response : " + response);
-
-        	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
-        	Log.d("TAG", "getKeyChainInfo response : " + response);
-
-        	JSONObject jObject = new JSONObject(response);
-        	Integer num  =  Integer.parseInt(jObject.getString(NUMBER_OF_KEYS_FIELD));
-
-        	if (num != 0) {
-			throw  new Exception("Bad number of keys : " + num);
-        	}
+		Context activity = getApplicationContext();
+		nfcApduRunner = NfcApduRunner.getInstance(activity);
+		cardKeyChainApi = new CardKeyChainApi(activity,  nfcApduRunner);
 	}
 	catch (Exception e) {
-        	Log.e("TAG", "Error happened : " + e.getMessage());
+		Log.e("TAG", "Error happened : " + e.getMessage());
 	}
-	
+}
+```
+
+And use the following code to test work with keychain.
+```java
+try {
+	String status = cardCryptoApi.createKeyForHmacAndGetJson(PASSWORD, COMMON_SECRET, SERIAL_NUMBER);
+        Log.d("TAG", "status : " + status);
+	String response = cardKeyChainApi.resetKeyChainAndGetJson();
+        Log.d("TAG", "resetKeyChain response : " + response);
+	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+	Log.d("TAG", "getKeyChainInfo response : " + response);
+        String keyInHex = "001122334455";
+	response = cardKeyChainApi.addKeyIntoKeyChainAndGetJson(keyInHex);
+       	Log.d("TAG", "addKeyIntoKeyChain response : " + response);
+	String keyHmac = extractMessage(response);
+       	Log.d("TAG", "keyHmac : " + response);
+	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+        Log.d("TAG", "getKeyChainInfo response : " + response);
+	response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(keyHmac);
+        String keyFromCard = extractMessage(response);
+        Log.d("TAG", "keyFromCard : " + response);
+	if (!keyInHex.equals(keyFromCard)) {
+		throw  new Exception("Bad key from card : " + keyFromCard);
+        }
+	String newKeyInHex = "00AA22334466";
+        response = cardKeyChainApi.changeKeyInKeyChainAndGetJson(newKeyInHex, keyHmac);
+        Log.d("TAG", "changeKeyInKeyChain response : " + response);
+        String newKeyHmac = extractMessage(response);
+	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+        Log.d("TAG", "getKeyChainInfo response : " + response);
+	response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(newKeyHmac);
+        String newKeyFromCard = extractMessage(response);
+        Log.d("TAG", "keyFromCard : " + response);
+        if (!newKeyInHex.equals(newKeyFromCard)) {
+		throw  new Exception("Bad key from card : " + newKeyFromCard);
+        }
+        response = cardKeyChainApi.deleteKeyFromKeyChainAndGetJson(newKeyHmac);
+        Log.d("TAG", "deleteKeyFromKeyChain response : " + response);
+	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+        Log.d("TAG", "getKeyChainInfo response : " + response);
+	JSONObject jObject = new JSONObject(response);
+        Integer num  =  Integer.parseInt(jObject.getString(NUMBER_OF_KEYS_FIELD));	
+        if (num != 0) {
+		throw  new Exception("Bad number of keys : " + num);
+        }
+}
+catch (Exception e) {
+        Log.e("TAG", "Error happened : " + e.getMessage());
+}
+```	
 ## Recovery module
 
 This module is to store/maintain the data for recovering service: multisignature wallet address (hex string of length 64), TON Labs Surf public key (hex string of length 64) and part of card's activation data: authenticationPassword (hex string of length 256), commonSecret(hex string of length 64). This data will allow to recover access to multisignature wallet in the case when user has lost Android device with installed Surf application and also a seed phrase for Surf account. More details about recovery service can be found here.
 
 There is an snippet demonstrating the structure of recovery data and the way of adding it into NFC TON Labs security card.
 
-	import com.tonnfccard.api.RecoveryDataApi;
-	import com.tonnfccard.api.nfc.NfcApduRunner;
-	import com.tonnfccard.utils.ByteArrayHelper;
-	...
-	private static final int AES_KEY_SIZE = 128; // in bits
-	private static final int AES_COUNTER_SIZE = 16; // in bytes
-	
-	private static final String SURF_PUBLIC_KEY = "B81F0E0E07416DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A";
-	private static final String MULTISIG_ADDR = "A11F0E0E07416DAB6C320ECC6BF3DBA48A70121C5251CC31B1D8F8A1B36E0F2F";
+```java
+import com.tonnfccard.api.RecoveryDataApi;
+import com.tonnfccard.api.nfc.NfcApduRunner;
+import com.tonnfccard.utils.ByteArrayHelper;
 
-	private RecoveryDataApi recoveryDataApi;
-	private SecureRandom sr = new SecureRandom();
-	private KeyGenerator kg;
-	private SecretKey key;
-	private byte[] counter = new byte[AES_COUNTER_SIZE];
+private static final int AES_KEY_SIZE = 128; // in bits
+private static final int AES_COUNTER_SIZE = 16; // in bytes
+private static final String SURF_PUBLIC_KEY = "B81F0E0E07416DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A";
+private static final String MULTISIG_ADDR = "A11F0E0E07416DAB6C320ECC6BF3DBA48A70121C5251CC31B1D8F8A1B36E0F2F";
+
+private RecoveryDataApi recoveryDataApi;
+private SecureRandom sr = new SecureRandom();
+private KeyGenerator kg;
+private SecretKey key;
+private byte[] counter = new byte[AES_COUNTER_SIZE];
 	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		...
-		try {
-			Context activity = getApplicationContext();
-			nfcApduRunner = NfcApduRunner.getInstance(activity);
-			recoveryDataApi = new RecoveryDataApi(activity,  nfcApduRunner);
-			kg = KeyGenerator.getInstance("AES");
-			kg.init(AES_KEY_SIZE);
-			key = kg.generateKey();
-		}
-		catch (Exception e) {
-			Log.e("TAG", e.getMessage());
-		}
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+	try {
+		Context activity = getApplicationContext();
+		nfcApduRunner = NfcApduRunner.getInstance(activity);
+		recoveryDataApi = new RecoveryDataApi(activity,  nfcApduRunner);
+		kg = KeyGenerator.getInstance("AES");
+		kg.init(AES_KEY_SIZE);
+		key = kg.generateKey();
 	}
-
+	catch (Exception e) {
+		Log.e("TAG", e.getMessage());
+	}
+}
+```
 And use the following code to test recovery data adding (for example add it as button action).
 
- 	try {
-        	String response = recoveryDataApi.resetRecoveryDataAndGetJson();
-        	Log.d("TAG", "resetRecoveryData response : " + response);
-
-        	response = recoveryDataApi.isRecoveryDataSetAndGetJson();
-        	Log.d("TAG", "isRecoveryDataSet response : " + response);
-
-        	JSONObject recoveryData = new JSONObject();
-        	recoveryData.put("surfPublicKey", SURF_PUBLIC_KEY);
-        	recoveryData.put("multisigAddress", MULTISIG_ADDR);
-	      	recoveryData.put("p1", PASSWORD);
-        	recoveryData.put("cs", COMMON_SECRET);
-		byte[] recoveryDataBytes = recoveryData.toString().getBytes(StandardCharsets.UTF_8);
-		
-		Cipher aesCtr = Cipher.getInstance("AES/CTR/NoPadding");
-		sr.nextBytes(counter);
-		aesCtr.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(counter));
-		
-		byte[] encryptedRecoveryDataBytes = aesCtr.doFinal(recoveryDataBytes);
-		String encryptedRecoveryDataHex = ByteArrayHelper.getInstance().hex(encryptedRecoveryDataBytes);
-
-		response = recoveryDataApi.addRecoveryDataAndGetJson(encryptedRecoveryDataHex );
-        	Log.d("TAG", "addRecoveryData response : " + response);
-
-        	response = recoveryDataApi.isRecoveryDataSetAndGetJson();
-        	Log.d("TAG", "isRecoveryDataSet response : " + response);
-      }
-      catch (Exception e) {
+```java
+ try {
+        String response = recoveryDataApi.resetRecoveryDataAndGetJson();
+        Log.d("TAG", "resetRecoveryData response : " + response);
+	response = recoveryDataApi.isRecoveryDataSetAndGetJson();
+        Log.d("TAG", "isRecoveryDataSet response : " + response);
+        JSONObject recoveryData = new JSONObject();
+        recoveryData.put("surfPublicKey", SURF_PUBLIC_KEY);
+        recoveryData.put("multisigAddress", MULTISIG_ADDR);
+	recoveryData.put("p1", PASSWORD);
+        recoveryData.put("cs", COMMON_SECRET);
+	byte[] recoveryDataBytes = recoveryData.toString().getBytes(StandardCharsets.UTF_8);
+	Cipher aesCtr = Cipher.getInstance("AES/CTR/NoPadding");
+	sr.nextBytes(counter);
+	aesCtr.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(counter));
+	byte[] encryptedRecoveryDataBytes = aesCtr.doFinal(recoveryDataBytes);
+	String encryptedRecoveryDataHex = ByteArrayHelper.getInstance().hex(encryptedRecoveryDataBytes);
+	response = recoveryDataApi.addRecoveryDataAndGetJson(encryptedRecoveryDataHex );
+        Log.d("TAG", "addRecoveryData response : " + response);
+	response = recoveryDataApi.isRecoveryDataSetAndGetJson();
+        Log.d("TAG", "isRecoveryDataSet response : " + response);
+ }
+ catch (Exception e) {
         Log.e("TAG", "Error happened : " + e.getMessage());
-      }
-      
+ }
+ ```
+ 
  There is an exemplary short code snippet demonstrating the way of getting recovery data from the card.
  
  	try {
