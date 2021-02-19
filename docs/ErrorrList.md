@@ -1,10 +1,9 @@
-In the case of any error functions of TonNfcClientAndroid library throw an exception. The exception usually contains inside a error message wrapped into json of special format. You can work with exception object directly or you can get error message json into your callback. Below there is a full list of json error messages that the library can potentially throw into the caller.
+In the case of any error TonNfcClientAndroid functions throw an exception. The exception usually contains inside a error message wrapped into json of special format. You can work with exception object directly or you can get error message json into your callback. Below there is a full list of json error messages that TonNfcClientAndroid can potentially throw into the caller.
 
 ## CARD_ERRORS
 
-Here there are errors produced by NFC card (TON Labs wallet applet itself). So Android code just catches it and throws a error message (or puts it into callback). Below there are exemplary jsons in which field "cardInstruction" always equals to  GET_APP_INFO. But really in this field you may meet any other card instruction (APDU).
+Here there are errors produced by NFC card (TON Labs wallet applet itself). So Android code just catches it and throws a error message (or puts it into callback). Below there are exemplary jsons. Their fields have the following meanings:
 
-Here there are meanings of all json fields:
 + *errorCode* — error status word (SW) produced by the card (applet)
 
 + *cardInstruction* — title of APDU command that failed
@@ -17,6 +16,9 @@ Here there are meanings of all json fields:
 
 + *apdu* — full text of failed APDU command in hex format
 
+In below list field "cardInstruction" always equals to  GET_APP_INFO (just as example). But really in this field you may meet any other card instruction (APDU).
+
+```json
 {
 "errorType": "Applet fail: card operation error",
 "errorTypeId": "0",
@@ -584,6 +586,7 @@ Here there are meanings of all json fields:
 "apdu": "B0 C1 00 00 ",
 "status": "fail"
 }
+```
 
 ## ANDROID_INTERNAL_ERRORS
 
