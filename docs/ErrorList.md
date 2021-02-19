@@ -1,4 +1,4 @@
-In the case of any error TonNfcClientAndroid functions throw an exception. The exception usually contains inside a error message wrapped into json of special format. You can work with exception object directly or you can get error message json into your callback. Below there is a full list of json error messages that TonNfcClientAndroid can potentially throw into the caller.
+In the case of any error TonNfcClientAndroid functions throws an exception. The exception usually contains inside a error message wrapped into json of special format. You can work with exception object directly or you can get error message json into your callback. Below there is a full list of json error messages that TonNfcClientAndroid can potentially throw into the caller.
 
 ## CARD_ERRORS
 
