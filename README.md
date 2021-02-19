@@ -253,58 +253,51 @@ private static final String COMMON_SECRET = "7256EFE7A77AFC7E9088266EF27A93CB01C
 private static final String IV = "1A550F4B413D0E971C28293F9183EA8A";
 private static final String PASSWORD  = "F4B072E1DF2DB7CF6CD0CD681EC5CD2D071458D278E6546763CBB4860F8082FE14418C8A8A55E2106CBC6CB1174F4BA6D827A26A2D205F99B7E00401DA4C15ACC943274B92258114B5E11C16DA64484034F93771547FBE60DA70E273E6BD64F8A4201A9913B386BCA55B6678CFD7E7E68A646A7543E9E439DD5B60B9615079FE";
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		...
-		try {
-	  		nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
-			cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
-			cardActivationApi = new CardActivationApi(getApplicationContext(),  nfcApduRunner);
-	  	}
-	  	catch (Exception e) {
-	  		Log.e("TAG", e.getMessage());
-	  	}
-	  	...
-	}
-	
-	@Override
-	public void onNewIntent(Intent intent) {
-		// Take the code for handling NFC intent fron above snippet
-	}
-	
-	private String extractMessage(String jsonStr) throws JSONException { 
-		JSONObject jObject = new JSONObject(jsonStr);
-		return jObject.getString(MESSAGE_FIELD);
-	}
-	
-And use the following code to start card activation (for example add it as button action).
-      
+@Override
+protected void onCreate(Bundle savedInstanceState) {
 	try {
-        	String seedStatus = extractMessage(cardCoinManagerNfcApi.getRootKeyStatusAndGetJson());
-        	if (seedStatus.equals(NOT_GENERATED_MSG)) {
-			cardCoinManagerNfcApi.generateSeedAndGetJson(DEFAULT_PIN); 
-		}
-		
-		String appletState = extractMessage(cardActivationApi.selectTonWalletAppletAndGetTonAppletStateAndGetJson());	
-		if (!appletState.equals(WAITE_AUTHORIZATION_MSG)) {
-			throw new Exception("Incorret applet state : " + appletState);
-		}
-		String hashOfEncryptedCommonSecret = extractMessage(cardActivationApi.getHashOfEncryptedCommonSecretAndGetJson());
-		String hashOfEncryptedPassword = extractMessage(cardActivationApi.getHashOfEncryptedPasswordAndGetJson());
-		
-		String newPin = "7777";
-		appletState = extractMessage(cardActivationApi.turnOnWalletAndGetJson(newPin, PASSWORD, COMMON_SECRET, IV));
-		Log.d("TAG", "Card response (state) : " + appletState);
-		
-		if (!appletState.equals(PERSONALIZED_STATE_MSG)) {
-			throw new Exception("Incorrect applet state after activation : " + appletState);
-		}
+		nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
+		cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
+		cardActivationApi = new CardActivationApi(getApplicationContext(),  nfcApduRunner);
 	}
 	catch (Exception e) {
-		e.printStackTrace();
-		Log.e("TAG", "Error happened : " + e.getMessage());
-	}      
+	  	Log.e("TAG", e.getMessage());
+	}
+}
 	
+private String extractMessage(String jsonStr) throws JSONException { 
+	JSONObject jObject = new JSONObject(jsonStr);
+	return jObject.getString(MESSAGE_FIELD);
+}
+```
+	
+And use the following code to start card activation (for example add it as button action).
+``` java    
+try {
+	String seedStatus = extractMessage(cardCoinManagerNfcApi.getRootKeyStatusAndGetJson());
+        if (seedStatus.equals(NOT_GENERATED_MSG)) {
+		cardCoinManagerNfcApi.generateSeedAndGetJson(DEFAULT_PIN); 
+	}
+		
+	String appletState = extractMessage(cardActivationApi.selectTonWalletAppletAndGetTonAppletStateAndGetJson());	
+	if (!appletState.equals(WAITE_AUTHORIZATION_MSG)) {
+		throw new Exception("Incorret applet state : " + appletState);
+	}
+	String hashOfEncryptedCommonSecret = extractMessage(cardActivationApi.getHashOfEncryptedCommonSecretAndGetJson());
+	String hashOfEncryptedPassword = extractMessage(cardActivationApi.getHashOfEncryptedPasswordAndGetJson());
+		
+	String newPin = "7777";
+	appletState = extractMessage(cardActivationApi.turnOnWalletAndGetJson(newPin, PASSWORD, COMMON_SECRET, IV));
+	Log.d("TAG", "Card response (state) : " + appletState);
+		
+	if (!appletState.equals(PERSONALIZED_STATE_MSG)) {
+		throw new Exception("Incorrect applet state after activation : " + appletState);
+	}
+}
+catch (Exception e) {
+	Log.e("TAG", "Error happened : " + e.getMessage());
+}      
+```	
 	
     
 ## About applet states and provided functionality
