@@ -1,13 +1,15 @@
 package com.tonnfccard.smartcard;
 
-import com.tonnfccard.smartcard.wrappers.RAPDU;
-import com.tonnfccard.utils.ByteArrayHelper;
+import androidx.annotation.RestrictTo;
+
+import com.tonnfccard.utils.ByteArrayUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 
+//@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class ErrorCodes {
-    private static final ByteArrayHelper BYTE_ARRAY_HELPER = ByteArrayHelper.getInstance();
+    private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
     private static Map<Short, String> codeToMsg = new HashMap<>();
 
     /** Javacard standard status words */

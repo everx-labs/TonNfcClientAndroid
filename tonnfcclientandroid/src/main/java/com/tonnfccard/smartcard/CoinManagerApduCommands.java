@@ -1,23 +1,25 @@
-package com.tonnfccard.smartcard.apdu;
+package com.tonnfccard.smartcard;
 
-import com.tonnfccard.smartcard.wrappers.CAPDU;
-import com.tonnfccard.utils.ByteArrayHelper;
+import androidx.annotation.RestrictTo;
+
+import com.tonnfccard.utils.ByteArrayUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_LABEL_BYTES_SIZE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_PIN_BYTES_SIZE_INCORRECT;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.PIN_SIZE;
-import static com.tonnfccard.smartcard.apdu.Constants.LE;
-import static com.tonnfccard.smartcard.apdu.Constants.SELECT_CLA;
-import static com.tonnfccard.smartcard.apdu.Constants.SELECT_INS;
-import static com.tonnfccard.smartcard.apdu.Constants.SELECT_P1;
-import static com.tonnfccard.smartcard.apdu.Constants.SELECT_P2;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_LABEL_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.TonWalletConstants.PIN_SIZE;
+import static com.tonnfccard.smartcard.CommonConstants.LE;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_CLA;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_INS;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_P1;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_P2;
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class CoinManagerApduCommands {
 
-    private final static ByteArrayHelper BYTE_ARRAY_HELPER = ByteArrayHelper.getInstance();
+    private final static ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
 
     public final static Integer LABEL_LENGTH = 32;
 

@@ -58,8 +58,8 @@ _Note:_ minSdkVersion now is 24 to use the library.
 Let's suppose you want to work with NFC TON Labs security card in your MainActivity class. And you want to make a simple request to the card: return the maximum number of card's PIN tries. For this request there is a special APDU command supported by the card. And there is a corresponding function in TonNfcClientAndroid library sending it to the card and making postprocessing of card's response for you. To make it work you should add the following snippet.
 
 ```java
-import com.tonnfccard.api.CardCoinManagerApi;
-import com.tonnfccard.api.nfc.NfcApduRunner;
+import com.tonnfccard.CardCoinManagerApi;
+import com.tonnfccard.nfc.NfcApduRunner;
 
 private NfcApduRunner nfcApduRunner;
 private CardCoinManagerApi cardCoinManagerNfcApi;
@@ -235,11 +235,11 @@ For now let's suppose the user somehow got activation data into his application 
 
 
 ```java
-import com.tonnfccard.api.CardCoinManagerApi;
-import com.tonnfccard.api.CardActivationApi;
-import com.tonnfccard.api.nfc.NfcApduRunner;
-import static com.tonnfccard.api.utils.JsonHelper.*;
-import static com.tonnfccard.api.utils.ResponsesConstants.*;
+import com.tonnfccard.CardCoinManagerApi;
+import com.tonnfccard.CardActivationApi;
+import com.tonnfccard.nfc.NfcApduRunner;
+import static com.tonnfccard.helpers.JsonHelper.*;
+import static com.tonnfccard.helpers.ResponsesConstants.*;
 import static com.tonnfccard.smartcard.TonWalletAppletConstants.*;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -372,7 +372,7 @@ The below snippet demonstrates the work with the keychain. We add one key, then 
 _Note:_ This test is quite long working. So take care of your NFC connection. To keep it alive your screen must not go out. You may increase timeout for your Android device to achieve this.
 
 ```java
-import com.tonnfccard.api.CardKeyChainApi;
+import com.tonnfccard.CardKeyChainApi;
 
 private CardKeyChainApi cardKeyChainApi;
 private NfcApduRunner nfcApduRunner;
@@ -445,9 +445,9 @@ This module is to store/maintain the data for recovering service: multisignature
 There is an snippet demonstrating the structure of recovery data and the way of adding it into NFC TON Labs security card.
 
 ```java
-import com.tonnfccard.api.RecoveryDataApi;
-import com.tonnfccard.api.nfc.NfcApduRunner;
-import com.tonnfccard.utils.ByteArrayHelper;
+import com.tonnfccard.RecoveryDataApi;
+import com.tonnfccard.nfc.NfcApduRunner;
+import com.tonnfccard.utils.ByteArrayUtil;
 
 private static final int AES_KEY_SIZE = 128; // in bits
 private static final int AES_COUNTER_SIZE = 16; // in bytes

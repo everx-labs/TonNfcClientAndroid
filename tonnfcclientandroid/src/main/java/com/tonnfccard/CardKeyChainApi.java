@@ -1,12 +1,12 @@
-package com.tonnfccard.api;
+package com.tonnfccard;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.tonnfccard.api.callback.NfcCallback;
+import com.tonnfccard.callback.NfcCallback;
 import com.tonnfccard.smartcard.TonWalletAppletStates;
-import com.tonnfccard.smartcard.wrappers.ApduRunner;
-import com.tonnfccard.smartcard.wrappers.RAPDU;
+import com.tonnfccard.smartcard.ApduRunner;
+import com.tonnfccard.smartcard.RAPDU;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,77 +16,71 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.tonnfccard.api.utils.JsonHelper.STATUS_FIELD;
-import static com.tonnfccard.api.utils.ResponsesConstants.DONE_MSG;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_KEY_DATA_PORTION_INCORRECT_LEN;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_AFTER_NUM_OF_KEYS_INCORRECT_AFTER_ADD;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_AFTER_NUM_OF_KEYS_INCORRECT_AFTER_CHANGE;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_APPLET_DOES_NOT_WAIT_TO_DELETE_KEY;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_APPLET_IS_NOT_PERSONALIZED;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_DELETE_KEY_CHUNK_RESPONSE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_DELETE_KEY_CHUNK_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_DELETE_KEY_RECORD_RESPONSE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_DELETE_KEY_RECORD_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_FREE_SIZE_RESPONSE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_RESPONSE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_RESPONSE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_GET_FREE_SIZE_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_GET_HMAC_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_GET_KEY_INDEX_IN_STORAGE_AND_LEN_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_GET_NUMBER_OF_KEYS_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_GET_OCCUPIED_SIZE_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_INITIATE_DELETE_KEY_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_KEY_HMAC_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_KEY_HMAC_NOT_HEX;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_KEY_INDEX_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_KEY_INDEX_VALUE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_KEY_LENGTH_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_KEY_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_KEY_NOT_HEX;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_KEY_SIZE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_NEW_KEY_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_NUMBER_OF_KEYS_RESPONSE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_OCCUPIED_SIZE_RESPONSE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_SEND_CHUNK_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.SUCCESS_STATUS;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.DATA_PORTION_MAX_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.DATA_RECOVERY_PORTION_MAX_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.HMAC_SHA_SIG_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.MAX_KEY_SIZE_IN_KEYCHAIN;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.MAX_NUMBER_OF_KEYS_IN_KEYCHAIN;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.DELETE_KEY_CHUNK_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.DELETE_KEY_RECORD_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_FREE_SIZE_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_KEY_INDEX_IN_STORAGE_AND_LEN_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_NUMBER_OF_KEYS_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_OCCUPIED_SIZE_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.INITIATE_DELETE_KEY_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.INS_ADD_KEY_CHUNK;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.INS_CHANGE_KEY_CHUNK;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.SEND_CHUNK_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getCheckAvailableVolForNewKeyAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getCheckKeyHmacConsistencyAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getDeleteKeyChunkAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getDeleteKeyChunkNumOfPacketsAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getDeleteKeyRecordAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getDeleteKeyRecordNumOfPacketsAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getGetFreeSizeAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getGetHmacAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getGetIndexAndLenOfKeyInKeyChainAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getGetKeyChunkAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getGetOccupiedSizeAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getInitiateChangeOfKeyAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getInitiateDeleteOfKeyAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getNumberOfKeysAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getResetKeyChainAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getSendKeyChunkAPDU;
+import static com.tonnfccard.TonWalletConstants.*;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_KEY_DATA_PORTION_INCORRECT_LEN;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_AFTER_NUM_OF_KEYS_INCORRECT_AFTER_ADD;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_AFTER_NUM_OF_KEYS_INCORRECT_AFTER_CHANGE;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APPLET_DOES_NOT_WAIT_TO_DELETE_KEY;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APPLET_IS_NOT_PERSONALIZED;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DELETE_KEY_CHUNK_RESPONSE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DELETE_KEY_CHUNK_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DELETE_KEY_RECORD_RESPONSE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DELETE_KEY_RECORD_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_FREE_SIZE_RESPONSE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_RESPONSE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_RESPONSE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_FREE_SIZE_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_HMAC_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_KEY_INDEX_IN_STORAGE_AND_LEN_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_NUMBER_OF_KEYS_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_OCCUPIED_SIZE_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_INITIATE_DELETE_KEY_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_HMAC_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_HMAC_NOT_HEX;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_INDEX_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_INDEX_VALUE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_LENGTH_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_NOT_HEX;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_SIZE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NEW_KEY_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NUMBER_OF_KEYS_RESPONSE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_OCCUPIED_SIZE_RESPONSE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SEND_CHUNK_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.TonWalletConstants.DATA_PORTION_MAX_SIZE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.DELETE_KEY_CHUNK_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.DELETE_KEY_RECORD_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_FREE_SIZE_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_KEY_INDEX_IN_STORAGE_AND_LEN_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_NUMBER_OF_KEYS_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_OCCUPIED_SIZE_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.INITIATE_DELETE_KEY_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.INS_ADD_KEY_CHUNK;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.INS_CHANGE_KEY_CHUNK;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.SEND_CHUNK_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getCheckAvailableVolForNewKeyAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getCheckKeyHmacConsistencyAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getDeleteKeyChunkAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getDeleteKeyChunkNumOfPacketsAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getDeleteKeyRecordAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getDeleteKeyRecordNumOfPacketsAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getGetFreeSizeAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getGetHmacAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getGetIndexAndLenOfKeyInKeyChainAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getGetKeyChunkAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getGetOccupiedSizeAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getInitiateChangeOfKeyAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getInitiateDeleteOfKeyAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getNumberOfKeysAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getResetKeyChainAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getSendKeyChunkAPDU;
 
-public class CardKeyChainApi extends TonWalletApi {
+public final class CardKeyChainApi extends TonWalletApi {
   public static final String KEY_INDEX_FIELD = "index";
   public static final String KEY_LENGTH_FIELD = "length";
   public static final String KEY_HMAC_FIELD = "hmac";
@@ -111,15 +105,20 @@ public class CardKeyChainApi extends TonWalletApi {
           Log.d(TAG, "resetKeyChain response : " + json);
          // keyMacs.clear();
         } catch (Exception e) {
-          EXCEPTION_HELPER.handleException(e, callback, TAG);
+            EXCEPTION_HELPER.handleException(e, callback, TAG);
         }
       }
     }).start();
   }
 
   public String resetKeyChainAndGetJson() throws Exception {
-    resetKeyChain();
-    return JSON_HELPER.createResponseJson(DONE_MSG);
+    try {
+      resetKeyChain();
+      return JSON_HELPER.createResponseJson(DONE_MSG);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void getKeyChainInfo(final NfcCallback callback) {
@@ -130,22 +129,27 @@ public class CardKeyChainApi extends TonWalletApi {
           resolveJson(json, callback);
           Log.d(TAG, "getKeyChainInfo response : " + json);
         } catch (Exception e) {
-          EXCEPTION_HELPER.handleException(e, callback, TAG);
+            EXCEPTION_HELPER.handleException(e, callback, TAG);
         }
       }
     }).start();
   }
 
   public String getKeyChainInfoAndGetJson() throws Exception {
-    int numOfKeys = getNumberOfKeys();
-    int occupiedStorageSize = getOccupiedStorageSize();
-    int freeStorageSize = getFreeStorageSize();
-    JSONObject jsonResponse = new JSONObject();
-    jsonResponse.put(NUMBER_OF_KEYS_FIELD, numOfKeys);
-    jsonResponse.put(OCCUPIED_SIZE_FIELD, occupiedStorageSize);
-    jsonResponse.put(FREE_SIZE_FIELD, freeStorageSize);
-    jsonResponse.put(STATUS_FIELD, SUCCESS_STATUS);
-    return jsonResponse.toString();
+    try {
+      int numOfKeys = getNumberOfKeys();
+      int occupiedStorageSize = getOccupiedStorageSize();
+      int freeStorageSize = getFreeStorageSize();
+      JSONObject jsonResponse = new JSONObject();
+      jsonResponse.put(NUMBER_OF_KEYS_FIELD, numOfKeys);
+      jsonResponse.put(OCCUPIED_SIZE_FIELD, occupiedStorageSize);
+      jsonResponse.put(FREE_SIZE_FIELD, freeStorageSize);
+      jsonResponse.put(STATUS_FIELD, SUCCESS_STATUS);
+      return jsonResponse.toString();
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void getNumberOfKeys(final NfcCallback callback) {
@@ -156,15 +160,20 @@ public class CardKeyChainApi extends TonWalletApi {
           resolveJson(json, callback);
           Log.d(TAG, "getNumberOfKeys response : " + json);
         } catch (Exception e) {
-          EXCEPTION_HELPER.handleException(e, callback, TAG);
+            EXCEPTION_HELPER.handleException(e, callback, TAG);
         }
       }
     }).start();
   }
 
   public String getNumberOfKeysAndGetJson() throws Exception {
-    int numOfKeys = getNumberOfKeys();
-    return JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
+    try {
+      int numOfKeys = getNumberOfKeys();
+      return JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void checkKeyHmacConsistency(final String keyHmac, final NfcCallback callback) {
@@ -182,12 +191,17 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   public String checkKeyHmacConsistencyAndGetJson(String keyHmac) throws Exception {
-    if (!STR_HELPER.isHexString(keyHmac))
-      throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
-    if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
-      throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
-    checkKeyHmacConsistency(BYTE_ARR_HELPER.bytes(keyHmac));
-    return JSON_HELPER.createResponseJson(DONE_MSG);
+    try {
+      if (!STR_HELPER.isHexString(keyHmac))
+        throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
+      if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
+        throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
+      checkKeyHmacConsistency(BYTE_ARR_HELPER.bytes(keyHmac));
+      return JSON_HELPER.createResponseJson(DONE_MSG);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void checkAvailableVolForNewKey(final Short keySize, final NfcCallback callback) {
@@ -205,10 +219,15 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   public String checkAvailableVolForNewKeyAndGetJson(final Short keySize) throws Exception {
-    if (keySize <= 0 || keySize > MAX_KEY_SIZE_IN_KEYCHAIN)
-      throw new Exception(ERROR_MSG_KEY_SIZE_INCORRECT);
-    checkAvailableVolForNewKey(keySize);
-    return JSON_HELPER.createResponseJson(DONE_MSG);
+    try {
+      if (keySize <= 0 || keySize > MAX_KEY_SIZE_IN_KEYCHAIN)
+        throw new Exception(ERROR_MSG_KEY_SIZE_INCORRECT);
+      checkAvailableVolForNewKey(keySize);
+      return JSON_HELPER.createResponseJson(DONE_MSG);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void getIndexAndLenOfKeyInKeyChain(final String keyHmac, final NfcCallback callback) {
@@ -226,12 +245,17 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   public String getIndexAndLenOfKeyInKeyChainAndGetJson(String keyHmac)  throws Exception {
-    if (!STR_HELPER.isHexString(keyHmac))
-      throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
-    if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
-      throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
-    String response = getIndexAndLenOfKeyInKeyChain(BYTE_ARR_HELPER.bytes(keyHmac)).toString();
-    return JSON_HELPER.createResponseJson(response);
+    try {
+      if (!STR_HELPER.isHexString(keyHmac))
+        throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
+      if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
+        throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
+      String response = getIndexAndLenOfKeyInKeyChain(BYTE_ARR_HELPER.bytes(keyHmac)).toString();
+      return JSON_HELPER.createResponseJson(response);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void getDeleteKeyRecordNumOfPackets(final NfcCallback callback) {
@@ -249,8 +273,13 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   public String getDeleteKeyRecordNumOfPacketsAndGetJson()  throws Exception {
-    String numOfPackets = Integer.valueOf(getDeleteKeyRecordNumOfPackets()).toString();
-    return JSON_HELPER.createResponseJson(numOfPackets);
+    try {
+      String numOfPackets = Integer.valueOf(getDeleteKeyRecordNumOfPackets()).toString();
+      return JSON_HELPER.createResponseJson(numOfPackets);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void getDeleteKeyChunkNumOfPackets(final NfcCallback callback) {
@@ -268,8 +297,13 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   public String getDeleteKeyChunkNumOfPacketsAndGetJson() throws Exception {
-    String numOfPackets = Integer.valueOf(getDeleteKeyChunkNumOfPackets()).toString();
-    return JSON_HELPER.createResponseJson(numOfPackets);
+    try {
+      String numOfPackets = Integer.valueOf(getDeleteKeyChunkNumOfPackets()).toString();
+      return JSON_HELPER.createResponseJson(numOfPackets);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void deleteKeyFromKeyChain(final String keyHmac, final NfcCallback callback) {
@@ -287,12 +321,17 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   public String deleteKeyFromKeyChainAndGetJson(String keyHmac) throws Exception {
-    if (!STR_HELPER.isHexString(keyHmac))
-      throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
-    if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
-      throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
-    int numOfKeys = deleteKeyFromKeyChain(BYTE_ARR_HELPER.bytes(keyHmac));
-    return JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
+    try {
+      if (!STR_HELPER.isHexString(keyHmac))
+        throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
+      if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
+        throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
+      int numOfKeys = deleteKeyFromKeyChain(BYTE_ARR_HELPER.bytes(keyHmac));
+      return JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void finishDeleteKeyFromKeyChainAfterInterruption(final NfcCallback callback) {
@@ -310,12 +349,17 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   public String finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson() throws Exception {
+    try {
     /*if (!STR_HELPER.isHexString(keyHmac))
       throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
     if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
       throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);*/
-    int numOfKeys = finishDeleteKeyFromKeyChainAfterInterruption();
-    return JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
+      int numOfKeys = finishDeleteKeyFromKeyChainAfterInterruption();
+      return JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void getOccupiedStorageSize(final NfcCallback callback) {
@@ -333,8 +377,13 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   public String getOccupiedStorageSizeAndGetJson() throws Exception {
-    String size = Integer.valueOf(getOccupiedStorageSize()).toString();
-    return JSON_HELPER.createResponseJson(size);
+    try {
+      String size = Integer.valueOf(getOccupiedStorageSize()).toString();
+      return JSON_HELPER.createResponseJson(size);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void getFreeStorageSize(final NfcCallback callback) {
@@ -352,8 +401,13 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   public String getFreeStorageSizeAndGetJson() throws Exception {
-    String size = Integer.valueOf(getFreeStorageSize()).toString();
-    return JSON_HELPER.createResponseJson(size);
+    try {
+      String size = Integer.valueOf(getFreeStorageSize()).toString();
+      return JSON_HELPER.createResponseJson(size);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void getKeyFromKeyChain(final String keyHmac, final NfcCallback callback) {
@@ -371,12 +425,17 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   public String getKeyFromKeyChainAndGetJson(String keyHmac) throws Exception {
-    if (!STR_HELPER.isHexString(keyHmac))
-      throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
-    if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
-      throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
-    String key = BYTE_ARR_HELPER.hex(getKeyFromKeyChain(BYTE_ARR_HELPER.bytes(keyHmac)));
-    return JSON_HELPER.createResponseJson(key);
+    try {
+      if (!STR_HELPER.isHexString(keyHmac))
+        throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
+      if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
+        throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
+      String key = BYTE_ARR_HELPER.hex(getKeyFromKeyChain(BYTE_ARR_HELPER.bytes(keyHmac)));
+      return JSON_HELPER.createResponseJson(key);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void addKeyIntoKeyChain(final String newKey, final NfcCallback callback) {
@@ -394,12 +453,17 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   public String addKeyIntoKeyChainAndGetJson(String newKey) throws Exception {
-    if (!STR_HELPER.isHexString(newKey))
-      throw new Exception(ERROR_MSG_KEY_NOT_HEX);
-    if (newKey.length() > 2 * MAX_KEY_SIZE_IN_KEYCHAIN)
-      throw new Exception(ERROR_MSG_KEY_LEN_INCORRECT);
-    String keyHmac = addKeyIntoKeyChain(BYTE_ARR_HELPER.bytes(newKey));
-    return JSON_HELPER.createResponseJson(keyHmac);
+    try {
+      if (!STR_HELPER.isHexString(newKey))
+        throw new Exception(ERROR_MSG_KEY_NOT_HEX);
+      if (newKey.length() > 2 * MAX_KEY_SIZE_IN_KEYCHAIN)
+        throw new Exception(ERROR_MSG_KEY_LEN_INCORRECT);
+      String keyHmac = addKeyIntoKeyChain(BYTE_ARR_HELPER.bytes(newKey));
+      return JSON_HELPER.createResponseJson(keyHmac);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void changeKeyInKeyChain(final String newKey, final String oldKeyHMac, final NfcCallback callback) {
@@ -417,16 +481,21 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   public String changeKeyInKeyChainAndGetJson(String newKey, String oldKeyHMac) throws Exception {
-    if (!STR_HELPER.isHexString(newKey))
-      throw new Exception(ERROR_MSG_KEY_NOT_HEX);
-    if (newKey.length() > 2 * MAX_KEY_SIZE_IN_KEYCHAIN)
-      throw new Exception(ERROR_MSG_KEY_LEN_INCORRECT);
-    if (!STR_HELPER.isHexString(oldKeyHMac))
-      throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
-    if (oldKeyHMac.length() != 2 * HMAC_SHA_SIG_SIZE)
-      throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
-    String newKeyHmac = changeKeyInKeyChain(BYTE_ARR_HELPER.bytes(newKey), BYTE_ARR_HELPER.bytes(oldKeyHMac));
-    return JSON_HELPER.createResponseJson(newKeyHmac);
+    try {
+      if (!STR_HELPER.isHexString(newKey))
+        throw new Exception(ERROR_MSG_KEY_NOT_HEX);
+      if (newKey.length() > 2 * MAX_KEY_SIZE_IN_KEYCHAIN)
+        throw new Exception(ERROR_MSG_KEY_LEN_INCORRECT);
+      if (!STR_HELPER.isHexString(oldKeyHMac))
+        throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
+      if (oldKeyHMac.length() != 2 * HMAC_SHA_SIG_SIZE)
+        throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
+      String newKeyHmac = changeKeyInKeyChain(BYTE_ARR_HELPER.bytes(newKey), BYTE_ARR_HELPER.bytes(oldKeyHMac));
+      return JSON_HELPER.createResponseJson(newKeyHmac);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void getKeyChainDataAboutAllKeys(final NfcCallback callback) {
@@ -444,18 +513,23 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   public String getKeyChainDataAboutAllKeysAndGetJson() throws Exception {
-    Map<String, Integer> map = getAllHmacsOfKeysFromCard();
-    JSONObject allKeysObj = new JSONObject();
-    JSONArray jArray = new JSONArray();
-    for (final String hmac : map.keySet()) {
-      JSONObject jObject = new JSONObject();
-      jObject.put(KEY_HMAC_FIELD, hmac);
-      jObject.put(KEY_LENGTH_FIELD, map.get(hmac).toString());
-      jArray.put(jObject);
+    try {
+      Map<String, Integer> map = getAllHmacsOfKeysFromCard();
+      JSONObject allKeysObj = new JSONObject();
+      JSONArray jArray = new JSONArray();
+      for (final String hmac : map.keySet()) {
+        JSONObject jObject = new JSONObject();
+        jObject.put(KEY_HMAC_FIELD, hmac);
+        jObject.put(KEY_LENGTH_FIELD, map.get(hmac).toString());
+        jArray.put(jObject);
+      }
+      allKeysObj.put(KEYS_DATA_FIELD, jArray);
+      allKeysObj.put(STATUS_FIELD, SUCCESS_STATUS);
+      return allKeysObj.toString();
     }
-    allKeysObj.put(KEYS_DATA_FIELD, jArray);
-    allKeysObj.put(STATUS_FIELD, SUCCESS_STATUS);
-    return allKeysObj.toString();
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void getHmac(final String index, final NfcCallback callback) {
@@ -473,15 +547,20 @@ public class CardKeyChainApi extends TonWalletApi {
   }
 
   public String getHmacAndGetJson(String index) throws Exception {
-    if (!STR_HELPER.isNumericString(index))
-      throw new Exception(ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC);
-    short ind = Short.parseShort(index);
-    if (ind < 0 || ind > MAX_NUMBER_OF_KEYS_IN_KEYCHAIN - 1)
-      throw new Exception(ERROR_MSG_KEY_INDEX_VALUE_INCORRECT);
-    byte[] indBytes = new byte[2];
-    BYTE_ARR_HELPER.setShort(indBytes, (short) 0, ind);
-    String response = BYTE_ARR_HELPER.hex(getHmac(indBytes));
-    return JSON_HELPER.createResponseJson(response);
+    try {
+      if (!STR_HELPER.isNumericString(index))
+        throw new Exception(ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC);
+      short ind = Short.parseShort(index);
+      if (ind < 0 || ind > MAX_NUMBER_OF_KEYS_IN_KEYCHAIN - 1)
+        throw new Exception(ERROR_MSG_KEY_INDEX_VALUE_INCORRECT);
+      byte[] indBytes = new byte[2];
+      BYTE_ARR_HELPER.setShort(indBytes, (short) 0, ind);
+      String response = BYTE_ARR_HELPER.hex(getHmac(indBytes));
+      return JSON_HELPER.createResponseJson(response);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   private RAPDU resetKeyChain() throws Exception {

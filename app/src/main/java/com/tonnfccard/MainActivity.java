@@ -13,20 +13,14 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.tonnfccard.api.CardActivationApi;
-import com.tonnfccard.api.CardCoinManagerApi;
-import com.tonnfccard.api.CardCryptoApi;
-import com.tonnfccard.api.CardKeyChainApi;
-import com.tonnfccard.api.RecoveryDataApi;
-import com.tonnfccard.api.NfcApi;
-import com.tonnfccard.api.nfc.NfcApduRunner;
-import com.tonnfccard.utils.ByteArrayHelper;
+import com.tonnfccard.nfc.NfcApduRunner;
+import com.tonnfccard.utils.ByteArrayUtil;
 
-import static com.tonnfccard.api.CardKeyChainApi.NUMBER_OF_KEYS_FIELD;
-import static com.tonnfccard.api.utils.JsonHelper.*;
-import static com.tonnfccard.utils.ByteArrayHelper.*;
-import static com.tonnfccard.api.utils.ResponsesConstants.*;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.*;
+import static com.tonnfccard.CardKeyChainApi.NUMBER_OF_KEYS_FIELD;
+import static com.tonnfccard.TonWalletConstants.MESSAGE_FIELD;
+import static com.tonnfccard.TonWalletConstants.NOT_GENERATED_MSG;
+import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE_MSG;
+import static com.tonnfccard.TonWalletConstants.WAITE_AUTHORIZATION_MSG;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -40,8 +34,6 @@ import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends AppCompatActivity {
-
-
     private static final String DEFAULT_PIN = "5555";
 
     // AES parameters
@@ -57,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String SURF_PUBLIC_KEY = "B81F0E0E07416DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A";
     private static final String MULTISIG_ADDR = "A11F0E0E07416DAB6C320ECC6BF3DBA48A70121C5251CC31B1D8F8A1B36E0F2F";
 
-    private NfcApduRunner nfcApduRunner;
     private CardCoinManagerApi cardCoinManagerNfcApi;
     private CardActivationApi cardActivationApi;
     private CardCryptoApi cardCryptoApi;
@@ -85,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         addListenerOnGetMaxPinTriesButton();
         addListenerOnActivateCardButton();
@@ -99,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnGetKeyChainDataAboutAllKeysButton();
         try {
             Context activity = getApplicationContext();
-            nfcApduRunner = NfcApduRunner.getInstance(activity);
+            NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(activity);
             cardCoinManagerNfcApi = new CardCoinManagerApi(activity,  nfcApduRunner);
             cardActivationApi = new CardActivationApi(activity,  nfcApduRunner);
             cardCryptoApi =  new CardCryptoApi(activity,  nfcApduRunner);
@@ -120,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         try {
-            if (nfcApduRunner.setCardTag(intent)) {
+            if (cardActivationApi.setCardTag(intent)) {
                 Toast.makeText(this, "NFC hardware touched!", Toast.LENGTH_SHORT).show();
             }
         }
@@ -279,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
 
                     byte[] encryptedRecoveryDataBytes = aesCtr.doFinal(recoveryDataBytes);
 
-                    String encryptedRecoveryDataHex = ByteArrayHelper.getInstance().hex(encryptedRecoveryDataBytes);
+                    String encryptedRecoveryDataHex = ByteArrayUtil.getInstance().hex(encryptedRecoveryDataBytes);
 
                     Log.d("TAG", "encryptedRecoveryDataHex : " + encryptedRecoveryDataHex);
 
@@ -321,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
 
                         Log.d("TAG", "encryptedRecoveryDataHex : " + encryptedRecoveryDataHex);
 
-                        byte[] encryptedRecoveryDataBytes = ByteArrayHelper.getInstance().bytes(encryptedRecoveryDataHex);
+                        byte[] encryptedRecoveryDataBytes = ByteArrayUtil.getInstance().bytes(encryptedRecoveryDataHex);
                         Log.d("TAG", "encryptedRecoveryDataBytes length : " + encryptedRecoveryDataBytes.length);
 
                         Cipher aesCtr = Cipher.getInstance("AES/CTR/NoPadding");
@@ -535,6 +527,7 @@ public class MainActivity extends AppCompatActivity {
                         throw new Exception("Incorrect applet state after activation : " + appletState);
                     }
                 }
+
                 catch (Exception e) {
                     e.printStackTrace();
                     Log.e("TAG", "Error happened : " + e.getMessage());

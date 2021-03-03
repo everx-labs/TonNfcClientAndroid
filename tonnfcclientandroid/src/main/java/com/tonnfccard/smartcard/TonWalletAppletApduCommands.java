@@ -1,46 +1,36 @@
-package com.tonnfccard.smartcard.apdu;
+package com.tonnfccard.smartcard;
 
-import com.tonnfccard.smartcard.cryptoUtils.HmacHelper;
-import com.tonnfccard.smartcard.wrappers.CAPDU;
-import com.tonnfccard.utils.ByteArrayHelper;
+import androidx.annotation.RestrictTo;
+
+import com.tonnfccard.helpers.HmacHelper;
+import com.tonnfccard.utils.ByteArrayUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_ACTIVATION_PASSWORD_BYTES_SIZE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_APDU_P1_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_DATA_BYTES_SIZE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_DATA_WITH_HD_PATH_BYTES_SIZE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_HD_INDEX_BYTES_SIZE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_INITIAL_VECTOR_BYTES_SIZE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_KEY_CHUNK_BYTES_SIZE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_PIN_BYTES_SIZE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.DATA_FOR_SIGNING_MAX_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.DATA_PORTION_MAX_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.HMAC_SHA_SIG_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.IV_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.KEYCHAIN_KEY_INDEX_LEN;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.MAX_IND_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.PASSWORD_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.PIN_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.PUBLIC_KEY_LEN;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.SAULT_LENGTH;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.SHA_HASH_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.SIG_LEN;
-import static com.tonnfccard.smartcard.apdu.Constants.LE;
-import static com.tonnfccard.smartcard.apdu.Constants.SELECT_CLA;
-import static com.tonnfccard.smartcard.apdu.Constants.SELECT_INS;
-import static com.tonnfccard.smartcard.apdu.Constants.SELECT_P1;
-import static com.tonnfccard.smartcard.apdu.Constants.SELECT_P2;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ACTIVATION_PASSWORD_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_P1_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DATA_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DATA_WITH_HD_PATH_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_HD_INDEX_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_INITIAL_VECTOR_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_CHUNK_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.smartcard.CommonConstants.LE;
+import static com.tonnfccard.TonWalletConstants.*;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_CLA;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_INS;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_P1;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_P2;
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class TonWalletAppletApduCommands {
-  private static final ByteArrayHelper BYTE_ARRAY_HELPER = ByteArrayHelper.getInstance();
+  private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
   private static HmacHelper HMAC_HELPER = HmacHelper.getInstance();
 
   public static void setHmacHelper(HmacHelper hmacHelper) {

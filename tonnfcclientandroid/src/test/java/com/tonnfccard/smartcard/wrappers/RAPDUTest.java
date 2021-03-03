@@ -1,9 +1,8 @@
 package com.tonnfccard.smartcard.wrappers;
 
-import static org.junit.Assert.*;
-
-import com.tonnfccard.api.utils.StringHelper;
-import com.tonnfccard.utils.ByteArrayHelper;
+import com.tonnfccard.helpers.StringHelper;
+import com.tonnfccard.smartcard.RAPDU;
+import com.tonnfccard.utils.ByteArrayUtil;
 
 import org.junit.Test;
 
@@ -15,7 +14,7 @@ import static org.junit.Assert.fail;
 
 public class RAPDUTest {
 
-    private static final ByteArrayHelper BYTE_ARRAY_HELPER = ByteArrayHelper.getInstance();
+    private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
     private static final StringHelper STR_HELPER = StringHelper.getInstance();
 
     private Random random = new Random();

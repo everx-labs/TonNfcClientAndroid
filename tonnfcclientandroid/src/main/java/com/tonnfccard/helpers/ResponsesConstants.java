@@ -1,4 +1,6 @@
-package com.tonnfccard.api.utils;
+package com.tonnfccard.helpers;
+
+import androidx.annotation.RestrictTo;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -6,47 +8,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.COMMON_SECRET_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.DATA_FOR_SIGNING_MAX_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.DATA_PORTION_MAX_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.HMAC_SHA_SIG_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.IV_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.KEYCHAIN_KEY_INDEX_LEN;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.MAX_IND_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.MAX_KEY_SIZE_IN_KEYCHAIN;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.MAX_NUMBER_OF_KEYS_IN_KEYCHAIN;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.MAX_PIN_TRIES;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.PASSWORD_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.PIN_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.PUBLIC_KEY_LEN;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.RECOVERY_DATA_MAX_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.SAULT_LENGTH;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.SERIAL_NUMBER_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.SHA_HASH_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.SIG_LEN;
-import static com.tonnfccard.smartcard.apdu.CoinManagerApduCommands.LABEL_LENGTH;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.DELETE_KEY_CHUNK_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.DELETE_KEY_RECORD_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_KEY_INDEX_IN_STORAGE_AND_LEN_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_NUMBER_OF_KEYS_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.INITIATE_DELETE_KEY_LE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.SEND_CHUNK_LE;
+import static com.tonnfccard.TonWalletConstants.*;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.LABEL_LENGTH;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.DELETE_KEY_CHUNK_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.DELETE_KEY_RECORD_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_KEY_INDEX_IN_STORAGE_AND_LEN_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_NUMBER_OF_KEYS_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.INITIATE_DELETE_KEY_LE;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.SEND_CHUNK_LE;
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class ResponsesConstants {
-  public static final String SUCCESS_STATUS = "ok";
-  public static final String FAIL_STATUS = "fail";
-  public static final String DONE_MSG = "done";
-  public static final String FALSE_MSG = "false";
-  public static final String TRUE_MSG = "true";
-  public static final String GENERATED_MSG = "generated";
-  public static final String NOT_GENERATED_MSG = "not generated";
-  public static final String HMAC_KEYS_DOES_NOT_FOUND_MSG = "HMac keys are not found in Android keystore.";
-  public static final String HMAC_KEY_GENERATED_MSG = "HMac key to sign APDU data is generated";
-  public static final String PIN_SET_MSG = "Pin is set";
-
   /**
    * Error types
    */

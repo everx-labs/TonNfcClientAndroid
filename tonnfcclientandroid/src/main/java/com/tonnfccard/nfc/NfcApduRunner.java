@@ -1,4 +1,4 @@
-package com.tonnfccard.api.nfc;
+package com.tonnfccard.nfc;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,24 +6,27 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 
-import com.tonnfccard.smartcard.wrappers.ApduRunner;
-import com.tonnfccard.smartcard.wrappers.CAPDU;
-import com.tonnfccard.smartcard.wrappers.RAPDU;
+import androidx.annotation.RestrictTo;
+
+import com.tonnfccard.smartcard.ApduRunner;
+import com.tonnfccard.smartcard.CAPDU;
+import com.tonnfccard.smartcard.RAPDU;
 
 import java.io.IOException;
 
 import static android.nfc.NfcAdapter.EXTRA_TAG;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_BAD_RESPONSE;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_APDU_EMPTY;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_INTENT_EMPTY;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_NFC_CONNECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_NFC_DISABLED;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_NFC_DISCONNECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_NO_CONTEXT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_NO_NFC;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_NO_TAG;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_TRANSCEIVE;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_BAD_RESPONSE;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_EMPTY;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_INTENT_EMPTY;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_CONNECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_DISABLED;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_DISCONNECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_CONTEXT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_NFC;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_TAG;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_TRANSCEIVE;
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class NfcApduRunner extends ApduRunner {
   public static final int TIME_OUT = 60000;
   private static NfcApduRunner nfcApduRunner;

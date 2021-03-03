@@ -1,4 +1,4 @@
-package com.tonnfccard.smartcard.cryptoUtils;
+package com.tonnfccard.helpers;
 
 import android.util.Log;
 
@@ -7,11 +7,14 @@ import java.security.KeyStore;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET_IN_ANDROID_KEYCHAIN;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.DEFAULT_SERIAL_NUMBER;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.EMPTY_SERIAL_NUMBER;
+import static com.tonnfccard.TonWalletConstants.DEFAULT_SERIAL_NUMBER;
+import static com.tonnfccard.TonWalletConstants.EMPTY_SERIAL_NUMBER;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET_IN_ANDROID_KEYCHAIN;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN;
 
+import androidx.annotation.RestrictTo;
+
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class HmacHelper {
     public static final String HMAC_KEY_ALIAS = "hmac_key_alias_";
 

@@ -1,32 +1,36 @@
-package com.tonnfccard.smartcard.wrappers;
+package com.tonnfccard.smartcard;
 
+import android.content.Intent;
 import android.util.Log;
 
-import com.tonnfccard.api.utils.JsonHelper;
-import com.tonnfccard.smartcard.TonWalletAppletStates;
-import com.tonnfccard.smartcard.apdu.ApduHelper;
-import com.tonnfccard.utils.ByteArrayHelper;
+import androidx.annotation.RestrictTo;
+
+import com.tonnfccard.helpers.JsonHelper;
+import com.tonnfccard.utils.ByteArrayUtil;
 
 import java.util.List;
 
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_APDU_EMPTY;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_APDU_NOT_SUPPORTED;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_STATE_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_EMPTY;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_NOT_SUPPORTED;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_STATE_RESPONSE_LEN_INCORRECT;
 import static com.tonnfccard.smartcard.ErrorCodes.getMsg;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.getStateByIns;
-import static com.tonnfccard.smartcard.apdu.CoinManagerApduCommands.SELECT_COIN_MANAGER_APDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_APPLET_STATE_APDU_LIST;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.INS_GET_APP_INFO;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getTonWalletAppletApduCommandName;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.SELECT_COIN_MANAGER_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_APPLET_STATE_APDU_LIST;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.INS_GET_APP_INFO;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getTonWalletAppletApduCommandName;
 
+
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public abstract class ApduRunner {
   private static final String TAG = "ApduRunner";
   private static final JsonHelper JSON_HELPER = JsonHelper.getInstance();
   private static final ApduHelper APDU_HELPER = ApduHelper.getInstance();
-  private static final ByteArrayHelper BYTE_ARRAY_HELPER = ByteArrayHelper.getInstance();
+  private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
 
   public ApduRunner() {
   }
+
+  public abstract boolean setCardTag(Intent intent) throws Exception;
 
   public abstract void disconnectCard() throws Exception;
 
@@ -52,7 +56,7 @@ public abstract class ApduRunner {
     if (commandAPDU.getIns() == INS_GET_APP_INFO) return response;
     TonWalletAppletStates appletState = TonWalletAppletStates.findByStateValue(response.getData()[0]);
     byte ins = commandAPDU.getIns();
-    if (!getStateByIns(ins).contains(appletState)) {
+    if (!TonWalletAppletStates.getStateByIns(ins).contains(appletState)) {
       String errMsg = ERROR_MSG_APDU_NOT_SUPPORTED + " : " + getTonWalletAppletApduCommandName(ins) + " in " + appletState.getDescription();
       throw new Exception(errMsg);
     }

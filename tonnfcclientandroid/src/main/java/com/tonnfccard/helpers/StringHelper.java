@@ -1,15 +1,18 @@
-package com.tonnfccard.api.utils;
+package com.tonnfccard.helpers;
+
+import androidx.annotation.RestrictTo;
 
 import java.util.Random;
 import java.util.regex.Pattern;
 
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_ARRAY_ELEMENTS_ARE_NOT_DIGITS;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_ARRAY_TO_MAKE_DIGITAL_STR_MUST_NOT_BE_EMPTY;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_PIN_FORMAT_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_PIN_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_STRING_IS_NULL;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.PIN_SIZE;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ARRAY_ELEMENTS_ARE_NOT_DIGITS;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ARRAY_TO_MAKE_DIGITAL_STR_MUST_NOT_BE_EMPTY;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_FORMAT_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_STRING_IS_NULL;
+import static com.tonnfccard.TonWalletConstants.PIN_SIZE;
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class StringHelper {
   private final Pattern PATTERN_HEX = Pattern.compile("[0-9a-fA-F]+");
   private final Pattern PATTERN_NUMERIC = Pattern.compile("[0-9]+");

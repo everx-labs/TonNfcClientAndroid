@@ -1,44 +1,41 @@
-package com.tonnfccard.api;
+package com.tonnfccard;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.tonnfccard.api.callback.NfcCallback;
+import com.tonnfccard.callback.NfcCallback;
 import com.tonnfccard.smartcard.TonWalletAppletStates;
-import com.tonnfccard.smartcard.wrappers.ApduRunner;
-import com.tonnfccard.smartcard.wrappers.RAPDU;
+import com.tonnfccard.smartcard.ApduRunner;
+import com.tonnfccard.smartcard.RAPDU;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHORIZATION;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_COMMON_SECRET_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_COMMON_SECRET_NOT_HEX;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_HASH_OF_ENCRYPTED_COMMON_SECRET_RESPONSE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_HASH_OF_ENCRYPTED_COMMON_SECRET_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_HASH_OF_ENCRYPTED_PASSWORD_RESPONSE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_HASH_OF_ENCRYPTED_PASSWORD_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_INITIAL_VECTOR_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_INITIAL_VECTOR_NOT_HEX;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_PASSWORD_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_PASSWORD_NOT_HEX;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_PIN_FORMAT_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_PIN_LEN_INCORRECT;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.COMMON_SECRET_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.DEFAULT_PIN;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.IV_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.PASSWORD_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.PIN_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.SHA_HASH_SIZE;
-import static com.tonnfccard.smartcard.apdu.CoinManagerApduCommands.RESET_WALLET_APDU;
-import static com.tonnfccard.smartcard.apdu.CoinManagerApduCommands.getChangePinAPDU;
-import static com.tonnfccard.smartcard.apdu.CoinManagerApduCommands.getGenerateSeedAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_HASH_OF_ENCRYPTED_PASSWORD_APDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getVerifyPasswordAPDU;
+import static com.tonnfccard.TonWalletConstants.*;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHORIZATION;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_COMMON_SECRET_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_COMMON_SECRET_NOT_HEX;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_HASH_OF_ENCRYPTED_COMMON_SECRET_RESPONSE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_HASH_OF_ENCRYPTED_COMMON_SECRET_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_HASH_OF_ENCRYPTED_PASSWORD_RESPONSE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_HASH_OF_ENCRYPTED_PASSWORD_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_INITIAL_VECTOR_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_INITIAL_VECTOR_NOT_HEX;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PASSWORD_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PASSWORD_NOT_HEX;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_FORMAT_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_LEN_INCORRECT;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.RESET_WALLET_APDU;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.getChangePinAPDU;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.getGenerateSeedAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_HASH_OF_ENCRYPTED_PASSWORD_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getVerifyPasswordAPDU;
 
-public class CardActivationApi extends TonWalletApi {
+
+
+public final class CardActivationApi extends TonWalletApi {
   private static final String TAG = "CardActivationNfcApi";
 
   public CardActivationApi(Context activity, ApduRunner apduRunner) {
@@ -60,24 +57,29 @@ public class CardActivationApi extends TonWalletApi {
   }
 
   public String turnOnWalletAndGetJson(final String newPin, final String password, final String commonSecret, final String initialVector) throws Exception {
-    if (!STR_HELPER.isHexString(password))
-      throw new Exception(ERROR_MSG_PASSWORD_NOT_HEX);
-    if (password.length() != 2 * PASSWORD_SIZE)
-      throw new Exception(ERROR_MSG_PASSWORD_LEN_INCORRECT);
-    if (!STR_HELPER.isNumericString(newPin))
-      throw new Exception(ERROR_MSG_PIN_FORMAT_INCORRECT);
-    if (newPin.length() != PIN_SIZE)
-      throw new Exception(ERROR_MSG_PIN_LEN_INCORRECT);
-    if (!STR_HELPER.isHexString(commonSecret))
-      throw new Exception(ERROR_MSG_COMMON_SECRET_NOT_HEX);
-    if (commonSecret.length() != 2 * COMMON_SECRET_SIZE)
-      throw new Exception(ERROR_MSG_COMMON_SECRET_LEN_INCORRECT);
-    if (!STR_HELPER.isHexString(initialVector))
-      throw new Exception(ERROR_MSG_INITIAL_VECTOR_NOT_HEX);
-    if (initialVector.length() != 2 * IV_SIZE)
-      throw new Exception(ERROR_MSG_INITIAL_VECTOR_LEN_INCORRECT);
-    TonWalletAppletStates state = turnOnWallet(BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(newPin)), BYTE_ARR_HELPER.bytes(password), BYTE_ARR_HELPER.bytes(commonSecret), BYTE_ARR_HELPER.bytes(initialVector));
-    return JSON_HELPER.createResponseJson(state.getDescription());
+    try {
+      if (!STR_HELPER.isHexString(password))
+        throw new Exception(ERROR_MSG_PASSWORD_NOT_HEX);
+      if (password.length() != 2 * PASSWORD_SIZE)
+        throw new Exception(ERROR_MSG_PASSWORD_LEN_INCORRECT);
+      if (!STR_HELPER.isNumericString(newPin))
+        throw new Exception(ERROR_MSG_PIN_FORMAT_INCORRECT);
+      if (newPin.length() != PIN_SIZE)
+        throw new Exception(ERROR_MSG_PIN_LEN_INCORRECT);
+      if (!STR_HELPER.isHexString(commonSecret))
+        throw new Exception(ERROR_MSG_COMMON_SECRET_NOT_HEX);
+      if (commonSecret.length() != 2 * COMMON_SECRET_SIZE)
+        throw new Exception(ERROR_MSG_COMMON_SECRET_LEN_INCORRECT);
+      if (!STR_HELPER.isHexString(initialVector))
+        throw new Exception(ERROR_MSG_INITIAL_VECTOR_NOT_HEX);
+      if (initialVector.length() != 2 * IV_SIZE)
+        throw new Exception(ERROR_MSG_INITIAL_VECTOR_LEN_INCORRECT);
+      TonWalletAppletStates state = turnOnWallet(BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(newPin)), BYTE_ARR_HELPER.bytes(password), BYTE_ARR_HELPER.bytes(commonSecret), BYTE_ARR_HELPER.bytes(initialVector));
+      return JSON_HELPER.createResponseJson(state.getDescription());
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void getHashOfEncryptedCommonSecret(final NfcCallback callback) {
@@ -95,8 +97,13 @@ public class CardActivationApi extends TonWalletApi {
   }
 
   public String getHashOfEncryptedCommonSecretAndGetJson() throws Exception {
-    String response = BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetHashOfEncryptedCommonSecret().getData());
-    return JSON_HELPER.createResponseJson(response);
+    try {
+      String response = BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetHashOfEncryptedCommonSecret().getData());
+      return JSON_HELPER.createResponseJson(response);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   public void getHashOfEncryptedPassword(final NfcCallback callback) {
@@ -114,8 +121,13 @@ public class CardActivationApi extends TonWalletApi {
   }
 
   public String getHashOfEncryptedPasswordAndGetJson() throws Exception {
-    String response = BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetHashOfEncryptedPassword().getData());
-    return JSON_HELPER.createResponseJson(response);
+    try {
+      String response = BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetHashOfEncryptedPassword().getData());
+      return JSON_HELPER.createResponseJson(response);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   private RAPDU getHashOfEncryptedCommonSecret() throws Exception {

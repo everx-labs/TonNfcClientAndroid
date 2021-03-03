@@ -1,39 +1,39 @@
 package com.tonnfccard.utils;
 
-import com.tonnfccard.api.utils.StringHelper;
+import com.tonnfccard.helpers.StringHelper;
 
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_ARRAYS_ARE_NULL;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_COUNT_IS_LESS_THEN_ZERO;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_COUNT_IS_TOO_BIG;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_DEST_ARRAY_IS_NULL;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_END_INDEX_OUT_OF_BOUND;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_FIRST_ARRAY_IS_NULL;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_FROM_IS_LESS_THEN_ZERO;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_FROM_IS_OUT_OF_BOUND;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_LENGTH_IS_NOT_POSITIVE;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_OFFSET_IS_NOT_CORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_SECOND_ARRAY_IS_NULL;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_SOURCE_ARRAY_IS_NULL;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_SOURCE_ARRAY_LENGTH_LESS_THAN_TWO;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_STRING_IS_NOT_CORRECT_HEX;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_STRING_IS_NULL;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ARRAYS_ARE_NULL;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_COUNT_IS_LESS_THEN_ZERO;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_COUNT_IS_TOO_BIG;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DEST_ARRAY_IS_NULL;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_END_INDEX_OUT_OF_BOUND;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_FIRST_ARRAY_IS_NULL;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_FROM_IS_LESS_THEN_ZERO;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_FROM_IS_OUT_OF_BOUND;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_LENGTH_IS_NOT_POSITIVE;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_OFFSET_IS_NOT_CORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SECOND_ARRAY_IS_NULL;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SOURCE_ARRAY_IS_NULL;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SOURCE_ARRAY_LENGTH_LESS_THAN_TWO;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_STRING_IS_NOT_CORRECT_HEX;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_STRING_IS_NULL;
 
-public class ByteArrayHelper {
+public class ByteArrayUtil {
 
   private final char[] HEX_ARRAY = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
   private static StringHelper stringHelper = StringHelper.getInstance();
 
-  private static ByteArrayHelper instance;
+  private static ByteArrayUtil instance;
 
-  public static ByteArrayHelper getInstance() {
+  public static ByteArrayUtil getInstance() {
     if (instance == null) {
-      instance = new ByteArrayHelper();
+      instance = new ByteArrayUtil();
     }
     return instance;
   }
 
-  private ByteArrayHelper(){}
+  private ByteArrayUtil(){}
 
   /**
    * Take count of bytes of array from the left side

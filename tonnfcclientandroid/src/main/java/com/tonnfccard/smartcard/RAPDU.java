@@ -1,12 +1,15 @@
-package com.tonnfccard.smartcard.wrappers;
+package com.tonnfccard.smartcard;
 
-import com.tonnfccard.utils.ByteArrayHelper;
+import androidx.annotation.RestrictTo;
 
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_APDU_RESPONSE_TOO_LONG;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_SW_TOO_SHORT;
+import com.tonnfccard.utils.ByteArrayUtil;
 
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_RESPONSE_TOO_LONG;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SW_TOO_SHORT;
+
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class RAPDU {
-    private static final ByteArrayHelper BYTE_ARRAY_HELPER = ByteArrayHelper.getInstance();
+    private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
     private final byte[] bytes;
     private final byte[] data;
     private final byte[] sw;

@@ -1,29 +1,22 @@
-package com.tonnfccard.api.utils;
+package com.tonnfccard.helpers;
 
+import androidx.annotation.RestrictTo;
+
+import com.tonnfccard.smartcard.CAPDU;
 import com.tonnfccard.smartcard.ErrorCodes;
-import com.tonnfccard.smartcard.apdu.ApduHelper;
-import com.tonnfccard.smartcard.wrappers.CAPDU;
+import com.tonnfccard.smartcard.ApduHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.tonnfccard.api.utils.ResponsesConstants.ANDROID_INTERNAL_ERROR_TYPE_ID;
-import static com.tonnfccard.api.utils.ResponsesConstants.CARD_ERROR_TYPE_ID;
-import static com.tonnfccard.api.utils.ResponsesConstants.FAIL_STATUS;
-import static com.tonnfccard.api.utils.ResponsesConstants.SUCCESS_STATUS;
-import static com.tonnfccard.api.utils.ResponsesConstants.getErrorCode;
-import static com.tonnfccard.api.utils.ResponsesConstants.getErrorTypeMsg;
+import static com.tonnfccard.helpers.ResponsesConstants.*;
+import static com.tonnfccard.TonWalletConstants.*;
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class JsonHelper {
   private static final String TAG = "JsonHelper";
   private static final String MALFORMED_JSON_MSG = "Malformed data for json.";
-  public static final String STATUS_FIELD = "status";
-  public static final String ERROR_CODE_FIELD = "errorCode";
-  public static final String ERROR_TYPE_FIELD = "errorType";
-  public static final String ERROR_TYPE_ID_FIELD = "errorTypeId";
-  public static final String MESSAGE_FIELD = "message";
-  public static final String CARD_INSTRUCTION_FIELD = "cardInstruction";
-  public static final String APDU_FIELD = "apdu";
+
 
   private static final StringHelper STRING_HELPER = StringHelper.getInstance();
   private static final ApduHelper APDU_HELPER = ApduHelper.getInstance();

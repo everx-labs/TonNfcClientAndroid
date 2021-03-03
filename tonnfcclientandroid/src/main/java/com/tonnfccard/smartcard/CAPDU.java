@@ -1,12 +1,15 @@
-package com.tonnfccard.smartcard.wrappers;
+package com.tonnfccard.smartcard;
 
 
-import com.tonnfccard.utils.ByteArrayHelper;
+import androidx.annotation.RestrictTo;
 
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_APDU_DATA_FIELD_LEN_INCORRECT;
+import com.tonnfccard.utils.ByteArrayUtil;
 
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_DATA_FIELD_LEN_INCORRECT;
+
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class CAPDU {
-        private static final ByteArrayHelper BYTE_ARRAY_HELPER = ByteArrayHelper.getInstance();
+        private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
 
         private final static byte[] EMPTY_DATA = new byte[0];
 

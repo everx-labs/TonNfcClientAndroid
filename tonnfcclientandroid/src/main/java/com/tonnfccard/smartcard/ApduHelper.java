@@ -1,22 +1,22 @@
-package com.tonnfccard.smartcard.apdu;
+package com.tonnfccard.smartcard;
 
-import com.tonnfccard.smartcard.wrappers.CAPDU;
-import com.tonnfccard.utils.ByteArrayHelper;
+import androidx.annotation.RestrictTo;
+import com.tonnfccard.utils.ByteArrayUtil;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.COIN_MANAGER_CLA;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.getCoinManagerApduCommandName;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_CLA;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_COIN_MANAGER_APDU_NAME;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_INS;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_P1;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_P2;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_TON_WALLET_APPLET_APDU_NAME;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.WALLET_APPLET_CLA;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getTonWalletAppletApduCommandName;
 
-import static com.tonnfccard.smartcard.apdu.CoinManagerApduCommands.COIN_MANAGER_CLA;
-import static com.tonnfccard.smartcard.apdu.CoinManagerApduCommands.getCoinManagerApduCommandName;
-import static com.tonnfccard.smartcard.apdu.Constants.SELECT_CLA;
-import static com.tonnfccard.smartcard.apdu.Constants.SELECT_COIN_MANAGER_APDU_NAME;
-import static com.tonnfccard.smartcard.apdu.Constants.SELECT_INS;
-import static com.tonnfccard.smartcard.apdu.Constants.SELECT_P1;
-import static com.tonnfccard.smartcard.apdu.Constants.SELECT_P2;
-import static com.tonnfccard.smartcard.apdu.Constants.SELECT_TON_WALLET_APPLET_APDU_NAME;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.WALLET_APPLET_CLA;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getTonWalletAppletApduCommandName;
-
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class ApduHelper {
 
-  private static final ByteArrayHelper BYTE_ARRAY_HELPER = ByteArrayHelper.getInstance();
+  private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
 
   private static ApduHelper instance;
 

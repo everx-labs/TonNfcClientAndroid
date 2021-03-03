@@ -1,6 +1,4 @@
-package com.tonnfccard.api.callback;
-
-import android.util.Log;
+package com.tonnfccard.callback;
 
 public class NfcCallback {
   private NfcResolver resolve;

@@ -1,33 +1,28 @@
-package com.tonnfccard.api;
+package com.tonnfccard;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.tonnfccard.api.callback.NfcCallback;
-import com.tonnfccard.smartcard.wrappers.ApduRunner;
-import com.tonnfccard.smartcard.wrappers.RAPDU;
+import com.tonnfccard.callback.NfcCallback;
+import com.tonnfccard.smartcard.ApduRunner;
+import com.tonnfccard.smartcard.RAPDU;
 
-import static com.tonnfccard.api.utils.ResponsesConstants.DONE_MSG;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_IS_RECOVERY_DATA_SET_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_RECOVERY_DATA_HASH_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_RECOVERY_DATA_LENGTH_RESPONSE_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_RECOVERY_DATA_LENGTH_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_RECOVERY_DATA_LEN_INCORRECT;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_MSG_RECOVERY_DATA_NOT_HEX;
-import static com.tonnfccard.api.utils.ResponsesConstants.ERROR_RECOVERY_DATA_PORTION_INCORRECT_LEN;
-import static com.tonnfccard.api.utils.ResponsesConstants.FALSE_MSG;
-import static com.tonnfccard.api.utils.ResponsesConstants.TRUE_MSG;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.DATA_RECOVERY_PORTION_MAX_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.RECOVERY_DATA_MAX_SIZE;
-import static com.tonnfccard.smartcard.TonWalletAppletConstants.SHA_HASH_SIZE;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_RECOVERY_DATA_HASH_APDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.GET_RECOVERY_DATA_LEN_APDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.IS_RECOVERY_DATA_SET_APDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.RESET_RECOVERY_DATA_APDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.addRecoveryDataPartAPDU;
-import static com.tonnfccard.smartcard.apdu.TonWalletAppletApduCommands.getRecoveryDataPartAPDU;
+import static com.tonnfccard.TonWalletConstants.*;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_IS_RECOVERY_DATA_SET_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_RECOVERY_DATA_HASH_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_RECOVERY_DATA_LENGTH_RESPONSE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_RECOVERY_DATA_LENGTH_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_RECOVERY_DATA_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_RECOVERY_DATA_NOT_HEX;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_RECOVERY_DATA_PORTION_INCORRECT_LEN;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_RECOVERY_DATA_HASH_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_RECOVERY_DATA_LEN_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.IS_RECOVERY_DATA_SET_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.RESET_RECOVERY_DATA_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.addRecoveryDataPartAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getRecoveryDataPartAPDU;
 
-public class RecoveryDataApi extends TonWalletApi {
+public final class RecoveryDataApi extends TonWalletApi {
   private static final String TAG = "RecoveryDataApi";
 
   public RecoveryDataApi(Context activity,  ApduRunner apduRunner) {
@@ -49,8 +44,13 @@ public class RecoveryDataApi extends TonWalletApi {
   }
 
   public String resetRecoveryDataAndGetJson() throws Exception {
-    resetRecoveryData();
-    return JSON_HELPER.createResponseJson(DONE_MSG);
+    try {
+      resetRecoveryData();
+      return JSON_HELPER.createResponseJson(DONE_MSG);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   private RAPDU resetRecoveryData() throws Exception {
@@ -72,8 +72,13 @@ public class RecoveryDataApi extends TonWalletApi {
   }
 
   public String getRecoveryDataHashAndGetJson() throws Exception {
-    String response = BYTE_ARR_HELPER.hex(getRecoveryDataHash().getData());
-    return JSON_HELPER.createResponseJson(response);
+    try {
+      String response = BYTE_ARR_HELPER.hex(getRecoveryDataHash().getData());
+      return JSON_HELPER.createResponseJson(response);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   private RAPDU getRecoveryDataHash() throws Exception {
@@ -98,8 +103,13 @@ public class RecoveryDataApi extends TonWalletApi {
   }
 
   public String getRecoveryDataLenAndGetJson() throws Exception {
-    String response = Integer.valueOf(getRecoveryDataLen()).toString();
-    return JSON_HELPER.createResponseJson(response);
+    try {
+      String response = Integer.valueOf(getRecoveryDataLen()).toString();
+      return JSON_HELPER.createResponseJson(response);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   private int getRecoveryDataLen() throws Exception {
@@ -126,9 +136,14 @@ public class RecoveryDataApi extends TonWalletApi {
     }).start();
   }
 
-  public String  isRecoveryDataSetAndGetJson() throws Exception {
-    String response = isRecoveryDataSet().getData()[0] == 0 ? FALSE_MSG : TRUE_MSG;
-    return JSON_HELPER.createResponseJson(response);
+  public String isRecoveryDataSetAndGetJson() throws Exception {
+    try {
+      String response = isRecoveryDataSet().getData()[0] == 0 ? FALSE_MSG : TRUE_MSG;
+      return JSON_HELPER.createResponseJson(response);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   private RAPDU isRecoveryDataSet() throws Exception {
@@ -152,11 +167,17 @@ public class RecoveryDataApi extends TonWalletApi {
   }
 
   public String addRecoveryDataAndGetJson(String recoveryData) throws Exception {
-    if (!STR_HELPER.isHexString(recoveryData)) throw new Exception(ERROR_MSG_RECOVERY_DATA_NOT_HEX);
-    if (recoveryData.length() == 0 || recoveryData.length() > 2 * RECOVERY_DATA_MAX_SIZE)
-      throw new Exception(ERROR_MSG_RECOVERY_DATA_LEN_INCORRECT);
-    addRecoveryData(BYTE_ARR_HELPER.bytes(recoveryData));
-    return JSON_HELPER.createResponseJson(DONE_MSG);
+    try {
+      if (!STR_HELPER.isHexString(recoveryData))
+        throw new Exception(ERROR_MSG_RECOVERY_DATA_NOT_HEX);
+      if (recoveryData.length() == 0 || recoveryData.length() > 2 * RECOVERY_DATA_MAX_SIZE)
+        throw new Exception(ERROR_MSG_RECOVERY_DATA_LEN_INCORRECT);
+      addRecoveryData(BYTE_ARR_HELPER.bytes(recoveryData));
+      return JSON_HELPER.createResponseJson(DONE_MSG);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   private void addRecoveryData(byte[] recoveryData) throws Exception {
@@ -196,17 +217,20 @@ public class RecoveryDataApi extends TonWalletApi {
   }
 
   public String getRecoveryDataAndGetJson() throws Exception {
-    String response = BYTE_ARR_HELPER.hex(getRecoveryData());
-    return JSON_HELPER.createResponseJson(response);
+    try {
+      String response = BYTE_ARR_HELPER.hex(getRecoveryData());
+      return JSON_HELPER.createResponseJson(response);
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+    }
   }
 
   private byte[] getRecoveryData() throws Exception {
     int len = getRecoveryDataLen();
-
     byte[] recoveryData = new byte[len];
     int numberOfPackets = len / DATA_RECOVERY_PORTION_MAX_SIZE;
     short startPos = 0;
-
     Log.d(TAG, "numberOfPackets = " + numberOfPackets);
     for (int i = 0; i < numberOfPackets; i++) {
       Log.d(TAG, "packet " + i);
@@ -217,7 +241,6 @@ public class RecoveryDataApi extends TonWalletApi {
       BYTE_ARR_HELPER.arrayCopy(res, 0, recoveryData, startPos, DATA_RECOVERY_PORTION_MAX_SIZE);
       startPos += DATA_RECOVERY_PORTION_MAX_SIZE;
     }
-
     int tailLen = len % DATA_RECOVERY_PORTION_MAX_SIZE;
     if (tailLen > 0) {
       byte[] dataChunk = new byte[]{(byte) (startPos >> 8), (byte) (startPos)};
@@ -230,3 +253,4 @@ public class RecoveryDataApi extends TonWalletApi {
   }
 
 }
+

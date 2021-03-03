@@ -1,4 +1,4 @@
-package com.tonnfccard.api.callback;
+package com.tonnfccard.callback;
 
 @FunctionalInterface
 public interface NfcRejecter {
