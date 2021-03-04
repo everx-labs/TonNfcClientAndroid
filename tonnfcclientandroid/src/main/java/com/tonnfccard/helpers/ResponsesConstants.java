@@ -93,6 +93,9 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_SECOND_ARRAY_IS_NULL = "Second array is null";
   public static final String ERROR_MSG_NO_CONTEXT = "Context is null";
   public static final String ERROR_MSG_ERR_MSG_IS_NULL = "Error message is null.";
+  public static final String ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_NULL = "Key for HMAC-SHA256 algorithm is null.";
+  public static final String ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_TOO_SHORT = "Key bytes for HMAC-SHA256 must have length >= " + SHA_HASH_SIZE + ".";
+  public static final String ERROR_MSG_ERR_DATA_BYTES_FOR_HMAC_SHA256_IS_NULL = "Data to sign by HMAC-SHA256 algorithm is null.";
 
   public static final List<String> ANDROID_INTERNAL_ERRORS = Arrays.asList(
     ERROR_MSG_APDU_EMPTY,
@@ -133,7 +136,9 @@ public class ResponsesConstants {
     ERROR_MSG_FIRST_ARRAY_IS_NULL,
     ERROR_MSG_SECOND_ARRAY_IS_NULL,
           ERROR_MSG_NO_CONTEXT,
-          ERROR_MSG_ERR_MSG_IS_NULL
+          ERROR_MSG_ERR_MSG_IS_NULL,
+          ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_NULL,
+          ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_TOO_SHORT
   );
 
 
