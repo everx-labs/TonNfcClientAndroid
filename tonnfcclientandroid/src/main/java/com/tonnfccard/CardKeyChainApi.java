@@ -18,8 +18,8 @@ import java.util.Map;
 
 import static com.tonnfccard.TonWalletConstants.*;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_KEY_DATA_PORTION_INCORRECT_LEN;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_AFTER_NUM_OF_KEYS_INCORRECT_AFTER_ADD;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_AFTER_NUM_OF_KEYS_INCORRECT_AFTER_CHANGE;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NUM_OF_KEYS_INCORRECT_AFTER_ADD;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NUM_OF_KEYS_INCORRECT_AFTER_CHANGE;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APPLET_DOES_NOT_WAIT_TO_DELETE_KEY;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APPLET_IS_NOT_PERSONALIZED;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DELETE_KEY_CHUNK_RESPONSE_INCORRECT;
@@ -117,7 +117,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(DONE_MSG);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -148,7 +148,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return jsonResponse.toString();
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -172,7 +172,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -200,7 +200,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(DONE_MSG);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -226,7 +226,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(DONE_MSG);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -254,7 +254,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(response);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -278,7 +278,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(numOfPackets);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -302,7 +302,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(numOfPackets);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -330,7 +330,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -358,7 +358,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -382,7 +382,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(size);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -406,7 +406,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(size);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -434,7 +434,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(key);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -462,7 +462,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(keyHmac);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -494,7 +494,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(newKeyHmac);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -528,7 +528,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return allKeysObj.toString();
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -559,7 +559,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(response);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -798,14 +798,14 @@ public final class CardKeyChainApi extends TonWalletApi {
     int oldNumOfKeys = getNumberOfKeys();
     int newNumberOfKeys = sendKey(keyBytes, INS_ADD_KEY_CHUNK);
     if (newNumberOfKeys != (oldNumOfKeys + 1))
-      throw new Exception(ERROR_MSG_AFTER_NUM_OF_KEYS_INCORRECT_AFTER_ADD);
+      throw new Exception(ERROR_MSG_NUM_OF_KEYS_INCORRECT_AFTER_ADD);
   }
 
   private void changeKey(byte[] keyBytes) throws Exception {
     int oldNumOfKeys = getNumberOfKeys();
     int newNumberOfKeys = sendKey(keyBytes, INS_CHANGE_KEY_CHUNK);
     if (oldNumOfKeys != newNumberOfKeys)
-      throw new Exception(ERROR_MSG_AFTER_NUM_OF_KEYS_INCORRECT_AFTER_CHANGE);
+      throw new Exception(ERROR_MSG_NUM_OF_KEYS_INCORRECT_AFTER_CHANGE);
   }
 
   private int sendKey(byte[] keyBytes, byte ins) throws Exception {

@@ -49,7 +49,7 @@ public final class RecoveryDataApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(DONE_MSG);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -77,7 +77,7 @@ public final class RecoveryDataApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(response);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -108,7 +108,7 @@ public final class RecoveryDataApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(response);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -142,7 +142,7 @@ public final class RecoveryDataApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(response);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -176,7 +176,7 @@ public final class RecoveryDataApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(DONE_MSG);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -222,7 +222,7 @@ public final class RecoveryDataApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(response);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 

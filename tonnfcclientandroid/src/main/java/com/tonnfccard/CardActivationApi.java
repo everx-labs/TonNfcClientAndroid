@@ -50,6 +50,7 @@ public final class CardActivationApi extends TonWalletApi {
           resolveJson(json, callback);
           Log.d(TAG, "turnOnWallet response : " + json);
         } catch (Exception e) {
+
           EXCEPTION_HELPER.handleException(e, callback, TAG);
         }
       }
@@ -78,7 +79,7 @@ public final class CardActivationApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(state.getDescription());
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -102,7 +103,7 @@ public final class CardActivationApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(response);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
@@ -126,7 +127,7 @@ public final class CardActivationApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(response);
     }
     catch (Exception e) {
-      throw new Exception(EXCEPTION_HELPER.makeErrMsg(e), e);
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
