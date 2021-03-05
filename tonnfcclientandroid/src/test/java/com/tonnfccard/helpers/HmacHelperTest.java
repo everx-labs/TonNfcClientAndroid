@@ -4,7 +4,10 @@ import com.tonnfccard.utils.ByteArrayUtil;
 
 import org.junit.Test;
 
+import static com.tonnfccard.TonWalletConstants.EMPTY_SERIAL_NUMBER;
 import static com.tonnfccard.TonWalletConstants.SHA_HASH_SIZE;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ERR_CURRENT_SERIAL_NUMBER_IS_NULL;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ERR_DATA_BYTES_FOR_HMAC_SHA256_IS_NULL;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_NULL;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_TOO_SHORT;
@@ -59,6 +62,41 @@ public class HmacHelperTest {
         }
     }
 
+    @Test
+    public void testNullDataForComputeMac2()   {
+        try {
+            byte[] mac = HMAC_HELPER.computeMac(null);
+            fail();
+        }
+        catch (Exception e) {
+            assertEquals(e.getMessage(), ERROR_MSG_ERR_DATA_BYTES_FOR_HMAC_SHA256_IS_NULL);
+        }
+    }
+
+
+    @Test
+    public void testNullSerialNumber()   {
+        try {
+            HMAC_HELPER.setCurrentSerialNumber(null);
+            byte[] mac = HMAC_HELPER.computeMac(new byte[1]);
+            fail();
+        }
+        catch (Exception e) {
+            assertEquals(e.getMessage(), ERROR_MSG_ERR_CURRENT_SERIAL_NUMBER_IS_NULL);
+        }
+    }
+
+    @Test
+    public void testEmptySerialNumber()   {
+        try {
+            HMAC_HELPER.setCurrentSerialNumber(EMPTY_SERIAL_NUMBER);
+            byte[] mac = HMAC_HELPER.computeMac(new byte[1]);
+            fail();
+        }
+        catch (Exception e) {
+            assertEquals(e.getMessage(), ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET);
+        }
+    }
 
 
 

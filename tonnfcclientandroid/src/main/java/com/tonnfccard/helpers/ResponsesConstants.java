@@ -96,6 +96,8 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_NULL = "Key for HMAC-SHA256 algorithm is null.";
   public static final String ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_TOO_SHORT = "Key bytes for HMAC-SHA256 must have length >= " + SHA_HASH_SIZE + ".";
   public static final String ERROR_MSG_ERR_DATA_BYTES_FOR_HMAC_SHA256_IS_NULL = "Data to sign by HMAC-SHA256 algorithm is null.";
+  public static final String ERROR_MSG_ERR_CURRENT_SERIAL_NUMBER_IS_NULL = "Current serial number is null.";
+  public static final String ERROR_MSG_ERR_IS_NOT_SEC_KEY_ENTRY = "Not an instance of a SecretKeyEntry";
 
   public static final List<String> ANDROID_INTERNAL_ERRORS = Arrays.asList(
     ERROR_MSG_APDU_EMPTY,
@@ -138,7 +140,10 @@ public class ResponsesConstants {
           ERROR_MSG_NO_CONTEXT,
           ERROR_MSG_ERR_MSG_IS_NULL,
           ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_NULL,
-          ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_TOO_SHORT
+          ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_TOO_SHORT,
+          ERROR_MSG_ERR_DATA_BYTES_FOR_HMAC_SHA256_IS_NULL,
+          ERROR_MSG_ERR_CURRENT_SERIAL_NUMBER_IS_NULL,
+          ERROR_MSG_ERR_IS_NOT_SEC_KEY_ENTRY
   );
 
 
@@ -336,9 +341,9 @@ public class ResponsesConstants {
    * IMPROPER_APPLET_STATE_ERROR_TYPE_ID = 6
    */
   public static final String ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN  = "Key for hmac signing for specified serial number does not exist.";
-  public static final String ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET_IN_ANDROID_KEYCHAIN = "Current serial number is not set. Can not select key for hmac.";
+  public static final String ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET = "Current serial number is not set. Can not select key for hmac.";
 
-  public static final List<String>  HMAC_KEY_ERRORS = Arrays.asList(ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN, ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET_IN_ANDROID_KEYCHAIN);
+  public static final List<String>  HMAC_KEY_ERRORS = Arrays.asList(ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN, ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET);
 
   public static final List<List<String>>  ALL_NATIVE_ERROR_MESSAGES = Arrays.asList(ANDROID_INTERNAL_ERRORS, ANDROID_NFC_ERRORS, INPUT_DATA_FORMAT_ERRORS, CARD_RESPONSE_DATA_ERRORS, IMPROPER_APPLET_STATE_ERRORS, HMAC_KEY_ERRORS);
 
