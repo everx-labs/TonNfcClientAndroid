@@ -12,6 +12,10 @@ import org.json.JSONObject;
 import static com.tonnfccard.helpers.ResponsesConstants.*;
 import static com.tonnfccard.TonWalletConstants.*;
 
+/** We wrap all responses/error messages into jsons of special format.
+ *  This class is responsible for wrapping
+ */
+
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class JsonHelper {
   private static final String TAG = "JsonHelper";
@@ -30,6 +34,10 @@ public class JsonHelper {
 
   private JsonHelper(){}
 
+  /*
+    Wrap msg from card into json looking like this:
+      {"message":"done","status":"ok"}
+   */
   public String createResponseJson(String msg) throws JSONException {
     if (msg == null) throw new IllegalArgumentException(ERROR_MSG_MALFORMED_JSON_MSG);
     JSONObject jObjectData = new JSONObject();
@@ -38,6 +46,19 @@ public class JsonHelper {
     return jObjectData.toString();
   }
 
+  /*
+    Create json error message for error happened in applet with some sw.
+    Example:
+    {
+      "errorType": "Applet fail: card operation error",
+      "errorTypeId": "0",
+      "errorCode": "6F00",
+      "message": "Command aborted, No precise diagnosis.",
+      "cardInstruction": "GET_APP_INFO",
+      "apdu": "B0 C1 00 00 ",
+      "status": "fail"
+  }
+   */
   public String createErrorJsonForCardException(String sw, CAPDU capdu) throws JSONException  {
     if (!STRING_HELPER.isHexString(sw) || sw.length() != 4) throw new IllegalArgumentException(ERROR_MSG_MALFORMED_SW_FOR_JSON);
     if (capdu == null) throw new IllegalArgumentException(ERROR_MSG_CAPDU_IS_NULL);
@@ -55,6 +76,17 @@ public class JsonHelper {
     return  jObjectData.toString();
   }
 
+  /*
+    Create json error message for error happened Android code itself.
+    Example:
+    {
+      "errorType": "Native code fail: incorrect format of input data",
+      "errorTypeId": "3",
+      "errorCode": "30000",
+      "message": "Activation password is a hex string of length 256.",
+      "status": "fail"
+    }
+   */
   public String createErrorJson(String msg) throws JSONException {
     if (msg == null) throw new IllegalArgumentException(ERROR_MSG_MALFORMED_JSON_MSG);
     JSONObject jObjectData = new JSONObject();
