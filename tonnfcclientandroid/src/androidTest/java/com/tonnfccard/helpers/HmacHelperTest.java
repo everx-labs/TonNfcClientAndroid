@@ -24,6 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.x500.X500Principal;
 
 import static com.tonnfccard.TonWalletConstants.SHA_HASH_SIZE;
+import static com.tonnfccard.helpers.HmacHelper.ANDROID_KEYSTORE;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ERR_IS_NOT_SEC_KEY_ENTRY;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN;
 import static org.junit.Assert.*;
@@ -52,7 +53,7 @@ public class HmacHelperTest {
         try {
             byte[] key = new byte[32];
             final SecretKey hmacSha256Key = new SecretKeySpec(key, 0, key.length, KeyProperties.KEY_ALGORITHM_HMAC_SHA256);
-            final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            final KeyStore keyStore = KeyStore.getInstance(ANDROID_KEYSTORE);
             String keyAlias = HmacHelper.HMAC_KEY_ALIAS + "777888999";
             keyStore.load(null);
             if (keyStore.containsAlias(keyAlias)) keyStore.deleteEntry(keyAlias);
@@ -77,11 +78,11 @@ public class HmacHelperTest {
     public void testIncorrectKeyEntryType()   {
         try {
 
-            final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            final KeyStore keyStore = KeyStore.getInstance(ANDROID_KEYSTORE);
             keyStore.load(null);
             String keyAlias = HmacHelper.HMAC_KEY_ALIAS + "1212121414";
 
-            KeyPairGenerator kpGenerator = KeyPairGenerator.getInstance("RSA", "AndroidKeyStore");
+            KeyPairGenerator kpGenerator = KeyPairGenerator.getInstance("RSA", ANDROID_KEYSTORE);
             AlgorithmParameterSpec spec = null;
             spec = new KeyGenParameterSpec.Builder(keyAlias,
                     KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)

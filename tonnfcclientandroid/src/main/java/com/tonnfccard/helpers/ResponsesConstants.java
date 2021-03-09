@@ -98,6 +98,9 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_ERR_DATA_BYTES_FOR_HMAC_SHA256_IS_NULL = "Data to sign by HMAC-SHA256 algorithm is null.";
   public static final String ERROR_MSG_ERR_CURRENT_SERIAL_NUMBER_IS_NULL = "Current serial number is null.";
   public static final String ERROR_MSG_ERR_IS_NOT_SEC_KEY_ENTRY = "Not an instance of a SecretKeyEntry";
+  public static final String ERROR_MSG_MALFORMED_JSON_MSG = "Malformed data for json (message is null).";
+  public static final String ERROR_MSG_MALFORMED_SW_FOR_JSON = "Malformed SW for json.";
+  public static final String ERROR_MSG_CAPDU_IS_NULL = "CAPDU is null.";
 
   public static final List<String> ANDROID_INTERNAL_ERRORS = Arrays.asList(
     ERROR_MSG_APDU_EMPTY,
@@ -143,7 +146,10 @@ public class ResponsesConstants {
           ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_TOO_SHORT,
           ERROR_MSG_ERR_DATA_BYTES_FOR_HMAC_SHA256_IS_NULL,
           ERROR_MSG_ERR_CURRENT_SERIAL_NUMBER_IS_NULL,
-          ERROR_MSG_ERR_IS_NOT_SEC_KEY_ENTRY
+          ERROR_MSG_ERR_IS_NOT_SEC_KEY_ENTRY,
+          ERROR_MSG_MALFORMED_JSON_MSG,
+          ERROR_MSG_MALFORMED_SW_FOR_JSON,
+          ERROR_MSG_CAPDU_IS_NULL
   );
 
 

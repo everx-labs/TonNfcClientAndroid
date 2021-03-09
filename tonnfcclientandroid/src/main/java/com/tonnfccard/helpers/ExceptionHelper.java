@@ -57,7 +57,12 @@ public class ExceptionHelper {
     // They are wrapped already if it's a error thrown by card applet (so ApduRunner makes wrapping).
     // Other error messages (not related to applet directly) are wrapped into json here.
     public String makeFinalErrMsg(String errMsg) {
-        if (errMsg == null) errMsg = ERROR_MSG_ERR_MSG_IS_NULL;
-        return errMsg.startsWith("{") ? errMsg : JSON_HELPER.createErrorJson(errMsg);  // check if errMsg is in JSON format already
+        try {
+            if (errMsg == null) errMsg = ERROR_MSG_ERR_MSG_IS_NULL;
+            return errMsg.startsWith("{") ? errMsg : JSON_HELPER.createErrorJson(errMsg);  // check if errMsg is in JSON format already
+        }
+        catch (Exception e) {
+            return e.getMessage();
+        }
     }
 }

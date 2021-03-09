@@ -346,7 +346,7 @@ public class TonWalletApi {
     }).start();
   }
 
-  public String getCurrentSerialNumber() {
+  public String getCurrentSerialNumber() throws Exception {
     return JSON_HELPER.createResponseJson(currentSerialNumber);
   }
 

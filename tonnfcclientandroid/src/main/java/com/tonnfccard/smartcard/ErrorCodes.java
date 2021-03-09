@@ -175,13 +175,13 @@ public class ErrorCodes {
         codeToMsg.put(sw, errMsg.trim());
     }
 
-    public static String getMsg(RAPDU apduAnswer) throws Exception {
+    public static String getMsg(RAPDU apduAnswer)  {
         byte[] swBytes = {apduAnswer.getSW1(), apduAnswer.getSW2()};
         int sw = BYTE_ARRAY_HELPER.makeShort(swBytes, (short)0);
         return codeToMsg.get(sw);
     }
 
-    public static String getMsg(String apduAnswer) throws Exception {
+    public static String getMsg(String apduAnswer)  {
         int sw = BYTE_ARRAY_HELPER.makeShort(BYTE_ARRAY_HELPER.bytes(apduAnswer.trim()), (short) 0);
         return codeToMsg.get((short) sw);
     }

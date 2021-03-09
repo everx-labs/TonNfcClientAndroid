@@ -26,7 +26,9 @@ import androidx.annotation.RestrictTo;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class HmacHelper {
+    public static final String HMAC_SHA256_ALG = "HmacSHA256";
     public static final String HMAC_KEY_ALIAS = "hmac_key_alias_";
+    public static final String ANDROID_KEYSTORE = "AndroidKeyStore";
 
     // serial number of currently active security card
     private String currentSerialNumber = DEFAULT_SERIAL_NUMBER;
@@ -50,11 +52,11 @@ public class HmacHelper {
 
     //Calculate symmetric key for HMAC SHA256 signature for the first time. Then it goes into Android keystore
     public byte[] computeMac(byte[] key, byte[] data) throws Exception {
-        if (key == null) throw new Exception(ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_NULL);
-        if (key.length < SHA_HASH_SIZE) throw new Exception(ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_TOO_SHORT);
-        if (data == null) throw new Exception(ERROR_MSG_ERR_DATA_BYTES_FOR_HMAC_SHA256_IS_NULL);
-        Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-        SecretKeySpec secretKey = new SecretKeySpec(key, "HmacSHA256");
+        if (key == null) throw new IllegalArgumentException(ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_NULL);
+        if (key.length < SHA_HASH_SIZE) throw new IllegalArgumentException(ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_TOO_SHORT);
+        if (data == null) throw new IllegalArgumentException(ERROR_MSG_ERR_DATA_BYTES_FOR_HMAC_SHA256_IS_NULL);
+        Mac sha256_HMAC = Mac.getInstance(HMAC_SHA256_ALG);
+        SecretKeySpec secretKey = new SecretKeySpec(key, HMAC_SHA256_ALG);
         sha256_HMAC.init(secretKey);
         return sha256_HMAC.doFinal(data);
     }
@@ -62,11 +64,11 @@ public class HmacHelper {
     // Calculate hmac of data using key living in Android keystore
     // Key for currentSerialNumber must exits in keystore
     public byte[] computeMac(byte[] data) throws Exception {
-        if (data == null) throw new Exception(ERROR_MSG_ERR_DATA_BYTES_FOR_HMAC_SHA256_IS_NULL);
-        if (currentSerialNumber == null) throw new Exception(ERROR_MSG_ERR_CURRENT_SERIAL_NUMBER_IS_NULL);
-        if (currentSerialNumber.equals(EMPTY_SERIAL_NUMBER)) throw new Exception(ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET);
-        Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-        KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+        if (data == null) throw new IllegalArgumentException(ERROR_MSG_ERR_DATA_BYTES_FOR_HMAC_SHA256_IS_NULL);
+        if (currentSerialNumber == null) throw new IllegalArgumentException(ERROR_MSG_ERR_CURRENT_SERIAL_NUMBER_IS_NULL);
+        if (currentSerialNumber.equals(EMPTY_SERIAL_NUMBER)) throw new IllegalArgumentException(ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET);
+        Mac sha256_HMAC = Mac.getInstance(HMAC_SHA256_ALG);
+        KeyStore keyStore = KeyStore.getInstance(ANDROID_KEYSTORE);
         keyStore.load(null);
         String keyAlias = HmacHelper.HMAC_KEY_ALIAS + currentSerialNumber;
         if (!keyStore.containsAlias(keyAlias)) throw new Exception(ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN);
