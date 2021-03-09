@@ -27,7 +27,7 @@ public class CoinManagerApduCommands {
     public final static String CURVE_TYPE_SUFFIX = "0102";
 
     public final static String GET_ROOT_KEY_STATUS_DATA = "DFFF028105";
-    public final static String GET_APPS_DATA = "DFFF028106";
+   // public final static String GET_APPS_DATA = "DFFF028106";
     public final static String GET_PIN_RTL_DATA = "DFFF028102";
     public final static String GET_PIN_TLT_DATA = "DFFF028103";
     public final static String RESET_WALLET_DATA = "DFFE028205";
@@ -48,31 +48,46 @@ public class CoinManagerApduCommands {
 
     public final static CAPDU SELECT_COIN_MANAGER_APDU = new CAPDU(SELECT_CLA, SELECT_INS, SELECT_P1, SELECT_P2, LE); // "00A40400"
     public final static CAPDU GET_ROOT_KEY_STATUS_APDU = new CAPDU(COIN_MANAGER_CLA, COIN_MANAGER_INS, COIN_MANAGER_P1, COIN_MANAGER_P2, BYTE_ARRAY_HELPER.bytes(GET_ROOT_KEY_STATUS_DATA), LE); // "80CB800005DFFF028105"
-    public final static CAPDU GET_APPS_APDU = new CAPDU(COIN_MANAGER_CLA, COIN_MANAGER_INS, COIN_MANAGER_P1,  COIN_MANAGER_P2, BYTE_ARRAY_HELPER.bytes(GET_APPS_DATA), LE); // "80CB800005DFFF028106"
+    //public final static CAPDU GET_APPS_APDU = new CAPDU(COIN_MANAGER_CLA, COIN_MANAGER_INS, COIN_MANAGER_P1,  COIN_MANAGER_P2, BYTE_ARRAY_HELPER.bytes(GET_APPS_DATA), LE); // "80CB800005DFFF028106"
     public final static CAPDU GET_PIN_RTL_APDU =  new CAPDU(COIN_MANAGER_CLA, COIN_MANAGER_INS, COIN_MANAGER_P1, COIN_MANAGER_P2, BYTE_ARRAY_HELPER.bytes(GET_PIN_RTL_DATA), LE); // "80CB800005DFFF028102" get remaining retry times of PIN
     public final static CAPDU GET_PIN_TLT_APDU =  new CAPDU(COIN_MANAGER_CLA, COIN_MANAGER_INS, COIN_MANAGER_P1, COIN_MANAGER_P2, BYTE_ARRAY_HELPER.bytes(GET_PIN_TLT_DATA), LE); // "80CB800005DFFF028103" get retry maximum times of PIN
     public final static CAPDU RESET_WALLET_APDU =  new CAPDU(COIN_MANAGER_CLA, COIN_MANAGER_INS, COIN_MANAGER_P1, COIN_MANAGER_P2, BYTE_ARRAY_HELPER.bytes(RESET_WALLET_DATA), LE);
     public final static CAPDU GET_AVAILABLE_MEMORY_APDU =  new CAPDU(COIN_MANAGER_CLA, COIN_MANAGER_INS, COIN_MANAGER_P1, COIN_MANAGER_P2, BYTE_ARRAY_HELPER.bytes(GET_AVAILABLE_MEMORY_DATA), LE);
     public final static CAPDU GET_APPLET_LIST_APDU =  new CAPDU(COIN_MANAGER_CLA, COIN_MANAGER_INS, COIN_MANAGER_P1, COIN_MANAGER_P2, BYTE_ARRAY_HELPER.bytes(GET_APPLET_LIST_DATA), LE);
-    public final static CAPDU GET_SE_VERSION =  new CAPDU(COIN_MANAGER_CLA, COIN_MANAGER_INS, COIN_MANAGER_P1, COIN_MANAGER_P2, BYTE_ARRAY_HELPER.bytes(GET_SE_DATA), LE);
-    public final static CAPDU GET_CSN =  new CAPDU(COIN_MANAGER_CLA, COIN_MANAGER_INS, COIN_MANAGER_P1, COIN_MANAGER_P2, BYTE_ARRAY_HELPER.bytes(GET_CSN_DATA), LE);
-    public final static CAPDU GET_DEVICE_LABEL =  new CAPDU(COIN_MANAGER_CLA, COIN_MANAGER_INS, COIN_MANAGER_P1, COIN_MANAGER_P2, BYTE_ARRAY_HELPER.bytes(GET_DEVICE_LABEL_DATA), LE);
+    public final static CAPDU GET_SE_VERSION_APDU =  new CAPDU(COIN_MANAGER_CLA, COIN_MANAGER_INS, COIN_MANAGER_P1, COIN_MANAGER_P2, BYTE_ARRAY_HELPER.bytes(GET_SE_DATA), LE);
+    public final static CAPDU GET_CSN_APDU =  new CAPDU(COIN_MANAGER_CLA, COIN_MANAGER_INS, COIN_MANAGER_P1, COIN_MANAGER_P2, BYTE_ARRAY_HELPER.bytes(GET_CSN_DATA), LE);
+    public final static CAPDU GET_DEVICE_LABEL_APDU =  new CAPDU(COIN_MANAGER_CLA, COIN_MANAGER_INS, COIN_MANAGER_P1, COIN_MANAGER_P2, BYTE_ARRAY_HELPER.bytes(GET_DEVICE_LABEL_DATA), LE);
 
     private static Map<String, String> coinManagerCommandsNames = new HashMap<>();
 
+    public final static String GET_ROOT_KEY_STATUS_APDU_NAME = "GET_ROOT_KEY_STATUS";
+    public final static String GET_APPS_APDU_NAME = "GET_APPS";
+    public final static String GET_PIN_RTL_APDU_NAME = "GET_PIN_RTL";
+    public final static String GET_PIN_TLT_APDU_NAME = "GET_PIN_TLT";
+    public final static String RESET_WALLET_APDU_NAME = "RESET_WALLET";
+    public final static String GET_AVAILABLE_MEMORY_APDU_NAME = "GET_AVAILABLE_MEMORY";
+    public final static String GET_APPLET_LIST_APDU_NAME = "GET_APPLET_LIST";
+    public final static String GET_SE_VERSION_APDU_NAME = "GET_SE_VERSION_APDU";
+    public final static String GET_CSN_APDU_NAME = "GET_CSN_APDU";
+    public final static String GET_DEVICE_LABEL_APDU_NAME = "GET_DEVICE_LABEL_APDU";
+    public final static String CHANGE_PIN_APDU_NAME = "CHANGE_PIN";
+    public final static String GENERATE_SEED_APDU_NAME = "GENERATE_SEED";
+    public final static String SET_DEVICE_LABEL_APDU_NAME = "SET_DEVICE_LABEL";
+
     static {
-      coinManagerCommandsNames.put(GET_ROOT_KEY_STATUS_DATA, "GET_ROOT_KEY_STATUS");
-      coinManagerCommandsNames.put(GET_APPS_DATA, "GET_APPS");
-      coinManagerCommandsNames.put(GET_PIN_RTL_DATA, "GET_PIN_RTL");
-      coinManagerCommandsNames.put(GET_PIN_TLT_DATA, "GET_PIN_TLT");
-      coinManagerCommandsNames.put(RESET_WALLET_DATA, "RESET_WALLET");
-      coinManagerCommandsNames.put(GET_AVAILABLE_MEMORY_DATA, "GET_AVAILABLE_MEMORY");
-      coinManagerCommandsNames.put(GET_SE_DATA, "GET_SE");
-      coinManagerCommandsNames.put(GET_CSN_DATA, "GET_CSN");
-      coinManagerCommandsNames.put(GET_DEVICE_LABEL_DATA, "GET_DEVICE_LABEL");
-      coinManagerCommandsNames.put(CHANGE_PIN_DATA, "CHANGE_PIN");
-      coinManagerCommandsNames.put(GENERATE_SEED_DATA, "GENERATE_SEED");
-      coinManagerCommandsNames.put(SET_DEVICE_LABEL_DATA, "SET_DEVICE_LABEL");
+      coinManagerCommandsNames.put(GET_ROOT_KEY_STATUS_DATA, GET_ROOT_KEY_STATUS_APDU_NAME);
+    // coinManagerCommandsNames.put(GET_APPS_DATA, GET_APPS_APDU_NAME);
+      coinManagerCommandsNames.put(GET_PIN_RTL_DATA, GET_PIN_RTL_APDU_NAME);
+      coinManagerCommandsNames.put(GET_PIN_TLT_DATA, GET_PIN_TLT_APDU_NAME);
+      coinManagerCommandsNames.put(RESET_WALLET_DATA, RESET_WALLET_APDU_NAME);
+      coinManagerCommandsNames.put(GET_AVAILABLE_MEMORY_DATA, GET_AVAILABLE_MEMORY_APDU_NAME);
+      coinManagerCommandsNames.put(GET_SE_DATA, GET_SE_VERSION_APDU_NAME);
+      coinManagerCommandsNames.put(GET_CSN_DATA, GET_CSN_APDU_NAME);
+      coinManagerCommandsNames.put(GET_DEVICE_LABEL_DATA, GET_DEVICE_LABEL_APDU_NAME );
+      coinManagerCommandsNames.put(CHANGE_PIN_DATA, CHANGE_PIN_APDU_NAME);
+      coinManagerCommandsNames.put(GENERATE_SEED_DATA, GENERATE_SEED_APDU_NAME);
+      coinManagerCommandsNames.put(SET_DEVICE_LABEL_DATA, SET_DEVICE_LABEL_APDU_NAME);
+      coinManagerCommandsNames.put(GET_APPLET_LIST_DATA, GET_APPLET_LIST_APDU_NAME);
     }
 
    public static String getCoinManagerApduCommandName(String apduDataField) {

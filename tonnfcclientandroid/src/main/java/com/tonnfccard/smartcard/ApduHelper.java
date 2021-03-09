@@ -2,6 +2,8 @@ package com.tonnfccard.smartcard;
 
 import androidx.annotation.RestrictTo;
 import com.tonnfccard.utils.ByteArrayUtil;
+
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_CAPDU_IS_NULL;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.COIN_MANAGER_CLA;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.getCoinManagerApduCommandName;
 import static com.tonnfccard.smartcard.CommonConstants.SELECT_CLA;
@@ -30,6 +32,7 @@ public class ApduHelper {
   private ApduHelper() {}
 
   public String getApduCommandName(CAPDU commandAPDU) {
+    if (commandAPDU == null) throw new IllegalArgumentException(ERROR_MSG_CAPDU_IS_NULL);
     if (isSelectAPDU(commandAPDU)) {
       if (commandAPDU.getData().length == 0)
         return SELECT_COIN_MANAGER_APDU_NAME;

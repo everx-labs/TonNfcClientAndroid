@@ -285,9 +285,9 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_GET_PIN_TLT_OR_RTL_RESPONSE_LEN_INCORRECT = "Response from GET_PIN_TLT (GET_PIN_RTL) must have length > 0.";
   public static final String ERROR_MSG_GET_PIN_TLT_OR_RTL_RESPONSE_VAL_INCORRECT = "Response from GET_PIN_TLT (GET_PIN_RTL) must have value >= 0 and <= " + MAX_PIN_TRIES + ".";
   public static final String ERROR_MSG_GET_ROOT_KEY_STATUS_RESPONSE_LEN_INCORRECT = "Response from GET_ROOT_KEY_STATUS must have length > 0.";
-  public static final String ERROR_MSG_GET_DEVICE_LABEL_RESPONSE_LEN_INCORRECT = "Response from GET_DEVICE_LABEL must have length = " + LABEL_LENGTH + ".";
+  public static final String ERROR_MSG_GET_DEVICE_LABEL_RESPONSE_LEN_INCORRECT = "Response from GET_DEVICE_LABEL_APDU must have length = " + LABEL_LENGTH + ".";
   public static final String ERROR_MSG_GET_CSN_RESPONSE_LEN_INCORRECT = "Response from GET_CSN_VERSION must have length > 0.";
-  public static final String ERROR_MSG_GET_SE_VERSION_RESPONSE_LEN_INCORRECT = "Response from GET_SE_VERSION must have length > 0.";
+  public static final String ERROR_MSG_GET_SE_VERSION_RESPONSE_LEN_INCORRECT = "Response from GET_SE_VERSION_APDU must have length > 0.";
   public static final String ERROR_MSG_GET_AVAILABLE_MEMORY_RESPONSE_LEN_INCORRECT = "Response from GET_AVAILABLE_MEMORY must have length > 0.";
   public static final String ERROR_MSG_GET_APPLET_LIST_RESPONSE_LEN_INCORRECT = "Response from GET_APPLET_LIST must have length > 0.";
 

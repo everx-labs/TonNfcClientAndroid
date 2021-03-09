@@ -80,7 +80,7 @@ public final class CardCoinManagerApi extends TonWalletApi {
 
   public String getDeviceLabelAndGetJson() throws Exception {
     try {
-      RAPDU rapdu = apduRunner.sendCoinManagerAppletAPDU(GET_DEVICE_LABEL);
+      RAPDU rapdu = apduRunner.sendCoinManagerAppletAPDU(GET_DEVICE_LABEL_APDU);
       if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != LABEL_LENGTH)
         throw new Exception(ERROR_MSG_GET_DEVICE_LABEL_RESPONSE_LEN_INCORRECT);
       String response = BYTE_ARR_HELPER.hex(rapdu.getData());
@@ -106,7 +106,7 @@ public final class CardCoinManagerApi extends TonWalletApi {
   }
 
   public String getSeVersionAndGetJson() throws Exception {
-    return executeCoinManagerOperationAndSendHex(GET_SE_VERSION, ERROR_MSG_GET_SE_VERSION_RESPONSE_LEN_INCORRECT);
+    return executeCoinManagerOperationAndSendHex(GET_SE_VERSION_APDU, ERROR_MSG_GET_SE_VERSION_RESPONSE_LEN_INCORRECT);
   }
 
   public void getCsn(final NfcCallback callback) {
@@ -124,7 +124,7 @@ public final class CardCoinManagerApi extends TonWalletApi {
   }
 
   public String getCsnAndGetJson() throws Exception {
-    return executeCoinManagerOperationAndSendHex(GET_CSN, ERROR_MSG_GET_CSN_RESPONSE_LEN_INCORRECT);
+    return executeCoinManagerOperationAndSendHex(GET_CSN_APDU, ERROR_MSG_GET_CSN_RESPONSE_LEN_INCORRECT);
   }
 
   public void getMaxPinTries(final NfcCallback callback) {
