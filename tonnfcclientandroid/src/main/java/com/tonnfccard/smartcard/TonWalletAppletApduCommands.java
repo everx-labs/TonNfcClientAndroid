@@ -270,7 +270,7 @@ public class TonWalletAppletApduCommands {
       PUBLIC_KEY_LEN);
   }
 
-  public static CAPDU addRecoveryDataPartAPDU(byte p1, byte[] data) {
+  public static CAPDU getAddRecoveryDataPartAPDU(byte p1, byte[] data) {
     if (p1 < 0 || p1 > 2) throw new IllegalArgumentException(ERROR_MSG_APDU_P1_INCORRECT);
     if (p1 <= 1 && (data == null || data.length == 0 || data.length > DATA_RECOVERY_PORTION_MAX_SIZE))
       throw new IllegalArgumentException(ERROR_MSG_RECOVER_DATA_PORTION_SIZE_INCORRECT);
@@ -281,7 +281,7 @@ public class TonWalletAppletApduCommands {
       data);
   }
 
-  public static CAPDU getRecoveryDataPartAPDU(byte[] startPositionBytes, byte le) {
+  public static CAPDU getGetRecoveryDataPartAPDU(byte[] startPositionBytes, byte le) {
     if (startPositionBytes == null || startPositionBytes.length != 2)
       throw new IllegalArgumentException(ERROR_MSG_START_POSITION_BYTES_SIZE_INCORRECT);
     return new CAPDU(WALLET_APPLET_CLA, INS_GET_RECOVERY_DATA_PART,

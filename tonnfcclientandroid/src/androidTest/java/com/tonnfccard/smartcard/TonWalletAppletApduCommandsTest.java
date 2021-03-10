@@ -400,16 +400,16 @@ public class TonWalletAppletApduCommandsTest {
 
 
     @Test
-    public void testAddRecoveryDataPartAPDU() {
+    public void testGetAddRecoveryDataPartAPDU() {
         try {
             for (byte p1 = 0 ; p1 < 2; p1++) {
                 byte[] data = new byte[DATA_RECOVERY_PORTION_MAX_SIZE];
                 random.nextBytes(data);
-                checkAPDU(addRecoveryDataPartAPDU(p1, data), INS_ADD_RECOVERY_DATA_PART, p1, P2, data, NEGATIVE_LE);
+                checkAPDU(getAddRecoveryDataPartAPDU(p1, data), INS_ADD_RECOVERY_DATA_PART, p1, P2, data, NEGATIVE_LE);
             }
             byte[] data = new byte[HMAC_SHA_SIG_SIZE];
             random.nextBytes(data);
-            checkAPDU(addRecoveryDataPartAPDU((byte) 0x02, data), INS_ADD_RECOVERY_DATA_PART, (byte) 0x02, P2, data, NEGATIVE_LE);
+            checkAPDU(getAddRecoveryDataPartAPDU((byte) 0x02, data), INS_ADD_RECOVERY_DATA_PART, (byte) 0x02, P2, data, NEGATIVE_LE);
         }
         catch (Exception e) {
             fail();
@@ -417,9 +417,9 @@ public class TonWalletAppletApduCommandsTest {
     }
 
     @Test
-    public void testAddRecoveryDataPartAPDUIncorrectInputData() {
+    public void testGetAddRecoveryDataPartAPDUIncorrectInputData() {
         try {
-            addRecoveryDataPartAPDU((byte) -1, null);
+            getAddRecoveryDataPartAPDU((byte) -1, null);
             fail();
         }
         catch (Exception e) {
@@ -427,7 +427,7 @@ public class TonWalletAppletApduCommandsTest {
         }
 
         try {
-            addRecoveryDataPartAPDU((byte) 3, null);
+            getAddRecoveryDataPartAPDU((byte) 3, null);
             fail();
         }
         catch (Exception e) {
@@ -436,7 +436,7 @@ public class TonWalletAppletApduCommandsTest {
 
 
         try {
-            addRecoveryDataPartAPDU(P1, null);
+            getAddRecoveryDataPartAPDU(P1, null);
             fail();
         }
         catch (Exception e) {
@@ -444,7 +444,7 @@ public class TonWalletAppletApduCommandsTest {
         }
 
         try {
-            addRecoveryDataPartAPDU(P1, new byte[0]);
+            getAddRecoveryDataPartAPDU(P1, new byte[0]);
             fail();
         }
         catch (Exception e) {
@@ -452,7 +452,7 @@ public class TonWalletAppletApduCommandsTest {
         }
 
         try {
-            addRecoveryDataPartAPDU(P1, new byte[DATA_RECOVERY_PORTION_MAX_SIZE + 1]);
+            getAddRecoveryDataPartAPDU(P1, new byte[DATA_RECOVERY_PORTION_MAX_SIZE + 1]);
             fail();
         }
         catch (Exception e) {
@@ -460,7 +460,7 @@ public class TonWalletAppletApduCommandsTest {
         }
 
         try {
-            addRecoveryDataPartAPDU((byte) 0x02, null);
+            getAddRecoveryDataPartAPDU((byte) 0x02, null);
             fail();
         }
         catch (Exception e) {
@@ -468,7 +468,7 @@ public class TonWalletAppletApduCommandsTest {
         }
 
         try {
-            addRecoveryDataPartAPDU((byte) 0x02, new byte[HMAC_SHA_SIG_SIZE + 1]);
+            getAddRecoveryDataPartAPDU((byte) 0x02, new byte[HMAC_SHA_SIG_SIZE + 1]);
             fail();
         }
         catch (Exception e) {
@@ -479,9 +479,9 @@ public class TonWalletAppletApduCommandsTest {
 
 
     @Test
-    public void testGetRecoveryDataPartAPDU() {
+    public void testGetGetRecoveryDataPartAPDU() {
         try {
-            CAPDU capdu = getRecoveryDataPartAPDU(new byte[2], (byte) DATA_PORTION_MAX_SIZE);
+            CAPDU capdu = getGetRecoveryDataPartAPDU(new byte[2], (byte) DATA_PORTION_MAX_SIZE);
             checkAPDU(capdu, INS_GET_RECOVERY_DATA_PART, P1, P2, new byte[2], DATA_PORTION_MAX_SIZE);
         }
         catch (Exception e) {
@@ -490,9 +490,9 @@ public class TonWalletAppletApduCommandsTest {
     }
 
     @Test
-    public void testGetRecoveryDataAPDUIncorrectInputData() {
+    public void testGetGetRecoveryDataAPDUIncorrectInputData() {
         try {
-            getRecoveryDataPartAPDU(null, (byte) DATA_PORTION_MAX_SIZE);
+            getGetRecoveryDataPartAPDU(null, (byte) DATA_PORTION_MAX_SIZE);
             fail();
         }
         catch (Exception e) {
@@ -500,7 +500,7 @@ public class TonWalletAppletApduCommandsTest {
         }
 
         try {
-            getRecoveryDataPartAPDU(new byte[1], (byte) DATA_PORTION_MAX_SIZE);
+            getGetRecoveryDataPartAPDU(new byte[1], (byte) DATA_PORTION_MAX_SIZE);
             fail();
         }
         catch (Exception e) {
@@ -508,7 +508,7 @@ public class TonWalletAppletApduCommandsTest {
         }
 
         try {
-            getRecoveryDataPartAPDU(new byte[3], (byte) DATA_PORTION_MAX_SIZE);
+            getGetRecoveryDataPartAPDU(new byte[3], (byte) DATA_PORTION_MAX_SIZE);
             fail();
         }
         catch (Exception e) {
@@ -736,7 +736,7 @@ public class TonWalletAppletApduCommandsTest {
 
 
     @Test
-    public void testGetIndexAndLenOfKeyInKeyChainAPDU() {
+    public void testGetGetIndexAndLenOfKeyInKeyChainAPDU() {
         try {
             byte[] sault = new byte[SAULT_LENGTH];
             random.nextBytes(sault);
@@ -751,7 +751,7 @@ public class TonWalletAppletApduCommandsTest {
     }
 
     @Test
-    public void testGetIndexAndLenOfKeyInKeyChainAPDUIncorrectInputData() {
+    public void testGetGetIndexAndLenOfKeyInKeyChainAPDUIncorrectInputData() {
         try {
             getGetIndexAndLenOfKeyInKeyChainAPDU(new byte[HMAC_SHA_SIG_SIZE], null);
             fail();
@@ -799,7 +799,7 @@ public class TonWalletAppletApduCommandsTest {
 
 
     @Test
-    public void testInitiateChangeOfKeyAPDU() {
+    public void testGetInitiateChangeOfKeyAPDU() {
         try {
             byte[] sault = new byte[SAULT_LENGTH];
             random.nextBytes(sault);
@@ -837,7 +837,6 @@ public class TonWalletAppletApduCommandsTest {
         catch (Exception e) {
             assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
         }
-
         try {
             getInitiateChangeOfKeyAPDU( null, new byte[SAULT_LENGTH]);
             fail();
@@ -863,7 +862,7 @@ public class TonWalletAppletApduCommandsTest {
 
 
     @Test
-    public void testInitiateDeleteOfKeyAPDU() {
+    public void testGetInitiateDeleteOfKeyAPDU() {
         try {
             byte[] sault = new byte[SAULT_LENGTH];
             random.nextBytes(sault);
@@ -900,7 +899,6 @@ public class TonWalletAppletApduCommandsTest {
         catch (Exception e) {
             assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
         }
-
         try {
             getInitiateDeleteOfKeyAPDU( null, new byte[SAULT_LENGTH]);
             fail();
@@ -1000,7 +998,6 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
-
     @Test
     public void testGetDeleteKeyRecordAPDU() {
         try {
@@ -1013,7 +1010,6 @@ public class TonWalletAppletApduCommandsTest {
             fail();
         }
     }
-
 
     @Test
     public void testGetDeleteKeyRecordAPDUIncorrectInputData() {
@@ -1081,7 +1077,6 @@ public class TonWalletAppletApduCommandsTest {
     }
 
 
-
     @Test
     public void testGetGetHmacAPDU() {
         try {
@@ -1121,7 +1116,6 @@ public class TonWalletAppletApduCommandsTest {
         catch (Exception e) {
             assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
         }
-
         try {
             getGetHmacAPDU( null, new byte[SAULT_LENGTH]);
             fail();
@@ -1186,7 +1180,6 @@ public class TonWalletAppletApduCommandsTest {
         catch (Exception e) {
             assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
         }
-
         try {
             getGetKeyChunkAPDU( null, startPos, new byte[SAULT_LENGTH], (byte) DATA_PORTION_MAX_SIZE);
             fail();
@@ -1211,7 +1204,7 @@ public class TonWalletAppletApduCommandsTest {
     }
 
     @Test
-    public void testSendKeyChunkAPDU() {
+    public void testGetSendKeyChunkAPDU() {
         try {
             byte[] instructions = new byte[]{INS_ADD_KEY_CHUNK, INS_CHANGE_KEY_CHUNK};
             for (int i = 0; i < instructions.length; i++) {
@@ -1238,7 +1231,7 @@ public class TonWalletAppletApduCommandsTest {
 
 
     @Test
-    public void testSendKeyChunkAPDUIncorrectInputData() {
+    public void testGetSendKeyChunkAPDUIncorrectInputData() {
         byte[] keyChunk = new byte[DATA_PORTION_MAX_SIZE];
         byte[] sault = new byte[SAULT_LENGTH];
         byte[] instructions = new byte[]{INS_ADD_KEY_CHUNK, INS_CHANGE_KEY_CHUNK};
@@ -1257,7 +1250,6 @@ public class TonWalletAppletApduCommandsTest {
             catch (Exception e) {
                 assertEquals(e.getMessage(), ERROR_MSG_APDU_P1_INCORRECT);
             }
-
             try {
                 getSendKeyChunkAPDU(instructions[i], P1, null, sault);
                 fail();
@@ -1265,7 +1257,6 @@ public class TonWalletAppletApduCommandsTest {
             catch (Exception e) {
                 assertEquals(e.getMessage(), ERROR_MSG_KEY_CHUNK_BYTES_SIZE_INCORRECT);
             }
-
             try {
                 getSendKeyChunkAPDU(instructions[i], P1, new byte[0], sault);
                 fail();
@@ -1273,7 +1264,6 @@ public class TonWalletAppletApduCommandsTest {
             catch (Exception e) {
                 assertEquals(e.getMessage(), ERROR_MSG_KEY_CHUNK_BYTES_SIZE_INCORRECT);
             }
-
             try {
                 getSendKeyChunkAPDU(instructions[i], P1, new byte[DATA_PORTION_MAX_SIZE + 1], sault);
                 fail();
@@ -1281,7 +1271,6 @@ public class TonWalletAppletApduCommandsTest {
             catch (Exception e) {
                 assertEquals(e.getMessage(), ERROR_MSG_KEY_CHUNK_BYTES_SIZE_INCORRECT);
             }
-
             try {
                 getSendKeyChunkAPDU(instructions[i], (byte) 0x02, null, sault);
                 fail();
@@ -1289,7 +1278,6 @@ public class TonWalletAppletApduCommandsTest {
             catch (Exception e) {
                 assertEquals(e.getMessage(), ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT);
             }
-
             try {
                 getSendKeyChunkAPDU(instructions[i], (byte) 0x02, new byte[HMAC_SHA_SIG_SIZE - 1], sault);
                 fail();
@@ -1297,7 +1285,6 @@ public class TonWalletAppletApduCommandsTest {
             catch (Exception e) {
                 assertEquals(e.getMessage(), ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT);
             }
-
             try {
                 getSendKeyChunkAPDU(instructions[i], (byte) 0x02, new byte[HMAC_SHA_SIG_SIZE + 1], sault);
                 fail();

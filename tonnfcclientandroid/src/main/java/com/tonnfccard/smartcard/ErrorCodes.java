@@ -7,7 +7,9 @@ import com.tonnfccard.utils.ByteArrayUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-//@RestrictTo(RestrictTo.Scope.LIBRARY)
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_RESPONSE_IS_NULL;
+
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class ErrorCodes {
     private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
     private static Map<Short, String> codeToMsg = new HashMap<>();
@@ -175,19 +177,21 @@ public class ErrorCodes {
         codeToMsg.put(sw, errMsg.trim());
     }
 
-    public static String getMsg(RAPDU apduAnswer)  {
-        byte[] swBytes = {apduAnswer.getSW1(), apduAnswer.getSW2()};
+    public static String getMsg(RAPDU apduResponse)  {
+        if (apduResponse == null) throw new IllegalArgumentException(ERROR_MSG_APDU_RESPONSE_IS_NULL);
+        byte[] swBytes = {apduResponse.getSW1(), apduResponse.getSW2()};
         int sw = BYTE_ARRAY_HELPER.makeShort(swBytes, (short)0);
-        return codeToMsg.get(sw);
+        return codeToMsg.get((short) sw);
     }
 
-    public static String getMsg(String apduAnswer)  {
-        int sw = BYTE_ARRAY_HELPER.makeShort(BYTE_ARRAY_HELPER.bytes(apduAnswer.trim()), (short) 0);
+    public static String getMsg(String apduResponse)  {
+        if (apduResponse == null) throw new IllegalArgumentException(ERROR_MSG_APDU_RESPONSE_IS_NULL);
+        int sw = BYTE_ARRAY_HELPER.makeShort(BYTE_ARRAY_HELPER.bytes(apduResponse.trim()), (short) 0);
         return codeToMsg.get((short) sw);
     }
 
     public static String getMsg(short sw) {
-    return codeToMsg.get((short) sw);
-  }
+        return codeToMsg.get((short) sw);
+    }
 
 }

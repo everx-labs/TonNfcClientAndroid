@@ -19,8 +19,8 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_RECOVERY_
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_RECOVERY_DATA_LEN_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.IS_RECOVERY_DATA_SET_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.RESET_RECOVERY_DATA_APDU;
-import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.addRecoveryDataPartAPDU;
-import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getRecoveryDataPartAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getAddRecoveryDataPartAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getGetRecoveryDataPartAPDU;
 
 public final class RecoveryDataApi extends TonWalletApi {
   private static final String TAG = "RecoveryDataApi";
@@ -186,7 +186,7 @@ public final class RecoveryDataApi extends TonWalletApi {
       System.out.println("packet#" + i);
       byte[] chunk = BYTE_ARR_HELPER.bSub(recoveryData, i * DATA_RECOVERY_PORTION_MAX_SIZE, DATA_RECOVERY_PORTION_MAX_SIZE);
       byte p1 = i == 0 ? (byte) 0x00 : (byte) 0x01;
-      apduRunner.sendTonWalletAppletAPDU(addRecoveryDataPartAPDU(p1, chunk));
+      apduRunner.sendTonWalletAppletAPDU(getAddRecoveryDataPartAPDU(p1, chunk));
     }
 
     int tailLen = recoveryData.length % DATA_RECOVERY_PORTION_MAX_SIZE;
@@ -195,11 +195,11 @@ public final class RecoveryDataApi extends TonWalletApi {
       System.out.println("tail#");
       byte[] chunk = BYTE_ARR_HELPER.bSub(recoveryData, numberOfPackets * DATA_RECOVERY_PORTION_MAX_SIZE, tailLen);
       byte p1 = numberOfPackets == 0 ? (byte) 0x00 : (byte) 0x01;
-      apduRunner.sendTonWalletAppletAPDU(addRecoveryDataPartAPDU(p1, chunk));
+      apduRunner.sendTonWalletAppletAPDU(getAddRecoveryDataPartAPDU(p1, chunk));
     }
 
     byte[] hash = digest.digest(recoveryData);
-    apduRunner.sendTonWalletAppletAPDU(addRecoveryDataPartAPDU((byte) 0x02, hash));
+    apduRunner.sendTonWalletAppletAPDU(getAddRecoveryDataPartAPDU((byte) 0x02, hash));
   }
 
   public void getRecoveryData(final NfcCallback callback) {
@@ -235,7 +235,7 @@ public final class RecoveryDataApi extends TonWalletApi {
     for (int i = 0; i < numberOfPackets; i++) {
       Log.d(TAG, "packet " + i);
       byte[] dataChunk = new byte[]{(byte) (startPos >> 8), (byte) (startPos)};
-      RAPDU rapdu = apduRunner.sendTonWalletAppletAPDU(getRecoveryDataPartAPDU(dataChunk, (byte) DATA_RECOVERY_PORTION_MAX_SIZE));
+      RAPDU rapdu = apduRunner.sendTonWalletAppletAPDU(getGetRecoveryDataPartAPDU(dataChunk, (byte) DATA_RECOVERY_PORTION_MAX_SIZE));
       if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != DATA_RECOVERY_PORTION_MAX_SIZE) throw new Exception(ERROR_RECOVERY_DATA_PORTION_INCORRECT_LEN + DATA_RECOVERY_PORTION_MAX_SIZE);
       byte[] res = rapdu.getData();
       BYTE_ARR_HELPER.arrayCopy(res, 0, recoveryData, startPos, DATA_RECOVERY_PORTION_MAX_SIZE);
@@ -244,7 +244,7 @@ public final class RecoveryDataApi extends TonWalletApi {
     int tailLen = len % DATA_RECOVERY_PORTION_MAX_SIZE;
     if (tailLen > 0) {
       byte[] dataChunk = new byte[]{(byte) (startPos >> 8), (byte) (startPos)};
-      RAPDU rapdu = apduRunner.sendTonWalletAppletAPDU(getRecoveryDataPartAPDU(dataChunk, (byte) tailLen));
+      RAPDU rapdu = apduRunner.sendTonWalletAppletAPDU(getGetRecoveryDataPartAPDU(dataChunk, (byte) tailLen));
       if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != tailLen) throw new Exception(ERROR_RECOVERY_DATA_PORTION_INCORRECT_LEN + tailLen);
       byte[] res = rapdu.getData();
       BYTE_ARR_HELPER.arrayCopy(res, 0, recoveryData, startPos, tailLen);

@@ -22,7 +22,6 @@ import static com.tonnfccard.TonWalletConstants.HMAC_SHA_SIG_SIZE;
 import static com.tonnfccard.TonWalletConstants.IV_SIZE;
 import static com.tonnfccard.TonWalletConstants.PASSWORD_SIZE;
 import static com.tonnfccard.TonWalletConstants.SAULT_LENGTH;
-import static com.tonnfccard.TonWalletConstants.SHA_HASH_SIZE;
 import static com.tonnfccard.helpers.HmacHelper.ANDROID_KEYSTORE;
 import static com.tonnfccard.helpers.HmacHelperTest.HMAC_HELPER;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_CAPDU_IS_NULL;
@@ -162,8 +161,8 @@ public class ApduHelperTest {
             assertEquals(APDU_HELPER.getApduCommandName(getVerifyPinAPDU(DEFAULT_PIN, sault)), VERIFY_PIN_APDU_NAME);
             assertEquals(APDU_HELPER.getApduCommandName(getSignShortMessageAPDU(data, ind, sault)), SIGN_SHORT_MESSAGE_APDU_NAME);
             assertEquals(APDU_HELPER.getApduCommandName(getPublicKeyAPDU(ind)), GET_PUBLIC_KEY_APDU_NAME);
-            assertEquals(APDU_HELPER.getApduCommandName(addRecoveryDataPartAPDU((byte) 0, data)), ADD_RECOVERY_DATA_PART_APDU_NAME);
-            assertEquals(APDU_HELPER.getApduCommandName(getRecoveryDataPartAPDU(pos, (byte) DATA_RECOVERY_PORTION_MAX_SIZE)), GET_GET_RECOVERY_DATA_PART_APDU_NAME);
+            assertEquals(APDU_HELPER.getApduCommandName(getAddRecoveryDataPartAPDU((byte) 0, data)), ADD_RECOVERY_DATA_PART_APDU_NAME);
+            assertEquals(APDU_HELPER.getApduCommandName(getGetRecoveryDataPartAPDU(pos, (byte) DATA_RECOVERY_PORTION_MAX_SIZE)), GET_GET_RECOVERY_DATA_PART_APDU_NAME);
             assertEquals(APDU_HELPER.getApduCommandName(getResetKeyChainAPDU(sault)), RESET_KEYCHAIN_APDU_NAME);
             assertEquals(APDU_HELPER.getApduCommandName(getNumberOfKeysAPDU(sault)), GET_NUMBER_OF_KEYS_APDU_NAME);
             assertEquals(APDU_HELPER.getApduCommandName(getGetOccupiedSizeAPDU(sault)), GET_OCCUPIED_STORAGE_APDU_NAME);

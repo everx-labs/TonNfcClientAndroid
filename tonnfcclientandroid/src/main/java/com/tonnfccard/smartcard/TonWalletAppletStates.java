@@ -125,10 +125,8 @@ public enum TonWalletAppletStates {
     return  tonWalletAppletCommandStateMapping.get(ins);
   }
 
-
   private Byte value;
   private String description;
-
 
   private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
 

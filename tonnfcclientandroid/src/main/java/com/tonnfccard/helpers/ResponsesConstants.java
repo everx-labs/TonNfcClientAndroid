@@ -110,7 +110,7 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_RECOVER_DATA_PORTION_SIZE_INCORRECT = "Recovery data portion must have length > 0 and <= " + DATA_RECOVERY_PORTION_MAX_SIZE + ".";
   public static final String ERROR_MSG_RECOVERY_DATA_MAC_BYTES_SIZE_INCORRECT = "Mac (byte array) of recovery data portion must have length " + HMAC_SHA_SIG_SIZE + ".";
   public static final String ERROR_MSG_START_POSITION_BYTES_SIZE_INCORRECT =  "Start position byte array must have length = 2.";
-
+  public static final String ERROR_MSG_APDU_RESPONSE_IS_NULL =  "APDU response is null.";
 
   public static final List<String> ANDROID_INTERNAL_ERRORS = Arrays.asList(
     ERROR_MSG_APDU_EMPTY,
@@ -164,7 +164,8 @@ public class ResponsesConstants {
           ERROR_MSG_APDU_DATA_FIELD_IS_NULL,
           ERROR_MSG_RECOVER_DATA_PORTION_SIZE_INCORRECT,
           ERROR_MSG_RECOVERY_DATA_MAC_BYTES_SIZE_INCORRECT,
-          ERROR_MSG_START_POSITION_BYTES_SIZE_INCORRECT
+          ERROR_MSG_START_POSITION_BYTES_SIZE_INCORRECT,
+          ERROR_MSG_APDU_RESPONSE_IS_NULL
   );
 
 
