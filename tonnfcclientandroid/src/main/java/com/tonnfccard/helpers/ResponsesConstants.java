@@ -72,7 +72,7 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_KEY_CHUNK_BYTES_SIZE_INCORRECT = "Key (from keyChain) chunk byte array must have length > 0 and <= " + DATA_PORTION_MAX_SIZE + ".";
   public static final String ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT = "Key (from keyChain) mac byte array must have length " + HMAC_SHA_SIG_SIZE + ".";
   public static final String ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT = "Sault byte array must have length " + SAULT_LENGTH + ".";
-  public static final String ERROR_MSG_HD_INDEX_BYTES_SIZE_INCORRECT = "hdIndex byte array must have length > 0 and <= " + MAX_IND_SIZE + ".";
+  public static final String ERROR_MSG_HD_INDEX_BYTES_SIZE_INCORRECT = "hdIndex byte array must have length > 0 and <= " + MAX_HD_INDEX_SIZE + ".";
   public static final String ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT =  "Key (from keyChain) index byte array must have length = " + KEYCHAIN_KEY_INDEX_LEN + ".";
   public static final String ERROR_MSG_LENGTH_IS_NOT_POSITIVE = "Length is not a positive value";
   public static final String ERROR_MSG_INTENT_EMPTY =  "Intent is null.";
@@ -107,6 +107,10 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_CAPDU_IS_NULL = "CAPDU is null.";
   public static final String ERROR_MSG_STRING_IS_NOT_ASCII = "String is not in ascii.";
   public static final String ERROR_MSG_APDU_DATA_FIELD_IS_NULL = "APDU data field is null.";
+  public static final String ERROR_MSG_RECOVER_DATA_PORTION_SIZE_INCORRECT = "Recovery data portion must have length > 0 and <= " + DATA_RECOVERY_PORTION_MAX_SIZE + ".";
+  public static final String ERROR_MSG_RECOVERY_DATA_MAC_BYTES_SIZE_INCORRECT = "Mac (byte array) of recovery data portion must have length " + HMAC_SHA_SIG_SIZE + ".";
+  public static final String ERROR_MSG_START_POSITION_BYTES_SIZE_INCORRECT =  "Start position byte array must have length = 2.";
+
 
   public static final List<String> ANDROID_INTERNAL_ERRORS = Arrays.asList(
     ERROR_MSG_APDU_EMPTY,
@@ -157,7 +161,10 @@ public class ResponsesConstants {
           ERROR_MSG_MALFORMED_SW_FOR_JSON,
           ERROR_MSG_CAPDU_IS_NULL,
           ERROR_MSG_STRING_IS_NOT_ASCII,
-          ERROR_MSG_APDU_DATA_FIELD_IS_NULL
+          ERROR_MSG_APDU_DATA_FIELD_IS_NULL,
+          ERROR_MSG_RECOVER_DATA_PORTION_SIZE_INCORRECT,
+          ERROR_MSG_RECOVERY_DATA_MAC_BYTES_SIZE_INCORRECT,
+          ERROR_MSG_START_POSITION_BYTES_SIZE_INCORRECT
   );
 
 
@@ -198,7 +205,7 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_DATA_FOR_SIGNING_WITH_PATH_LEN_INCORRECT  =  "Data for signing must be a nonempty hex string of even length > 0 and <= " + (2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH) + ".";
   public static final String ERROR_MSG_RECOVERY_DATA_NOT_HEX = "Recovery data is not a valid hex string.";
   public static final String ERROR_MSG_RECOVERY_DATA_LEN_INCORRECT = "Recovery data is a hex string of length > 0 and <= " + (2 * RECOVERY_DATA_MAX_SIZE) + ".";
-  public static final String ERROR_MSG_HD_INDEX_LEN_INCORRECT = "Hd index must be a numeric string of length > 0 and <= " + MAX_IND_SIZE + ".";
+  public static final String ERROR_MSG_HD_INDEX_LEN_INCORRECT = "Hd index must be a numeric string of length > 0 and <= " + MAX_HD_INDEX_SIZE + ".";
   public static final String ERROR_MSG_HD_INDEX_FORMAT_INCORRECT = "Hd index is not a valid numeric string.";
   public static final String ERROR_MSG_DEVICE_LABEL_LEN_INCORRECT = "Device label must be a hex string of length " + (2 * LABEL_LENGTH) + ".";
   public static final String ERROR_MSG_DEVICE_LABEL_NOT_HEX = "Device label is not a valid hex string.";

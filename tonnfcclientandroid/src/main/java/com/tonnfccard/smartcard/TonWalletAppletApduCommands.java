@@ -19,8 +19,12 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_INITIAL_VECTOR
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_CHUNK_BYTES_SIZE_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_SIZE_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_RECOVERY_DATA_MAC_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_RECOVER_DATA_PORTION_SIZE_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_START_POSITION_BYTES_SIZE_INCORRECT;
 import static com.tonnfccard.smartcard.CommonConstants.LE;
 import static com.tonnfccard.TonWalletConstants.*;
 import static com.tonnfccard.smartcard.CommonConstants.SELECT_CLA;
@@ -41,6 +45,9 @@ public class TonWalletAppletApduCommands {
 
   // code of CLA byte in the command APDU header
   public final static byte WALLET_APPLET_CLA = (byte) 0xB0;
+
+  public final static byte P1 = (byte) 0x00;
+  public final static byte P2 = (byte) 0x00;
 
   private static Map<Byte, String> tonWalletAppletCommandsNames = new HashMap<>();
 
@@ -227,7 +234,7 @@ public class TonWalletAppletApduCommands {
     if (initialVector == null || initialVector.length != IV_SIZE)
       throw new IllegalArgumentException(ERROR_MSG_INITIAL_VECTOR_BYTES_SIZE_INCORRECT);
     byte[] data = BYTE_ARRAY_HELPER.bConcat(passwordBytes, initialVector);
-    return new CAPDU(WALLET_APPLET_CLA, INS_VERIFY_PASSWORD, 0x00, 0x00, data);
+    return new CAPDU(WALLET_APPLET_CLA, INS_VERIFY_PASSWORD, P1, P2, data);
   }
 
   public static CAPDU getVerifyPinAPDU(byte[] pinBytes, byte[] sault) throws Exception {
@@ -246,12 +253,12 @@ public class TonWalletAppletApduCommands {
     return new CAPDU(WALLET_APPLET_CLA, INS_SIGN_SHORT_MESSAGE_WITH_DEFAULT_PATH, 0x00, 0x00, data, SIG_LEN);
   }
 
-  public static CAPDU getSignShortMessageAPDU(byte[] dataForSigning, byte[] ind, byte[] sault) throws Exception {
+  public static CAPDU getSignShortMessageAPDU(byte[] dataForSigning, byte[] hdIndex, byte[] sault) throws Exception {
     if (dataForSigning == null || dataForSigning.length == 0 || dataForSigning.length > DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH)
       throw new IllegalArgumentException(ERROR_MSG_DATA_WITH_HD_PATH_BYTES_SIZE_INCORRECT);
     checkSault(sault);
-    checkHdIndex(ind);
-    byte[] data = prepareApduData(BYTE_ARRAY_HELPER.bConcat(new byte[]{0x00, (byte) (dataForSigning.length)}, dataForSigning, new byte[]{(byte) ind.length}, ind, sault));
+    checkHdIndex(hdIndex);
+    byte[] data = prepareApduData(BYTE_ARRAY_HELPER.bConcat(new byte[]{0x00, (byte) (dataForSigning.length)}, dataForSigning, new byte[]{(byte) hdIndex.length}, hdIndex, sault));
     return new CAPDU(WALLET_APPLET_CLA, INS_SIGN_SHORT_MESSAGE, 0x00, 0x00, data, SIG_LEN);
   }
 
@@ -264,14 +271,19 @@ public class TonWalletAppletApduCommands {
   }
 
   public static CAPDU addRecoveryDataPartAPDU(byte p1, byte[] data) {
-    //Todo: check data length
+    if (p1 < 0 || p1 > 2) throw new IllegalArgumentException(ERROR_MSG_APDU_P1_INCORRECT);
+    if (p1 <= 1 && (data == null || data.length == 0 || data.length > DATA_RECOVERY_PORTION_MAX_SIZE))
+      throw new IllegalArgumentException(ERROR_MSG_RECOVER_DATA_PORTION_SIZE_INCORRECT);
+    if (p1 == 2 && (data == null || data.length != HMAC_SHA_SIG_SIZE))
+      throw new IllegalArgumentException(ERROR_MSG_RECOVERY_DATA_MAC_BYTES_SIZE_INCORRECT);
     return new CAPDU(WALLET_APPLET_CLA, INS_ADD_RECOVERY_DATA_PART,
       p1, (byte) 0x00,
       data);
   }
 
   public static CAPDU getRecoveryDataPartAPDU(byte[] startPositionBytes, byte le) {
-    //Todo: check startPositionBytes length
+    if (startPositionBytes == null || startPositionBytes.length != 2)
+      throw new IllegalArgumentException(ERROR_MSG_START_POSITION_BYTES_SIZE_INCORRECT);
     return new CAPDU(WALLET_APPLET_CLA, INS_GET_RECOVERY_DATA_PART,
       (byte) 0x00, (byte) 0x00,
       startPositionBytes,
@@ -308,7 +320,8 @@ public class TonWalletAppletApduCommands {
   }
 
   public static CAPDU getCheckAvailableVolForNewKeyAPDU(short keySize, byte[] sault) throws Exception {
-    //todo:check keysize
+    if (keySize <= 0 || keySize > MAX_KEY_SIZE_IN_KEYCHAIN)
+      throw new IllegalArgumentException(ERROR_MSG_KEY_SIZE_INCORRECT);
     checkSault(sault);
     byte[] data = prepareApduData(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) (keySize >> 8), (byte) (keySize)}, sault));
     return new CAPDU(
@@ -318,17 +331,17 @@ public class TonWalletAppletApduCommands {
       data);
   }
 
-  public static CAPDU getCheckKeyHmacConsistencyAPDU(byte[] keyHmac, byte[] sault) throws Exception {
-    checkHmac(keyHmac);
+  public static CAPDU getCheckKeyHmacConsistencyAPDU(byte[] keyMac, byte[] sault) throws Exception {
+    checkHmac(keyMac);
     checkSault(sault);
-    byte[] data = prepareApduData(BYTE_ARRAY_HELPER.bConcat(keyHmac, sault));
+    byte[] data = prepareApduData(BYTE_ARRAY_HELPER.bConcat(keyMac, sault));
     return new CAPDU(WALLET_APPLET_CLA, INS_CHECK_KEY_HMAC_CONSISTENCY, 0x00, 0x00, data);
   }
 
-  public static CAPDU getInitiateChangeOfKeyAPDU(byte[] index, byte[] sault) throws Exception {
-    checkKeyChainKeyIndex(index);
+  public static CAPDU getInitiateChangeOfKeyAPDU(byte[] keyIndex, byte[] sault) throws Exception {
+    checkKeyChainKeyIndex(keyIndex);
     checkSault(sault);
-    byte[] data = prepareApduData(BYTE_ARRAY_HELPER.bConcat(new byte[]{index[0], index[1]}, sault));
+    byte[] data = prepareApduData(BYTE_ARRAY_HELPER.bConcat(new byte[]{keyIndex[0], keyIndex[1]}, sault));
     return new CAPDU(
       WALLET_APPLET_CLA,
       INS_INITIATE_CHANGE_OF_KEY,
@@ -336,10 +349,10 @@ public class TonWalletAppletApduCommands {
       data);
   }
 
-  public static CAPDU getGetIndexAndLenOfKeyInKeyChainAPDU(byte[] keyHmac, byte[] sault) throws Exception {
-    checkHmac(keyHmac);
+  public static CAPDU getGetIndexAndLenOfKeyInKeyChainAPDU(byte[] keyMac, byte[] sault) throws Exception {
+    checkHmac(keyMac);
     checkSault(sault);
-    byte[] data = prepareApduData(BYTE_ARRAY_HELPER.bConcat(keyHmac, sault));
+    byte[] data = prepareApduData(BYTE_ARRAY_HELPER.bConcat(keyMac, sault));
     return new CAPDU(
       WALLET_APPLET_CLA,
       INS_GET_KEY_INDEX_IN_STORAGE_AND_LEN,
@@ -348,10 +361,10 @@ public class TonWalletAppletApduCommands {
       GET_KEY_INDEX_IN_STORAGE_AND_LEN_LE);
   }
 
-  public static CAPDU getInitiateDeleteOfKeyAPDU(byte[] index, byte[] sault) throws Exception {
-    checkKeyChainKeyIndex(index);
+  public static CAPDU getInitiateDeleteOfKeyAPDU(byte[] keyIndex, byte[] sault) throws Exception {
+    checkKeyChainKeyIndex(keyIndex);
     checkSault(sault);
-    byte[] data = prepareApduData(BYTE_ARRAY_HELPER.bConcat(new byte[]{index[0], index[1]}, sault));
+    byte[] data = prepareApduData(BYTE_ARRAY_HELPER.bConcat(new byte[]{keyIndex[0], keyIndex[1]}, sault));
     return new CAPDU(
       WALLET_APPLET_CLA,
       INS_INITIATE_DELETE_KEY,
@@ -398,10 +411,10 @@ public class TonWalletAppletApduCommands {
       DELETE_KEY_RECORD_LE);
   }
 
-  public static CAPDU getGetHmacAPDU(byte[] index, byte[] sault) throws Exception {
-    checkKeyChainKeyIndex(index);
+  public static CAPDU getGetHmacAPDU(byte[] keyIndex, byte[] sault) throws Exception {
+    checkKeyChainKeyIndex(keyIndex);
     checkSault(sault);
-    byte[] data = prepareApduData(BYTE_ARRAY_HELPER.bConcat(index, sault));
+    byte[] data = prepareApduData(BYTE_ARRAY_HELPER.bConcat(keyIndex, sault));
     return new CAPDU(
       WALLET_APPLET_CLA,
       INS_GET_HMAC,
@@ -410,10 +423,10 @@ public class TonWalletAppletApduCommands {
       GET_HMAC_LE);
   }
 
-  public static CAPDU getGetKeyChunkAPDU(byte[] index, short startPos, byte[] sault, byte le) throws Exception {
-    checkKeyChainKeyIndex(index);
+  public static CAPDU getGetKeyChunkAPDU(byte[] keyIndex, short startPos, byte[] sault, byte le) throws Exception {
+    checkKeyChainKeyIndex(keyIndex);
     checkSault(sault);
-    byte[] data = prepareApduData(BYTE_ARRAY_HELPER.bConcat(index, new byte[]{(byte) (startPos >> 8), (byte) (startPos)}, sault));
+    byte[] data = prepareApduData(BYTE_ARRAY_HELPER.bConcat(keyIndex, new byte[]{(byte) (startPos >> 8), (byte) (startPos)}, sault));
     return new CAPDU(
       WALLET_APPLET_CLA,
       INS_GET_KEY_CHUNK,
@@ -444,12 +457,12 @@ public class TonWalletAppletApduCommands {
       new CAPDU(WALLET_APPLET_CLA, ins, p1, 0x00, data);
   }
 
-  private static byte[] prepareSaultBasedApduData(byte[] sault) throws Exception {
+  public static byte[] prepareSaultBasedApduData(byte[] sault) throws Exception {
     checkSault(sault);
     return BYTE_ARRAY_HELPER.bConcat(sault, HMAC_HELPER.computeMac(sault));
   }
 
-  private static byte[] prepareApduData(byte[] dataChunk) throws Exception {
+  public static byte[] prepareApduData(byte[] dataChunk) throws Exception {
     return BYTE_ARRAY_HELPER.bConcat(dataChunk, HMAC_HELPER.computeMac(dataChunk));
   }
 
@@ -464,7 +477,7 @@ public class TonWalletAppletApduCommands {
   }
 
   private static void checkHdIndex(byte[] ind) {
-    if (ind == null || ind.length == 0 || ind.length > MAX_IND_SIZE)
+    if (ind == null || ind.length == 0 || ind.length > MAX_HD_INDEX_SIZE)
       throw new IllegalArgumentException(ERROR_MSG_HD_INDEX_BYTES_SIZE_INCORRECT);
   }
 

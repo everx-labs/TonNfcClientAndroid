@@ -36,7 +36,7 @@ public final class TonWalletConstants {
     public static final short MAX_NUMBER_OF_KEYS_IN_KEYCHAIN = 1023;
     public static final short MAX_KEY_SIZE_IN_KEYCHAIN = 8192;
     public static final short KEY_CHAIN_SIZE = 32767;
-    public final static short MAX_IND_SIZE = (short) 10;
+    public final static short MAX_HD_INDEX_SIZE = (short) 10;
     public static final short COMMON_SECRET_SIZE = 32;
     public static final short MAX_HMAC_FAIL_TRIES = 20;
     public static final short KEYCHAIN_KEY_INDEX_LEN = 2;
