@@ -106,6 +106,7 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_MALFORMED_SW_FOR_JSON = "Malformed SW for json.";
   public static final String ERROR_MSG_CAPDU_IS_NULL = "CAPDU is null.";
   public static final String ERROR_MSG_STRING_IS_NOT_ASCII = "String is not in ascii.";
+  public static final String ERROR_MSG_APDU_DATA_FIELD_IS_NULL = "APDU data field is null.";
 
   public static final List<String> ANDROID_INTERNAL_ERRORS = Arrays.asList(
     ERROR_MSG_APDU_EMPTY,
@@ -155,7 +156,8 @@ public class ResponsesConstants {
           ERROR_MSG_MALFORMED_JSON_MSG,
           ERROR_MSG_MALFORMED_SW_FOR_JSON,
           ERROR_MSG_CAPDU_IS_NULL,
-          ERROR_MSG_STRING_IS_NOT_ASCII
+          ERROR_MSG_STRING_IS_NOT_ASCII,
+          ERROR_MSG_APDU_DATA_FIELD_IS_NULL
   );
 
 
