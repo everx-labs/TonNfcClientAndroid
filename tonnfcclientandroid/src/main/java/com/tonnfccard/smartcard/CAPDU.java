@@ -9,31 +9,30 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_DATA_FIEL
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class CAPDU {
-        private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
-
+        public final static int MAX_DATA_LEN = 255;
+        public final static int HEADER_LENGTH = 4;
+        private final static ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
         private final static byte[] EMPTY_DATA = new byte[0];
-
-        private final static int HEADER_LENGTH = 4;
 
         private byte[] bytes;
 
-        public CAPDU(int cla, int ins, int p1, int p2) {
-            this.bytes = BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte)cla, (byte)ins, (byte)p1, (byte)p2});
+        public CAPDU(byte cla, byte ins, byte p1, byte p2) {
+            this.bytes = BYTE_ARRAY_HELPER.bConcat(new byte[]{cla, ins, p1, p2});
         }
 
-        public CAPDU(int cla, int ins, int p1, int p2, int le)  {
-            this.bytes = BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte)cla, (byte)ins, (byte)p1, (byte)p2, (byte) le});
+        public CAPDU(byte cla, byte ins, byte p1, byte p2, byte le)  {
+            this.bytes = BYTE_ARRAY_HELPER.bConcat(new byte[]{cla, ins, p1, p2, le});
         }
 
-        public CAPDU(int cla, int ins, int p1, int p2, byte[] dataField)   {
-            // checkDataField(dataField);
-            if (dataField == null) return;
-            this.bytes = BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte)cla, (byte)ins, (byte)p1, (byte)p2, (byte) dataField.length}, dataField);
+        public CAPDU(byte cla, byte ins, byte p1, byte p2, byte[] dataField)   {
+            checkDataField(dataField);
+            //if (dataField == null) return;
+            this.bytes = BYTE_ARRAY_HELPER.bConcat(new byte[]{cla, ins, p1, p2, (byte) dataField.length}, dataField);
         }
 
-        public CAPDU(int cla, int ins, int p1, int p2, byte[] dataField, int le)  {
-            //  checkDataField(dataField);
-            this.bytes = BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte)cla, (byte)ins, (byte)p1, (byte)p2, (byte) dataField.length}, dataField, new byte[]{(byte) le});
+        public CAPDU(byte cla, byte ins, byte p1, byte p2, byte[] dataField, byte le)  {
+            checkDataField(dataField);
+            this.bytes = BYTE_ARRAY_HELPER.bConcat(new byte[]{cla, ins, p1, p2, (byte) dataField.length}, dataField, new byte[]{le});
         }
 
         public byte getCla() {
@@ -84,7 +83,7 @@ public class CAPDU {
                         .append(BYTE_ARRAY_HELPER.hex(getData())).append(" ");
             }
 
-            if (getLe() == -1) {
+            if (getLe() != -1) {
                 apduFormated.append(BYTE_ARRAY_HELPER.hex(getLe())).append(" ");
             }
             return apduFormated;
@@ -92,16 +91,11 @@ public class CAPDU {
 
         @Override
         public String toString()  {
-            try {
-                return BYTE_ARRAY_HELPER.hex(getBytes());
-            }
-            catch (Exception e) {
-                return "";
-            }
+            return BYTE_ARRAY_HELPER.hex(getBytes());
         }
 
         private static void checkDataField(byte[] dataField) {
-            if (dataField == null || dataField.length == 0 || dataField.length > 255){
+            if (dataField == null || dataField.length == 0 || dataField.length > MAX_DATA_LEN){
                 throw new IllegalArgumentException(ERROR_MSG_APDU_DATA_FIELD_LEN_INCORRECT);
             }
         }

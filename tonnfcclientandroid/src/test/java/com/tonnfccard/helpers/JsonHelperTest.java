@@ -170,8 +170,8 @@ public class JsonHelperTest {
     public void testCreateErrorJsonForCardExceptionForUnknownSwAndUnknownApdu()   {
         try {
             String unknownSw = "6677";
-            CAPDU unknownApdu = new CAPDU(40, 80, 0x00, 0x00, 1);
-            String s = JSON_HELPER.createErrorJsonForCardException(unknownSw,  new CAPDU(40, 80, 0x00, 0x00, 1));
+            CAPDU unknownApdu = new CAPDU((byte)40, (byte) 80, (byte) 0x00, (byte) 0x00, (byte)1);
+            String s = JSON_HELPER.createErrorJsonForCardException(unknownSw,  new CAPDU((byte)40, (byte) 80, (byte) 0x00, (byte) 0x00, (byte)1));
             JSONObject obj = new JSONObject(s);
             assertEquals(obj.get(TonWalletConstants.STATUS_FIELD), TonWalletConstants.FAIL_STATUS);
             assertEquals(obj.get(TonWalletConstants.ERROR_TYPE_ID_FIELD), CARD_ERROR_TYPE_ID);

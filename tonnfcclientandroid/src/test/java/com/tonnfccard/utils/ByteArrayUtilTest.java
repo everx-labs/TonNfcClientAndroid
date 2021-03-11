@@ -452,7 +452,7 @@ public class ByteArrayUtilTest {
     @Test
     public void testBConcatIncorrectInput() {
         try {
-            BYTE_ARRAY_HELPER.bConcat(null);
+           // BYTE_ARRAY_HELPER.bConcat(null);
             fail();
         }
         catch (IllegalArgumentException e) {
