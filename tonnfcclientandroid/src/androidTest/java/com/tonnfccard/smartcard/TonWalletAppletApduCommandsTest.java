@@ -78,6 +78,18 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
+    /**
+     VERIFY_PASSWORD
+
+     CLA: 0xB0
+     INS: 0x92
+     P1: 0x00
+     P2: 0x00
+     LC: 0x90
+     Data: 128 bytes of unencrypted activation password | 16 bytes of IV for AES128 CBC
+
+     */
+
     @Test
     public void testGetVerifyPasswordAPDUIncorrectInputData() {
         try {
@@ -140,6 +152,17 @@ public class TonWalletAppletApduCommandsTest {
             fail();
         }
     }
+
+    /**
+     VERIFY_PIN
+
+     CLA: 0xB0
+     INS: 0xA2
+     P1: 0x00
+     P2: 0x00
+     LC: 0x44
+     Data: 4 bytes of PIN | 32 bytes of sault | 32 bytes of mac
+     */
 
     @Test
     public void testGetVerifyPinAPDU() {
@@ -205,7 +228,17 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
+    /**
+     SIGN_SHORT_MESSAGE_WITH_DEFAULT_PATH
 
+     CLA: 0xB0
+     INS: 0xA5
+     P1: 0x00
+     P2: 0x00
+     LC: APDU data length
+     Data: messageLength (2bytes)| message | sault (32 bytes) | mac (32 bytes)
+     LE: 0x40
+     */
 
     @Test
     public void testGetSignShortMessageWithDefaultPathAPDU() {
@@ -271,6 +304,18 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
+    /**
+     SIGN_SHORT_MESSAGE
+
+     CLA: 0xB0
+     INS: 0xA3
+     P1: 0x00
+     P2: 0x00
+     LC: APDU data length
+     Data: messageLength (2bytes)| message | indLength (1 byte, > 0, <= 10) | ind | sault (32 bytes) | mac (32 bytes)
+     LE: 0x40
+
+     */
 
     @Test
     public void testGetSignShortMessageAPDU() {
@@ -360,6 +405,19 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
+    /**
+     GET_PUBLIC_KEY
+
+     CLA: 0xB0
+     INS: 0xA0
+     P1: 0x00
+     P2: 0x00
+     LC: Number of decimal places in ind
+     Data: Ascii encoding of ind decimal places
+     LE: 0x20
+
+     */
+
     @Test
     public void testGetPublicKeyAPDU() {
         try {
@@ -397,6 +455,17 @@ public class TonWalletAppletApduCommandsTest {
             assertEquals(e.getMessage(), ERROR_MSG_HD_INDEX_BYTES_SIZE_INCORRECT);
         }
     }
+
+    /**
+     * ADD_RECOVERY_DATA_PART
+     *
+     * CLA: 0xB0
+     * INS: 0xD1
+     * P1: 0x00 (START_OF_TRANSMISSION), 0x01 or 0x02 (END_OF_TRANSMISSION)
+     * P2: 0x00
+     * LC: If (P1 ≠ 0x02) Length of recovery data piece else 0x20
+     * Data: If (P1 ≠ 0x02) recovery data piece else SHA256(recovery data)
+     */
 
 
     @Test
@@ -474,9 +543,19 @@ public class TonWalletAppletApduCommandsTest {
         catch (Exception e) {
             assertEquals(e.getMessage(), ERROR_MSG_RECOVERY_DATA_MAC_BYTES_SIZE_INCORRECT);
         }
-
     }
 
+    /**
+     * GET_RECOVERY_DATA_PART
+     *
+     * CLA: 0xB0
+     * INS: 0xD2
+     * P1: 0x00
+     * P2: 0x00
+     * LC: 0x02
+     * Data: startPosition of recovery data piece in internal buffer
+     * LE: length of recovery data piece in internal buffer
+     */
 
     @Test
     public void testGetGetRecoveryDataPartAPDU() {
@@ -514,8 +593,18 @@ public class TonWalletAppletApduCommandsTest {
         catch (Exception e) {
             assertEquals(e.getMessage(), ERROR_MSG_START_POSITION_BYTES_SIZE_INCORRECT);
         }
-
     }
+
+    /**
+     RESET_KEYCHAIN
+
+     CLA: 0xB0
+     INS: 0xBC
+     P1: 0x00
+     P2: 0x00
+     LC: 0x40
+     Data: sault (32 bytes) | mac (32 bytes)
+     */
 
     @Test
     public void testGetResetKeyChainAPDU() {
@@ -556,6 +645,18 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
+    /**
+     GET_NUMBER_OF_KEYS
+
+     CLA: 0xB0
+     INS: 0xB8
+     P1: 0x00
+     P2: 0x00
+     LC: 0x40
+     Data: sault (32 bytes) | mac (32 bytes)
+     LE: 0x02
+     */
+
     @Test
     public void testGetNumberOfKeysAPDU() {
         try {
@@ -593,6 +694,18 @@ public class TonWalletAppletApduCommandsTest {
             assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
         }
     }
+
+    /***
+     GET_OCCUPIED_STORAGE_SIZE
+
+     CLA: 0xB0
+     INS: 0xBA
+     P1: 0x00
+     P2: 0x00
+     LC: 0x40
+     Data: sault (32 bytes) | mac (32 bytes)
+     LE: 0x02
+     */
 
 
     @Test
@@ -633,6 +746,18 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
+    /***
+     GET_FREE_STORAGE_SIZE
+
+     CLA: 0xB0
+     INS: 0xB9
+     P1: 0x00
+     P2: 0x00
+     LC: 0x40
+     Data: sault (32 bytes) | mac (32 bytes)
+     LE: 0x02
+     */
+
     @Test
     public void testGetGetFreeSizeAPDU() {
         try {
@@ -670,6 +795,17 @@ public class TonWalletAppletApduCommandsTest {
             assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
         }
     }
+
+    /***
+     CHECK_KEY_HMAC_CONSISTENCY
+
+     CLA: 0xB0
+     INS: 0xB0
+     P1: 0x00
+     P2: 0x00
+     LC: 0x60
+     Data: keyMac (32 bytes) | sault (32 bytes) | mac (32 bytes)
+     */
 
 
     @Test
@@ -734,6 +870,18 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
+    /***
+     GET_KEY_INDEX_IN_STORAGE_AND_LEN
+
+     CLA: 0xB0
+     INS: 0xB1
+     P1: 0x00
+     P2: 0x00
+     LC: 0x60
+     Data: hmac of key (32 bytes) | sault (32 bytes) | mac (32 bytes)
+     LE: 0x04
+     */
+
 
     @Test
     public void testGetGetIndexAndLenOfKeyInKeyChainAPDU() {
@@ -796,6 +944,17 @@ public class TonWalletAppletApduCommandsTest {
             assertEquals(e.getMessage(), ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT);
         }
     }
+
+    /***
+     INITIATE_CHANGE_OF_KEY
+
+     CLA: 0xB0
+     INS: 0xB5
+     P1: 0x00
+     P2: 0x00
+     LC: 0x42
+     Data: index of key (2 bytes) | sault (32 bytes) | mac (32 bytes)
+     */
 
 
     @Test
@@ -860,6 +1019,18 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
+    /***
+     INITIATE_DELETE_KEY
+
+     CLA: 0xB0
+     INS: 0xB7
+     P1: 0x00
+     P2: 0x00
+     LC: 0x42
+     Data: key  index (2 bytes) | sault (32 bytes) | mac (32 bytes)
+     LE: 0x02
+     */
+
 
     @Test
     public void testGetInitiateDeleteOfKeyAPDU() {
@@ -922,6 +1093,18 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
+    /**
+     * GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS
+     *
+     * CLA: 0xB0
+     * INS: 0xE1
+     * P1: 0x00
+     * P2: 0x00
+     * LC: 0x40
+     * Data: sault (32 bytes) | mac (32 bytes)
+     * LE: 0x02
+     */
+
     @Test
     public void testGetDeleteKeyChunkNumOfPacketsAPDU() {
         try {
@@ -959,6 +1142,18 @@ public class TonWalletAppletApduCommandsTest {
             assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
         }
     }
+
+    /**
+     * GET_DELETE_KEY_RECORD_NUM_OF_PACKETS
+     *
+     * CLA: 0xB0
+     * INS: 0xE2
+     * P1: 0x00
+     * P2: 0x00
+     * LC: 0x40
+     * Data: sault (32 bytes) | mac (32 bytes)
+     * LE: 0x02
+     */
 
     @Test
     public void testGetDeleteKeyRecordNumOfPacketsAPDU() {
@@ -998,6 +1193,18 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
+    /***
+     DELETE_KEY_RECORD
+
+     CLA: 0xB0
+     INS: 0xBF
+     P1: 0x00
+     P2: 0x00
+     LC: 0x40
+     Data: sault (32 bytes) | mac (32 bytes)
+     LE: 0x01
+     */
+
     @Test
     public void testGetDeleteKeyRecordAPDU() {
         try {
@@ -1035,6 +1242,18 @@ public class TonWalletAppletApduCommandsTest {
             assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
         }
     }
+
+    /***
+     DELETE_KEY_CHUNK
+
+     CLA: 0xB0
+     INS: 0xBE
+     P1: 0x00
+     P2: 0x00
+     LC: 0x40
+     Data: sault (32 bytes) | mac (32 bytes)
+     LE: 0x01
+     */
 
 
     @Test
@@ -1075,6 +1294,19 @@ public class TonWalletAppletApduCommandsTest {
             assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
         }
     }
+
+
+    /***
+     GET_HMAC
+
+     CLA: 0xB0
+     INS: 0xBB
+     P1: 0x00
+     P2: 0x00
+     LC: 0x42
+     Data: index of key (2 bytes) | sault (32 bytes) | mac (32 bytes)
+     LE: 0x22
+     */
 
 
     @Test
@@ -1139,6 +1371,18 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
+    /***
+     GET_KEY_CHUNK
+
+     CLA: 0xB0
+     INS: 0xB2
+     P1: 0x00
+     P2: 0x00
+     LC: 0x44
+     Data: key  index (2 bytes) | startPos (2 bytes) | sault (32 bytes) | mac (32 bytes)
+     LE: Key chunk length
+     */
+
     @Test
     public void testGetKeyChunkAPDU() {
         try {
@@ -1202,6 +1446,44 @@ public class TonWalletAppletApduCommandsTest {
             assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
         }
     }
+
+    /***
+     ADD_KEY_CHUNK
+
+     CLA: 0xB0
+     INS: 0xB4
+     P1: 0x00 (START_OF_TRANSMISSION), 0x01 or 0x02 (END_OF_TRANSMISSION)
+     P2: 0x00
+     LC:
+     if (P1 = 0x00 OR  0x01): 0x01 +  length of key chunk + 0x40
+     if (P1 = 0x02): 0x60
+
+     Data:
+     if (P1 = 0x00 OR  0x01): length of key chunk (1 byte) | key chunk | sault (32 bytes) | mac (32 bytes)
+     if (P1 = 0x02): hmac of key (32 bytes) | sault (32 bytes) | mac (32 bytes)
+
+     LE: if (P1 = 0x02): 0x02
+
+     */
+
+    /***
+     CHANGE_KEY_CHUNK
+
+     CLA: 0xB0
+     INS: 0xB6
+     P1: 0x00 (START_OF_TRANSMISSION), 0x01 or 0x02 (END_OF_TRANSMISSION)
+     P2: 0x00
+     LC:
+     if (P1 = 0x00 OR  0x01): 0x01 +  length of key chunk + 0x40
+     if (P1 = 0x02): 0x60
+
+     Data:
+     if (P1 = 0x00 OR  0x01): length of key chunk (1 byte) | key chunk | sault (32 bytes) | mac (32 bytes)
+     if (P1 = 0x02): hmac of key (32 bytes) | sault (32 bytes) | mac (32 bytes)
+
+     LE: if (P1 = 0x02): 0x02
+
+     */
 
     @Test
     public void testGetSendKeyChunkAPDU() {
@@ -1315,6 +1597,17 @@ public class TonWalletAppletApduCommandsTest {
             }
         }
     }
+
+    /***
+     CHECK_AVAILABLE_VOL_FOR_NEW_KEY
+
+     CLA: 0xB0
+     INS: 0xB3
+     P1: 0x00
+     P2: 0x00
+     LC: 0x42
+     Data: length of new key (2 bytes) | sault (32 bytes) | mac (32 bytes)
+     */
 
     @Test
     public void testGetCheckAvailableVolForNewKeyAPDU() {
