@@ -13,7 +13,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class RAPDUTest {
-
     private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
     private static final StringHelper STR_HELPER = StringHelper.getInstance();
 

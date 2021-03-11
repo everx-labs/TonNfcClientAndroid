@@ -7,41 +7,52 @@ import com.tonnfccard.utils.ByteArrayUtil;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_RESPONSE_TOO_LONG;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SW_TOO_SHORT;
 
+/**
+ *  Class wrapper to represent the response from smart card.
+ *  Response from the card has the following structure: DATA | SW1 | SW2
+ *
+ *  DATA - real data (byte array) returned by the card, for example: ed25519 signature
+ *  SW1 - first byte of status word
+ *  SW2 - second byte of status word
+ *
+ *  DATA field may not exist if we do not wait the data from applet, but we always must get SW1 | SW2
+ *
+ *  SW1 == 0x90 && SW2 == 0x00 means that card operation is done successfully
+ *  If you get another SW then some error happened. Check ErrorCodes class for more information.
+ */
+
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class RAPDU {
+    public static final int MIN_LENGTH = 2;
+    public static final int MAX_LENGTH = 257;
     private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
     private final byte[] bytes;
-    private final byte[] data;
-    private final byte[] sw;
+
 
     public RAPDU(String response) {
         this(BYTE_ARRAY_HELPER.bytes(response));
     }
 
     public RAPDU(byte[] bytes) {
-        if (bytes == null || bytes.length < 2 ) throw new IllegalArgumentException(ERROR_MSG_SW_TOO_SHORT);
-        if (bytes.length > 257 ) throw new IllegalArgumentException(ERROR_MSG_APDU_RESPONSE_TOO_LONG);
-        int len = bytes.length;
+        if (bytes == null || bytes.length < MIN_LENGTH) throw new IllegalArgumentException(ERROR_MSG_SW_TOO_SHORT);
+        if (bytes.length > MAX_LENGTH ) throw new IllegalArgumentException(ERROR_MSG_APDU_RESPONSE_TOO_LONG);
         this.bytes = bytes;
-        this.data = new byte[len-2];
-        System.arraycopy(bytes, 0, data, 0, len - 2);
-        this.sw = new byte[]{bytes[len-2], bytes[len-1]};
     }
 
     public byte[] getData() {
-        return data;
+        return BYTE_ARRAY_HELPER.bLeft(bytes, bytes.length - 2);
     }
 
     public byte[] getSW() {
-        return sw;
+        return new byte[]{bytes[bytes.length - 2], bytes[bytes.length - 1]};
     }
 
     public byte getSW1() {
-        return sw[0];
+        return bytes[bytes.length-2];
     }
 
     public byte getSW2() {
-        return sw[1];
+        return bytes[bytes.length-1];
     }
 
     public byte[] getBytes() {

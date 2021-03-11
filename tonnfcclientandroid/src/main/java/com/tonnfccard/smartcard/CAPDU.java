@@ -7,6 +7,30 @@ import com.tonnfccard.utils.ByteArrayUtil;
 
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_DATA_FIELD_LEN_INCORRECT;
 
+/**
+ *  Class wrapper to represent APDU command that is sent to smart card
+ *  We are using the following notation:
+ *
+ *  CLA = APDU command class
+ *  INS = APDU command type
+ *  P1= first param of APDU
+ *  P2= second param of APDU
+ *  LC = length of input data for APDU command
+ *  LE = length of response data array for APDU command.
+ *
+ *
+ *  Each APDU command field (CLA, INS, P1, P2, Lc and Le)  has a size = 1 byte except of Data.
+ *  APDU command may have one of the following format:
+ *  CLA | INS | P1 | P2
+ *  CLA | INS | P1 | P2 | LC | Data
+ *  CLA | INS | P1 | P2 | LC | Data | LE
+ *  CLA | INS | P1 | P2 | LE
+ *
+ *  Note:
+ *  1) LE = 0 usually means that applet must return all the data that it has
+ *  2) LE = -1 we use for the case when really LE is absent and we do not wait for response from the card.
+ */
+
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class CAPDU {
         public final static int MAX_DATA_LEN = 255;
