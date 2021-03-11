@@ -180,18 +180,18 @@ public class ErrorCodes {
     public static String getMsg(RAPDU apduResponse)  {
         if (apduResponse == null) throw new IllegalArgumentException(ERROR_MSG_APDU_RESPONSE_IS_NULL);
         byte[] swBytes = {apduResponse.getSW1(), apduResponse.getSW2()};
-        int sw = BYTE_ARRAY_HELPER.makeShort(swBytes, (short)0);
-        return codeToMsg.get((short) sw);
+        short sw = BYTE_ARRAY_HELPER.makeShort(swBytes, (short)0);
+        return codeToMsg.get(sw);
     }
 
     public static String getMsg(String apduResponse)  {
         if (apduResponse == null) throw new IllegalArgumentException(ERROR_MSG_APDU_RESPONSE_IS_NULL);
-        int sw = BYTE_ARRAY_HELPER.makeShort(BYTE_ARRAY_HELPER.bytes(apduResponse.trim()), (short) 0);
-        return codeToMsg.get((short) sw);
+        short sw = BYTE_ARRAY_HELPER.makeShort(BYTE_ARRAY_HELPER.bytes(apduResponse.trim()), (short) 0);
+        return codeToMsg.get(sw);
     }
 
     public static String getMsg(short sw) {
-        return codeToMsg.get((short) sw);
+        return codeToMsg.get(sw);
     }
 
 }

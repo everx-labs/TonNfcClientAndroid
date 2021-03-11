@@ -86,12 +86,13 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_COUNT_IS_LESS_THEN_ZERO = "Count of is less than 0.";
   public static final String ERROR_MSG_COUNT_IS_TOO_BIG = "Count is greater than length of source array (";
   public static final String ERROR_MSG_FROM_IS_LESS_THEN_ZERO = "From is less than 0";
-  public static final String ERROR_MSG_FROM_IS_OUT_OF_BOUND = "From is out of bound (";
+  public static final String ERROR_MSG_OFFSET_IS_OUT_OF_BOUND = "Offset is out of bound (";
   public static final String ERROR_MSG_END_INDEX_OUT_OF_BOUND = "End index is out of bound (";
-  public static final String ERROR_MSG_ARRAYS_ARE_NULL = "Arrays are null";
-  public static final String ERROR_MSG_STRING_IS_NULL = "String is null";
-  public static final String ERROR_MSG_STRING_IS_NOT_CORRECT_HEX = "Source string is not correct hex: '";
-  public static final String ERROR_MSG_OFFSET_IS_NOT_CORRECT = "Incorrect offset in source array.";
+  public static final String ERROR_MSG_ARRAYS_ARE_NULL = "All arrays arg are null.";
+  public static final String ERROR_MSG_STRING_IS_NULL = "String is null.";
+  public static final String ERROR_MSG_STRING_IS_NOT_CORRECT_HEX = "Source string is not correct hex: ";
+  public static final String ERROR_MSG_SOURCE_OFFSET_IS_NOT_CORRECT = "Incorrect offset in source array.";
+  public static final String ERROR_MSG_DEST_OFFSET_IS_NOT_CORRECT = "Incorrect offset in dest array.";
   public static final String ERROR_MSG_SOURCE_ARRAY_LENGTH_LESS_THAN_TWO = "Source array must have length >= 2.";
   public static final String ERROR_MSG_FIRST_ARRAY_IS_NULL = "First array is null";
   public static final String ERROR_MSG_SECOND_ARRAY_IS_NULL = "Second array is null";
@@ -141,12 +142,13 @@ public class ResponsesConstants {
     ERROR_MSG_COUNT_IS_LESS_THEN_ZERO,
     ERROR_MSG_COUNT_IS_TOO_BIG,
     ERROR_MSG_FROM_IS_LESS_THEN_ZERO,
-    ERROR_MSG_FROM_IS_OUT_OF_BOUND,
+          ERROR_MSG_OFFSET_IS_OUT_OF_BOUND,
     ERROR_MSG_END_INDEX_OUT_OF_BOUND,
     ERROR_MSG_ARRAYS_ARE_NULL,
     ERROR_MSG_STRING_IS_NULL,
     ERROR_MSG_STRING_IS_NOT_CORRECT_HEX,
-    ERROR_MSG_OFFSET_IS_NOT_CORRECT,
+    ERROR_MSG_SOURCE_OFFSET_IS_NOT_CORRECT,
+          ERROR_MSG_DEST_OFFSET_IS_NOT_CORRECT,
     ERROR_MSG_SOURCE_ARRAY_LENGTH_LESS_THAN_TWO,
     ERROR_MSG_FIRST_ARRAY_IS_NULL,
     ERROR_MSG_SECOND_ARRAY_IS_NULL,

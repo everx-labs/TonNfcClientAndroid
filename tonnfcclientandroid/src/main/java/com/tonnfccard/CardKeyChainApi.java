@@ -514,7 +514,7 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String getKeyChainDataAboutAllKeysAndGetJson() throws Exception {
     try {
-      Map<String, Integer> map = getAllHmacsOfKeysFromCard();
+      Map<String, Short> map = getAllHmacsOfKeysFromCard();
       JSONObject allKeysObj = new JSONObject();
       JSONArray jArray = new JSONArray();
       for (final String hmac : map.keySet()) {
@@ -554,7 +554,7 @@ public final class CardKeyChainApi extends TonWalletApi {
       if (ind < 0 || ind > MAX_NUMBER_OF_KEYS_IN_KEYCHAIN - 1)
         throw new Exception(ERROR_MSG_KEY_INDEX_VALUE_INCORRECT);
       byte[] indBytes = new byte[2];
-      BYTE_ARR_HELPER.setShort(indBytes, (short) 0, ind);
+      BYTE_ARR_HELPER.setShort(indBytes, 0, ind);
       String response = BYTE_ARR_HELPER.hex(getHmac(indBytes));
       return JSON_HELPER.createResponseJson(response);
     }
@@ -576,7 +576,7 @@ public final class CardKeyChainApi extends TonWalletApi {
     if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != GET_NUMBER_OF_KEYS_LE)
       throw new Exception(ERROR_MSG_GET_NUMBER_OF_KEYS_RESPONSE_LEN_INCORRECT);
     byte[] response = rapdu.getData();
-    int numOfKeys = BYTE_ARR_HELPER.makeShort(response, 0);
+    short numOfKeys = BYTE_ARR_HELPER.makeShort(response, 0);
     if (numOfKeys < 0 || numOfKeys > MAX_NUMBER_OF_KEYS_IN_KEYCHAIN)
       throw new Exception(ERROR_MSG_NUMBER_OF_KEYS_RESPONSE_INCORRECT);
     return numOfKeys;
@@ -613,10 +613,10 @@ public final class CardKeyChainApi extends TonWalletApi {
     if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != GET_KEY_INDEX_IN_STORAGE_AND_LEN_LE)
       throw new Exception(ERROR_MSG_GET_KEY_INDEX_IN_STORAGE_AND_LEN_RESPONSE_LEN_INCORRECT);
     byte[] response = rapdu.getData();
-    int index = BYTE_ARR_HELPER.makeShort(response, 0);
+    short index = BYTE_ARR_HELPER.makeShort(response, 0);
     if (index < 0 || index > MAX_NUMBER_OF_KEYS_IN_KEYCHAIN - 1)
       throw new Exception(ERROR_MSG_KEY_INDEX_INCORRECT);
-    int len = BYTE_ARR_HELPER.makeShort(response, 2);
+    short len = BYTE_ARR_HELPER.makeShort(response, 2);
     if (len <= 0 || len > MAX_KEY_SIZE_IN_KEYCHAIN)
       throw new Exception(ERROR_MSG_KEY_LENGTH_INCORRECT);
     JSONObject jsonResponse = new JSONObject();
@@ -629,7 +629,7 @@ public final class CardKeyChainApi extends TonWalletApi {
     JSONObject jsonObject = getIndexAndLenOfKeyInKeyChain(macBytes);
     byte[] ind = new byte[2];
     short indVal = (short) jsonObject.getInt(KEY_INDEX_FIELD);
-    BYTE_ARR_HELPER.setShort(ind, (short)0, indVal);
+    BYTE_ARR_HELPER.setShort(ind, 0, indVal);
     initiateDeleteOfKey(ind);
 
     int deleteKeyChunkIsDone = 0;
@@ -707,7 +707,7 @@ public final class CardKeyChainApi extends TonWalletApi {
     if (rapdu == null || rapdu.getData() == null || rapdu.getData().length  != GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_LE)
       throw new Exception(ERROR_MSG_GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_RESPONSE_LEN_INCORRECT);
     byte[] response = rapdu.getData();
-    int num = BYTE_ARR_HELPER.makeShort(response, 0);
+    short num = BYTE_ARR_HELPER.makeShort(response, 0);
     if (num < 0)
       throw new Exception(ERROR_MSG_GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_RESPONSE_INCORRECT);
     return num;
@@ -720,7 +720,7 @@ public final class CardKeyChainApi extends TonWalletApi {
     if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_LE)
       throw new Exception(ERROR_MSG_GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_RESPONSE_LEN_INCORRECT);
     byte[] response = rapdu.getData();
-    int num = BYTE_ARR_HELPER.makeShort(response, 0);
+    short num = BYTE_ARR_HELPER.makeShort(response, 0);
     if (num < 0)
       throw new Exception(ERROR_MSG_GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_RESPONSE_INCORRECT);
     return num;
@@ -733,7 +733,7 @@ public final class CardKeyChainApi extends TonWalletApi {
     if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != GET_OCCUPIED_SIZE_LE)
       throw new Exception(ERROR_MSG_GET_OCCUPIED_SIZE_RESPONSE_LEN_INCORRECT);
     byte[] response = rapdu.getData();
-    int size = BYTE_ARR_HELPER.makeShort(response, 0);
+    short size = BYTE_ARR_HELPER.makeShort(response, 0);
     if (size < 0)
       throw new Exception(ERROR_MSG_OCCUPIED_SIZE_RESPONSE_INCORRECT);
     return size;
@@ -746,7 +746,7 @@ public final class CardKeyChainApi extends TonWalletApi {
     if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != GET_FREE_SIZE_LE)
       throw new Exception(ERROR_MSG_GET_FREE_SIZE_RESPONSE_LEN_INCORRECT);
     byte[] response = rapdu.getData();
-    int size = BYTE_ARR_HELPER.makeShort(response, 0);
+    short size = BYTE_ARR_HELPER.makeShort(response, 0);
     if (size < 0)
       throw new Exception(ERROR_MSG_FREE_SIZE_RESPONSE_INCORRECT);
     return size;
@@ -766,7 +766,7 @@ public final class CardKeyChainApi extends TonWalletApi {
     int keyLen = jsonObject.getInt(KEY_LENGTH_FIELD);
     byte[] ind = new byte[2];
     short indVal = (short) jsonObject.getInt(KEY_INDEX_FIELD);
-    BYTE_ARR_HELPER.setShort(ind, (short)0, indVal);
+    BYTE_ARR_HELPER.setShort(ind, 0, indVal);
     return getKeyFromKeyChain(keyLen, ind);
   }
 
@@ -831,7 +831,7 @@ public final class CardKeyChainApi extends TonWalletApi {
     if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != SEND_CHUNK_LE)
       throw new Exception(ERROR_MSG_SEND_CHUNK_RESPONSE_LEN_INCORRECT);
     byte[] response = rapdu.getData();
-    int numOfKeys = BYTE_ARR_HELPER.makeShort(response, 0);
+    short numOfKeys = BYTE_ARR_HELPER.makeShort(response, 0);
     if (numOfKeys <= 0 || numOfKeys > MAX_NUMBER_OF_KEYS_IN_KEYCHAIN)
       throw new Exception(ERROR_MSG_NUMBER_OF_KEYS_RESPONSE_INCORRECT);
     return numOfKeys;
@@ -850,22 +850,22 @@ public final class CardKeyChainApi extends TonWalletApi {
       throw new IllegalArgumentException(ERROR_MSG_NEW_KEY_LEN_INCORRECT + keyLen + ".");
     byte[] ind = new byte[2];
     short indVal = (short) jsonObject.getInt(KEY_INDEX_FIELD);
-    BYTE_ARR_HELPER.setShort(ind, (short)0, indVal);
+    BYTE_ARR_HELPER.setShort(ind, 0, indVal);
     initiateChangeOfKey(ind);
     changeKey(newKeyBytes);
     return BYTE_ARR_HELPER.hex(HMAC_HELPER.computeMac(newKeyBytes));
   }
 
-  private Map<String, Integer> getAllHmacsOfKeysFromCard() throws Exception {
-    Map<String, Integer> hmacs = new LinkedHashMap<>();
+  private Map<String, Short> getAllHmacsOfKeysFromCard() throws Exception {
+    Map<String, Short> hmacs = new LinkedHashMap<>();
     keyMacs.clear();
     int numOfKeys = getNumberOfKeys();
     byte[] ind = new byte[2];
     for (short i = 0; i < numOfKeys; i++) {
-      BYTE_ARR_HELPER.setShort(ind, (short) 0, i);
+      BYTE_ARR_HELPER.setShort(ind, 0, i);
       byte[] data = getHmac(ind);
       byte[] mac = BYTE_ARR_HELPER.bSub(data, 0, HMAC_SHA_SIG_SIZE);
-      int len = BYTE_ARR_HELPER.makeShort(data, HMAC_SHA_SIG_SIZE);
+      short len = BYTE_ARR_HELPER.makeShort(data, HMAC_SHA_SIG_SIZE);
       hmacs.put(BYTE_ARR_HELPER.hex(mac), len);
       keyMacs.add(BYTE_ARR_HELPER.hex(mac));
     }

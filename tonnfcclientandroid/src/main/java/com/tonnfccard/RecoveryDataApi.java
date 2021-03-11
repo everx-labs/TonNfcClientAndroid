@@ -116,7 +116,7 @@ public final class RecoveryDataApi extends TonWalletApi {
     RAPDU rapdu = apduRunner.sendTonWalletAppletAPDU(GET_RECOVERY_DATA_LEN_APDU);
     if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != 0x02)
       throw new Exception(ERROR_MSG_RECOVERY_DATA_LENGTH_RESPONSE_LEN_INCORRECT);
-    int len = BYTE_ARR_HELPER.makeShort(rapdu.getData(), 0);
+    short len = BYTE_ARR_HELPER.makeShort(rapdu.getData(), 0);
     if (len <= 0 || len > RECOVERY_DATA_MAX_SIZE)
       throw new Exception(ERROR_MSG_RECOVERY_DATA_LENGTH_RESPONSE_INCORRECT);
     return len;
