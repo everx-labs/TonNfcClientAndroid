@@ -573,4 +573,8 @@ cardCoinManagerNfcApi.getMaxPinTries(NfcCallback(promise::resolve, promise::reje
 
 The full list of functions provided by the library to communicate with the card you will find [here](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/docs/FuntionsList.md)
 
+## Auxiliary classes
+
+TonNfcClientAndroid provides also additional entities. [Here](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/tonnfcclientandroid/src/main/java/com/tonnfccard/TonWalletConstants.java) one may find the list of all constants required for work. And this utility class [ByteArrayUtil] (https://github.com/tonlabs/TonNfcClientAndroid/blob/master/tonnfcclientandroid/src/main/java/com/tonnfccard/utils/ByteArrayUtil.java) provides functions to handle byte arrays, hex representations of byte arrays and integer numbers.
+
 
