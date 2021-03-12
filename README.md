@@ -2,6 +2,10 @@
 
 The library is developed to handle communication of Android smartphones with NFC TON Labs Security cards. It provides a useful API to work with all functionality (i.e. APDU commands) supported by NFC TON Labs Security card. The technical specification of TON Labs Security card can be found here https://ton.surf/scard.
 
+<p align="center">
+<img src="../master/docs/images/Services.png" width="200">
+</p>
+
 ## Installation
 
 The library is published on  https://jitpack.io, see https://jitpack.io/#tonlabs/TonNfcClientAndroid.
