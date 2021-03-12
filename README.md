@@ -572,6 +572,6 @@ The full list of functions provided by the library to communicate with the card 
 
 ## Auxiliary classes
 
-TonNfcClientAndroid provides also additional entities. [Here](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/tonnfcclientandroid/src/main/java/com/tonnfccard/TonWalletConstants.java) one may find the list of all constants required for work. Class [ByteArrayUtil](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/tonnfcclientandroid/src/main/java/com/tonnfccard/utils/ByteArrayUtil.java) provides functions to handle byte arrays, hex representations of byte arrays and integer numbers. It is to simplify the work with the main API.
+TonNfcClientAndroid provides also additional entities. [Here](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/tonnfcclientandroid/src/main/java/com/tonnfccard/TonWalletConstants.java) one may find the list of all constants required for work. Class [ByteArrayUtil](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/tonnfcclientandroid/src/main/java/com/tonnfccard/utils/ByteArrayUtil.java) provides functions to handle byte arrays, hex representations of byte arrays and integer numbers. It is to simplify the work with the main API. Class [NfcApduRunner](https://github.com/tonlabs/TonNfcClientAndroid/tree/master/tonnfcclientandroid/src/main/java/com/tonnfccard/nfc) provides functionality to connect NFC smart card and send APDU to it. But normally you should not use it, use functions from classes with ending 'Api' to communicate wuth the card.
 
 
