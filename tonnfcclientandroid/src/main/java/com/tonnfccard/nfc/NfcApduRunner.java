@@ -26,8 +26,8 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_NFC;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_TAG;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_TRANSCEIVE;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY)
-public class NfcApduRunner extends ApduRunner {
+//@RestrictTo(RestrictTo.Scope.LIBRARY)
+public final class NfcApduRunner extends ApduRunner {
   public static final int TIME_OUT = 60000;
   private static NfcApduRunner nfcApduRunner;
   private static Context apiContext;
