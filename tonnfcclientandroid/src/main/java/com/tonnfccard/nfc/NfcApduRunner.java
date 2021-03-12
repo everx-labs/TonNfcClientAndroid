@@ -27,6 +27,10 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_TAG;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_TRANSCEIVE;
 
 //@RestrictTo(RestrictTo.Scope.LIBRARY)
+
+/**
+ * This class is responsible for connecting NFC cards (tags), transmitting APDU commands via NFC and getting responses from the card.
+ */
 public final class NfcApduRunner extends ApduRunner {
   public static final int TIME_OUT = 60000;
   private static NfcApduRunner nfcApduRunner;
