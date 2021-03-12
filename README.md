@@ -573,8 +573,10 @@ The full list of functions provided by the library to communicate with the card 
 ## Auxiliary classes
 
 TonNfcClientAndroid provides also additional entities. 
-+ In [TonWalletConstants](https://github.com/tonlabs/TonNfcClientSwift/blob/master/TonNfcClientSwift/Classes/smartCard/TonWalletAppletConstants.swift) one may find the list of all constants required for work. 
-+ Class [ByteArrayAndHexHelper](https://github.com/tonlabs/TonNfcClientSwift/blob/master/TonNfcClientSwift/Classes/api/utils/ByteArrayAndHexHelper.swift) provides functions to handle byte arrays, hex representations of byte arrays and integer numbers. It is to simplify the work with the main API. 
++ In [TonWalletConstants](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/tonnfcclientandroid/src/main/java/com/tonnfccard/TonWalletConstants.java) one may find the list of all constants required for work. 
+ + Class [ByteArrayUtil](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/tonnfcclientandroid/src/main/java/com/tonnfccard/utils/ByteArrayUtil.java) provides functions to handle byte arrays, hex representations of byte arrays and integer numbers. It is to simplify the work with the main API. 
+ + Class [NfcApduRunner](https://github.com/tonlabs/TonNfcClientAndroid/tree/master/tonnfcclientandroid/src/main/java/com/tonnfccard/nfc) provides functionality to connect NFC smart card and send arbitrary APDU to it. You can play with it, but normally you should not use it to work with TON Wallet functionality. Use functions from classes with ending 'Api' to communicate with the card correctly and get well formed json responses.
+ + Class wrappers for APDU command [CAPDU](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/tonnfcclientandroid/src/main/java/com/tonnfccard/smartcard/CAPDU.java) and its response [RAPDU](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/tonnfcclientandroid/src/main/java/com/tonnfccard/smartcard/RAPDU.java). They are to play with NfcApduRunner.
 
 
 
