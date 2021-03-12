@@ -3,6 +3,14 @@
 This document describes in detail the process of TON Labs Security card delivery from the ordering to its activation by the user. The information about Recovery service is described in separate document.  
 
 <p align="center">
+<img src="images/SecureConstants.png" width="1000">
+</p>
+
+<p align="center">
+<img src="images/SmartContracts.png" width="1000">
+</p>
+
+<p align="center">
 <img src="images/Services.png" width="1000">
 </p>
 
