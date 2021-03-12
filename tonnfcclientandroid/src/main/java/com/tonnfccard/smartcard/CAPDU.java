@@ -31,7 +31,6 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_DATA_FIEL
  *  2) LE = -1 we use for the case when really LE is absent and we do not wait for response from the card.
  */
 
-@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class CAPDU {
         public final static int MAX_DATA_LEN = 255;
         public final static int HEADER_LENGTH = 4;

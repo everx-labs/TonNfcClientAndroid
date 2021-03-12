@@ -21,7 +21,6 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SW_TOO_SHORT;
  *  If you get another SW then some error happened. Check ErrorCodes class for more information.
  */
 
-@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class RAPDU {
     public static final int MIN_LENGTH = 2;
     public static final int MAX_LENGTH = 257;
