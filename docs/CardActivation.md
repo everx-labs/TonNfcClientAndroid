@@ -2,6 +2,10 @@
 
 This document describes in detail the process of TON Labs Security card delivery from the ordering to its activation by the user. The information about Recovery service is described in separate document.  
 
+<p align="center">
+<img src="../master/docs/images/Screenshot1.png" width="200">
+</p>
+
 ## 2. Security card details
 
 Specification:
