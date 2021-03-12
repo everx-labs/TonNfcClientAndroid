@@ -42,7 +42,7 @@ See the details below.
 
 Description of security card APDU commands:
 
-[Final list of APDU command supported by NFC card (Updated 24/11/20)v3.0](https://www.notion.so/Final-list-of-APDU-command-supported-by-NFC-card-Updated-24-11-20-v3-0-d668f7f7c22c4a65a3b2c84440a007f7)
+Final list of APDU command supported by NFC card (will be added later).
 
 At this step TonLabs secure card service (SC-service) will generate authentication data and save it to TonLabs secure card storage contract (SCSC) for future usage.
 
