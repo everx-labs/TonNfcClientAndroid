@@ -243,7 +243,6 @@ import static com.tonnfccard.smartcard.TonWalletAppletConstants.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-private NfcApduRunner nfcApduRunner;
 private CardActivationApi cardActivationApi;
 private CardCoinManagerApi cardCoinManagerNfcApi;
 private static final String DEFAULT_PIN = "5555";
@@ -255,7 +254,7 @@ private static final String PASSWORD  = "F4B072E1DF2DB7CF6CD0CD681EC5CD2D071458D
 @Override
 protected void onCreate(Bundle savedInstanceState) {
 	try {
-		nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
+		NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
 		cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
 		cardActivationApi = new CardActivationApi(getApplicationContext(),  nfcApduRunner);
 	}
@@ -374,13 +373,12 @@ _Note:_ This test is quite long working. So take care of your NFC connection. To
 import com.tonnfccard.CardKeyChainApi;
 
 private CardKeyChainApi cardKeyChainApi;
-private NfcApduRunner nfcApduRunner;
 
 @Override
 protected void onCreate(Bundle savedInstanceState) {
 	try {
 		Context activity = getApplicationContext();
-		nfcApduRunner = NfcApduRunner.getInstance(activity);
+		NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(activity);
 		cardKeyChainApi = new CardKeyChainApi(activity,  nfcApduRunner);
 	}
 	catch (Exception e) {
@@ -463,7 +461,7 @@ private byte[] counter = new byte[AES_COUNTER_SIZE];
 protected void onCreate(Bundle savedInstanceState) {
 	try {
 		Context activity = getApplicationContext();
-		nfcApduRunner = NfcApduRunner.getInstance(activity);
+		NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(activity);
 		recoveryDataApi = new RecoveryDataApi(activity,  nfcApduRunner);
 		kg = KeyGenerator.getInstance("AES");
 		kg.init(AES_KEY_SIZE);
