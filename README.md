@@ -61,7 +61,6 @@ Let's suppose you want to work with NFC TON Labs security card in your MainActiv
 import com.tonnfccard.CardCoinManagerApi;
 import com.tonnfccard.nfc.NfcApduRunner;
 
-private NfcApduRunner nfcApduRunner;
 private CardCoinManagerApi cardCoinManagerNfcApi;
 		
 @Override
@@ -70,7 +69,7 @@ protected void onCreate(Bundle savedInstanceState) {
 	setContentView(android.example.myapplication.R.layout.activity_main);
 	...
 	try {
-		nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
+		NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
 		cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
 	}
 	catch (Exception e) {
@@ -87,7 +86,7 @@ protected void onCreate(Bundle savedInstanceState) {
 public void onNewIntent(Intent intent) {
 	super.onNewIntent(intent);
 	try {
-		if (nfcApduRunner.setCardTag(intent)) {
+		if (cardCoinManagerNfcApi.setCardTag(intent)) {
 			Toast.makeText(this, "NFC hardware touched", Toast.LENGTH_SHORT).show();
 		}
 	}
