@@ -2,12 +2,6 @@
 
 This document describes in detail the process of TON Labs Security card delivery from the ordering to its activation by the user. The information about Recovery service is described in separate document.  
 
-[Secure card constants](https://www.notion.so/7ee85a68c3994e8ab998f88de6566001)
-
-[Smart contracts](https://www.notion.so/26933be183044e549cdfc996f56584f3)
-
-[Services](https://www.notion.so/e9390be987374810b9078fba4bd95e3e)
-
 ## 2. Security card details
 
 Specification:
@@ -157,4 +151,4 @@ If the user use Recovery service and has lost either the Card or Device with Sur
 
 ## 8. Recovery without service
 
-When user don't use Recovery-service he(she) takes full responsibility for the safety of the keys. 
+When user don't use Recovery-service he(she) takes full responsibility for the safety of the keys. (more info will be added later)
