@@ -594,300 +594,377 @@ Here there are some internal errors that may happen inside Android code. It mean
 
 ```json
 {
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10000",
-"message": "Apdu command is null",
-"status": "fail"
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10000",
+  "message": "Apdu command is null",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10001",
+  "message": "Data field in APDU must have length > 0 and <= 255 bytes.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10002",
+  "message": "APDU response bytes are incorrect. It must contain at least 2 bytes of status word (SW) from the card.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10003",
+  "message": "APDU response is incorrect. Response from the card can not contain > 255 bytes.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10004",
+  "message": "Pin byte array must have length 4.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10005",
+  "message": "Device label byte array must have length 32.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10006",
+  "message": "Activation password byte array must have length 128.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10007",
+  "message": "Initial vector byte array must have length 16.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10008",
+  "message": "Data for signing byte array must have length > 0 and <= 189.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10009",
+  "message": "Data for signing byte array must have length > 0 and <= 178.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10010",
+  "message": "APDU parameter P2 must take value from {0, 1, 2}.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10011",
+  "message": "Key (from keyChain) chunk byte array must have length > 0 and <= 128.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10012",
+  "message": "Key (from keyChain) mac byte array must have length 32.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10013",
+  "message": "Sault byte array must have length 32.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10014",
+  "message": "hdIndex byte array must have length > 0 and <= 10.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10015",
+  "message": "Key (from keyChain) index byte array must have length = 2.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10016",
+  "message": "Length is not a positive value",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10017",
+  "message": "Intent is null.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10018",
+  "message": "Source array is null",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10019",
+  "message": "Destination array is null",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10020",
+  "message": "All array elements must be decimal digits >= 0 and < 9",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10021",
+  "message": "Can not convert empty array (or null) into digital string.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10022",
+  "message": "Nfc callback is null.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10023",
+  "message": "Exception object is null.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10024",
+  "message": "Count of is less than 0.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10025",
+  "message": "Count is greater than length of source array (",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10026",
+  "message": "From is less than 0",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10027",
+  "message": "Offset is out of bound (",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10028",
+  "message": "End index is out of bound (",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10029",
+  "message": "All arrays arg are null.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10030",
+  "message": "String is null.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10031",
+  "message": "Source string is not correct hex: ",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10032",
+  "message": "Incorrect offset in source array.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10033",
+  "message": "Incorrect offset in dest array.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10034",
+  "message": "Source array must have length >= 2.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10035",
+  "message": "First array is null",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10036",
+  "message": "Second array is null",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10037",
+  "message": "Context is null",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10038",
+  "message": "Error message is null.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10039",
+  "message": "Key for HMAC-SHA256 algorithm is null.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10040",
+  "message": "Key bytes for HMAC-SHA256 must have length >= 32.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10041",
+  "message": "Data to sign by HMAC-SHA256 algorithm is null.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10042",
+  "message": "Current serial number is null.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10043",
+  "message": "Not an instance of a SecretKeyEntry",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10044",
+  "message": "Malformed data for json (message is null).",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10045",
+  "message": "Malformed SW for json.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10046",
+  "message": "CAPDU is null.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10047",
+  "message": "String is not in ascii.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10048",
+  "message": "APDU data field is null.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10049",
+  "message": "Recovery data portion must have length > 0 and <= 250.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10050",
+  "message": "Mac (byte array) of recovery data portion must have length 32.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10051",
+  "message": "Start position byte array must have length = 2.",
+  "status": "fail"
+}
+{
+  "errorType": "Android code fail: internal error",
+  "errorTypeId": "1",
+  "errorCode": "10052",
+  "message": "APDU response is null.",
+  "status": "fail"
 }
 
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10001",
-"message": "Data field in APDU must have length > 0 and <= 255 bytes.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10002",
-"message": "APDU response bytes are incorrect. It must contain at least 2 bytes of status word (SW) from the card.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10003",
-"message": "APDU response is incorrect. Response from the card can not contain > 255 bytes.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10004",
-"message": "Pin byte array must have length 4.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10005",
-"message": "Device label byte array must have length 32.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10006",
-"message": "Activation password byte array must have length 128.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10007",
-"message": "Initial vector byte array must have length 16.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10008",
-"message": "Data for signing byte array must have length > 0 and <= 189.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10009",
-"message": "Data for signing byte array must have length > 0 and <= 178.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10010",
-"message": "APDU parameter P2 must take value from {0, 1, 2}.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10011",
-"message": "Key (from keyChain) chunk byte array must have length > 0 and <= 128.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10012",
-"message": "Key (from keyChain) mac byte array must have length 32.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10013",
-"message": "Sault byte array must have length 32.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10014",
-"message": "hdIndex byte array must have length > 0 and <= 10.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10015",
-"message": "Key (from keyChain) index byte array must have length = 2.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10016",
-"message": "Length is not a positive value",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10017",
-"message": "Intent is null.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10018",
-"message": "Source array is null",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10019",
-"message": "Destination array is null",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10020",
-"message": "All array elements must be decimal digits >= 0 and < 9",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10021",
-"message": "Can not convert empty array (or null) into digital string.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10022",
-"message": "Nfc callback is null.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10023",
-"message": "Exception object or its message is null.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10024",
-"message": "Count of is less than 0.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10025",
-"message": "Count is greater than length of source array (",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10026",
-"message": "From is less than 0",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10027",
-"message": "From is out of bound (",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10028",
-"message": "End index is out of bound (",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10029",
-"message": "Arrays are null",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10030",
-"message": "String is null",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10031",
-"message": "Source string is not correct hex: '",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10032",
-"message": "Incorrect offset in source array.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10033",
-"message": "Source array must have length >= 2.",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10034",
-"message": "First array is null",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10035",
-"message": "Second array is null",
-"status": "fail"
-}
-
-{
-"errorType": "Android code fail: internal error",
-"errorTypeId": "1",
-"errorCode": "10036",
-"message": "Context is null",
-"status": "fail"
-}
 ```
 
 ## ANDROID_NFC_ERRORS
