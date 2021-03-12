@@ -1035,219 +1035,193 @@ Any trouble with input data passing into TonNfcClientAndroid API functions. For 
 
 ```json
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30000",
-"message": "Activation password is a hex string of length 256.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30000",
+  "message": "Activation password is a hex string of length 256.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30001",
-"message": "Common secret is a hex string of length 64.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30001",
+  "message": "Common secret is a hex string of length 64.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30002",
-"message": "Initial vector is a hex string of length 32.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30002",
+  "message": "Initial vector is a hex string of length 32.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30003",
-"message": "Activation password is not a valid hex string.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30003",
+  "message": "Activation password is not a valid hex string.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30004",
-"message": "Common secret is not a valid hex string.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30004",
+  "message": "Common secret is not a valid hex string.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30005",
-"message": "Initial vector is not a valid hex string.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30005",
+  "message": "Initial vector is not a valid hex string.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30006",
-"message": "Pin must be a numeric string of length 4.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30006",
+  "message": "Pin must be a numeric string of length 4.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30007",
-"message": "Pin is not a valid numeric string.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30007",
+  "message": "Pin is not a valid numeric string.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30008",
-"message": "Data for signing is not a valid hex .",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30008",
+  "message": "Data for signing is not a valid hex .",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30009",
-"message": "Data for signing must be a nonempty hex string of even length > 0 and <= 378.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30009",
+  "message": "Data for signing must be a nonempty hex string of even length > 0 and <= 378.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30010",
-"message": "Data for signing must be a nonempty hex string of even length > 0 and <= 356.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30010",
+  "message": "Data for signing must be a nonempty hex string of even length > 0 and <= 356.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30011",
-"message": "Recovery data is not a valid hex string.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30011",
+  "message": "Recovery data is not a valid hex string.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30012",
-"message": "Recovery data is a hex string of length > 0 and <= 4096.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30012",
+  "message": "Recovery data is a hex string of length > 0 and <= 4096.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30013",
-"message": "Hd index must be a numeric string of length > 0 and <= 10.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30013",
+  "message": "Hd index must be a numeric string of length > 0 and <= 10.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30014",
-"message": "Hd index is not a valid numeric string.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30014",
+  "message": "Hd index is not a valid numeric string.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30015",
-"message": "Device label must be a hex string of length 64.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30015",
+  "message": "Device label must be a hex string of length 64.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30016",
-"message": "Device label is not a valid hex string.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30016",
+  "message": "Device label is not a valid hex string.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30017",
-"message": "Key hmac is a hex string of length 64.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30017",
+  "message": "Key hmac is a hex string of length 64.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30018",
-"message": "Key hmac is not a valid hex string.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30018",
+  "message": "Key hmac is not a valid hex string.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30019",
-"message": "Key is not a valid hex string.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30019",
+  "message": "Key is not a valid hex string.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30020",
-"message": "Key is a hex string of length > 0 and <= 16384.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30020",
+  "message": "Key is a hex string of length > 0 and <= 16384.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30021",
-"message": "Key size must be > 0 and <= 8192.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30021",
+  "message": "Key size must be > 0 and <= 8192.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30022",
-"message": "Length of new key must be equal to length of old key ",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30022",
+  "message": "Length of new key must be equal to length of old key ",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30023",
-"message": "Key index is a numeric string representing integer >= 0 and <= 1022.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30023",
+  "message": "Key index is a numeric string representing integer >= 0 and <= 1022.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30024",
-"message": "Key index is not a valid numeric string.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30024",
+  "message": "Key index is not a valid numeric string.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30025",
-"message": "Serial number is a numeric string of length 24.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30025",
+  "message": "Serial number is a numeric string of length 24.",
+  "status": "fail"
 }
-
 {
-"errorType": "Native code fail: incorrect format of input data",
-"errorTypeId": "3",
-"errorCode": "30026",
-"message": "Serial number is not a valid numeric string.",
-"status": "fail"
+  "errorType": "Native code fail: incorrect format of input data",
+  "errorTypeId": "3",
+  "errorCode": "30026",
+  "message": "Serial number is not a valid numeric string.",
+  "status": "fail"
 }
 ```
 
