@@ -32,6 +32,10 @@ import static com.tonnfccard.smartcard.CommonConstants.SELECT_INS;
 import static com.tonnfccard.smartcard.CommonConstants.SELECT_P1;
 import static com.tonnfccard.smartcard.CommonConstants.SELECT_P2;
 
+/**
+ * Here there are all objects representing APDU commands of TonWalletApplet
+ */
+
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class TonWalletAppletApduCommands {
   private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
@@ -118,17 +122,65 @@ public class TonWalletAppletApduCommands {
   public static final byte GET_RECOVERY_DATA_LEN_LE =  0x02;
   public static final byte IS_RECOVERY_DATA_SET_LE =  0x01;
 
-  //00 A4 04 00 0C 31 31 32 32 33 33 34 34 35 35 36 36 00
-  public final static CAPDU SELECT_TON_WALLET_APPLET_APDU = new CAPDU(SELECT_CLA, SELECT_INS, SELECT_P1, SELECT_P2, TON_WALLET_APPLET_AID, LE);
+  /**
+   *This command selects TonWalletApplet to start communicating with applet.
+   */
+  public final static CAPDU SELECT_TON_WALLET_APPLET_APDU = new CAPDU(SELECT_CLA, SELECT_INS, SELECT_P1, SELECT_P2, TON_WALLET_APPLET_AID, LE); // 00 A4 04 00 0C 31 31 32 32 33 33 34 34 35 35 36 36 00
+
+  /**
+   * This command returns applet state. Available in any applet state.
+   */
   public final static CAPDU GET_APP_INFO_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_APP_INFO, P1, P2, GET_APP_INFO_LE);
+
+  /**
+   *  This command returns SHA256 hash of encrypted (by AES) activation password. Available only in WAITE_AUTHORIZATION_MODE state of applet.
+   */
   public final static CAPDU GET_HASH_OF_ENCRYPTED_PASSWORD_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_HASH_OF_ENCRYPTED_PASSWORD, P1, P2, SHA_HASH_SIZE);
+
+  /**
+   *  This command returns SHA256 hash of encrypted (by AES) activation common secret. Available only in WAITE_AUTHORIZATION_MODE state of applet.
+   */
   public final static CAPDU GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_HASH_OF_ENCRYPTED_COMMON_SECRET, P1, P2, SHA_HASH_SIZE);
+
+  /**
+   * This function retrieves ED25519 public key from CoinManager for fixed bip44 HD path m/44'/396'/0'/0'/0
+   */
   public final static CAPDU GET_PUB_KEY_WITH_DEFAULT_PATH_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_PUBLIC_KEY_WITH_DEFAULT_HD_PATH, P1, P2, PUBLIC_KEY_LEN);
+
+  /**
+   * The command outputs random 32-bytes sault produced by card. This sault must be used  by the host to generate HMAC.
+   * In the end of its work it calls generateNewSault. So each call of GET_SAULT should produce new random looking sault
+   * Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public final static CAPDU GET_SAULT_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_SAULT, P1, P2, SAULT_LENGTH);
+
+  /**
+   * This function returns SHA256 hash of encrypted binary blob saved during registration in Recovery service. This is necessary to control the integrity.
+   * Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public final static CAPDU GET_RECOVERY_DATA_HASH_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_RECOVERY_DATA_HASH, P1, P2, SHA_HASH_SIZE);
+
+  /**
+   * This function returns real length of recovery data  saved in applet's internal buffer.
+   * Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public final static CAPDU GET_RECOVERY_DATA_LEN_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_RECOVERY_DATA_LEN, P1, P2, GET_RECOVERY_DATA_LEN_LE);
+
+  /**
+   * Returns 0x01 if recovery data is set, 0x00 if not.
+   * Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public final static CAPDU IS_RECOVERY_DATA_SET_APDU = new CAPDU(WALLET_APPLET_CLA, INS_IS_RECOVERY_DATA_SET, P1, P2, IS_RECOVERY_DATA_SET_LE);
+
+  /**
+   * This function reset recovery data, internal buffer is filled by zeros, internal variable realRecoveryDataLen is set to 0, internal flag  isRecoveryDataSet is set to false.
+   * Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE
+   */
   public final static CAPDU RESET_RECOVERY_DATA_APDU = new CAPDU(WALLET_APPLET_CLA, INS_RESET_RECOVERY_DATA, P1, P2);
+
+  /**
+   * This command returns card serial number. Available in any applet state.
+   */
   public final static CAPDU GET_SERIAL_NUMBER_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_SERIAL_NUMBER, P1, P2, GET_SERIAL_NUMBER_LE);
 
   public static final List<CAPDU> GET_APPLET_STATE_APDU_LIST = new ArrayList<>();
@@ -230,6 +282,21 @@ public class TonWalletAppletApduCommands {
       data);
   }*/
 
+  /**
+   VERIFY_PASSWORD
+
+   CLA: 0xB0
+   INS: 0x92
+   P1: 0x00
+   P2: 0x00
+   LC: 0x90
+   Data: 128 bytes of unencrypted activation password | 16 bytes of IV for AES128 CBC
+
+   This function is available only in WAITE_AUTHORIZATION_MODE state of applet.
+   It makes activation password verification and in the case of success it changes the state of applet: WAITE_AUTHORIZATION_MODE -> PERSONALIZED.
+   After 20 unsuccessful attempts to verify password this functions changes the state of applet: WAITE_AUTHORIZATION_MODE -> BLOCKED_MODE. In this case applet is blocked.
+   This is irreversible and card becomes useless.
+   */
   public static CAPDU getVerifyPasswordAPDU(byte[] passwordBytes, byte[] initialVector)  {
     if (passwordBytes == null || passwordBytes.length != PASSWORD_SIZE)
       throw new IllegalArgumentException(ERROR_MSG_ACTIVATION_PASSWORD_BYTES_SIZE_INCORRECT);
@@ -239,6 +306,24 @@ public class TonWalletAppletApduCommands {
     return new CAPDU(WALLET_APPLET_CLA, INS_VERIFY_PASSWORD, P1, P2, data);
   }
 
+  /**
+   VERIFY_PIN
+
+   CLA: 0xB0
+   INS: 0xA2
+   P1: 0x00
+   P2: 0x00
+   LC: 0x44
+   Data: 4 bytes of PIN | 32 bytes of sault | 32 bytes of mac
+
+   This function verifies ascii encoded PIN bytes sent in the data field. After 10 fails of PIN verification internal seed will be blocked.
+   Keys produced from it will not be available for signing transactions. And then RESET WALLET and GENERATE SEED APDU commands of CoinManager must be called.
+   It will regenerate seed and reset PIN.The default card PIN is 5555 now. This version of applet was written for NFC card.
+   It uses special mode PIN_MODE_FROM_API for entering PIN. PIN  bytes are  given to applet as plain text.
+   If PIN code = 5555 plain PIN bytes array must look like {0x35, 0x35 0x35, 0x35}.
+   Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   Precondition:  GET_SAULT should be called before to get new sault from card.
+   */
   public static CAPDU getVerifyPinAPDU(byte[] pinBytes, byte[] sault) throws Exception {
     if (pinBytes == null || pinBytes.length != PIN_SIZE)
       throw new IllegalArgumentException(ERROR_MSG_PIN_BYTES_SIZE_INCORRECT);
@@ -247,6 +332,22 @@ public class TonWalletAppletApduCommands {
     return new CAPDU(WALLET_APPLET_CLA, INS_VERIFY_PIN, P1, P2, data);
   }
 
+  /**
+   SIGN_SHORT_MESSAGE_WITH_DEFAULT_PATH
+
+   CLA: 0xB0
+   INS: 0xA5
+   P1: 0x00
+   P2: 0x00
+   LC: APDU data length
+   Data: messageLength (2bytes)| message | sault (32 bytes) | mac (32 bytes)
+   LE: 0x40
+
+   This function signs the message from apdu buffer by ED25519 for default bip44 HD path
+   m/44'/396'/0'/0'/0'.
+   Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   Precondition:  1) GET_SAULT should be called before to get new sault from card. 2) VERIFY_PIN should be called before.
+   */
   public static CAPDU getSignShortMessageWithDefaultPathAPDU(byte[] dataForSigning, byte[] sault) throws Exception {
     if (dataForSigning == null || dataForSigning.length == 0 || dataForSigning.length > DATA_FOR_SIGNING_MAX_SIZE)
       throw new IllegalArgumentException(ERROR_MSG_DATA_BYTES_SIZE_INCORRECT);
@@ -255,6 +356,23 @@ public class TonWalletAppletApduCommands {
     return new CAPDU(WALLET_APPLET_CLA, INS_SIGN_SHORT_MESSAGE_WITH_DEFAULT_PATH, P1, P2, data, SIG_LEN);
   }
 
+  /**
+   SIGN_SHORT_MESSAGE
+
+   CLA: 0xB0
+   INS: 0xA3
+   P1: 0x00
+   P2: 0x00
+   LC: APDU data length
+   Data: messageLength (2bytes)| message | indLength (1 byte, > 0, <= 10) | ind | sault (32 bytes) | mac (32 bytes)
+   LE: 0x40
+
+   This function signs the message from apdu buffer by ED25519 for default bip44 HD path
+   m/44'/396'/0'/0'/ind'. There is 0 <= ind <= 2^31 - 1. ind must be represented as decimal number and each decimal place should be transformed into Ascii encoding.
+   Example: ind = 171 ⇒ {0x31, 0x37, 0x31}
+   Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   Precondition:  1)* GET_SAULT should be called before to get new sault from card. 2) VERIFY_PIN should be called before.
+   */
   public static CAPDU getSignShortMessageAPDU(byte[] dataForSigning, byte[] hdIndex, byte[] sault) throws Exception {
     if (dataForSigning == null || dataForSigning.length == 0 || dataForSigning.length > DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH)
       throw new IllegalArgumentException(ERROR_MSG_DATA_WITH_HD_PATH_BYTES_SIZE_INCORRECT);
@@ -264,6 +382,23 @@ public class TonWalletAppletApduCommands {
     return new CAPDU(WALLET_APPLET_CLA, INS_SIGN_SHORT_MESSAGE, P1, P2, data, SIG_LEN);
   }
 
+
+  /**
+   GET_PUBLIC_KEY
+
+   CLA: 0xB0
+   INS: 0xA0
+   P1: 0x00
+   P2: 0x00
+   LC: Number of decimal places in ind
+   Data: Ascii encoding of ind decimal places
+   LE: 0x20
+
+   This function retrieves ED25519 public key from CoinManager for bip44 HD path
+   m/44'/396'/0'/0'/ind'. There is 0 <= ind <= 2^31 - 1. ind must be represented as decimal number and each decimal place should be transformed into Ascii encoding.
+   Example: ind = 171 ⇒ {0x31, 0x37, 0x31}
+   Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public static CAPDU getPublicKeyAPDU(byte[] ind) {
     checkHdIndex(ind);
     return new CAPDU(WALLET_APPLET_CLA, INS_GET_PUBLIC_KEY, P1, P2,
@@ -271,6 +406,25 @@ public class TonWalletAppletApduCommands {
       PUBLIC_KEY_LEN);
   }
 
+  /**
+   * ADD_RECOVERY_DATA_PART
+   *
+   * CLA: 0xB0
+   * INS: 0xD1
+   * P1: 0x00 (START_OF_TRANSMISSION), 0x01 or 0x02 (END_OF_TRANSMISSION)
+   * P2: 0x00
+   * LC: If (P1 ≠ 0x02) Length of recovery data piece else 0x20
+   * Data: If (P1 ≠ 0x02) recovery data piece else SHA256(recovery data)
+   *
+   * This function receives encrypted byte array containing data for recovery service. Now it is multisignature wallet address, surf public key(32 bytes),
+   * card common secret (32 bytes) and authentication password (128 bytes) (and this stuff is wrapped in json). Just in case in applet for now we reserved 2048 bytes for string recovery data.
+   * It is probably bigger volume than required just now.
+   * As usually the APDU command can be used to put no more than 256 bytes into applet at once. It is just a limitation of APDU protocol. 256 bytes is a max byte array length that we can send(request) into the card.
+   * So if recover data will extended then ADD_RECOVERY_DATA_PART should be called multiple times sequentially.
+   * Last call of ADD_RECOVERY_DATA_PART must contain SHA256 hash of all recovery data. The card inside will compute hash of received data and it will compare te computed hash and hash received from the host.
+   * If they are identical then internal flag isRecoveryDataSet is set to true. Otherwise the card resets all internal buffers, sets  isRecoveryDataSet = false and thrwos exception.
+   * Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public static CAPDU getAddRecoveryDataPartAPDU(byte p1, byte[] data) {
     if (p1 < 0 || p1 > 2) throw new IllegalArgumentException(ERROR_MSG_APDU_P1_INCORRECT);
     if (p1 <= 1 && (data == null || data.length == 0 || data.length > DATA_RECOVERY_PORTION_MAX_SIZE))
@@ -282,6 +436,23 @@ public class TonWalletAppletApduCommands {
       data);
   }
 
+  /**
+   * GET_RECOVERY_DATA_PART
+   *
+   * CLA: 0xB0
+   * INS: 0xD2
+   * P1: 0x00
+   * P2: 0x00
+   * LC: 0x02
+   * Data: startPosition of recovery data piece in internal buffer
+   * LE: length of recovery data piece in internal buffer
+   *
+   * This function returns encrypted binary blob saved during registration in Recovery service. This APDU command shouldn't be protected with HMAC or PIN.
+   * If length of recovery data > 256 bytes then this apdu command must be called multiple times.
+   * Since as usually the APDU command can be used to transmit no more than 256 bytes from applet into host at once. It is just a limitation of APDU protocol.
+   * 256 bytes is a max byte array length that we can request from the card.
+   * Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public static CAPDU getGetRecoveryDataPartAPDU(byte[] startPositionBytes, byte le) {
     if (startPositionBytes == null || startPositionBytes.length != 2)
       throw new IllegalArgumentException(ERROR_MSG_START_POSITION_BYTES_SIZE_INCORRECT);
@@ -291,17 +462,61 @@ public class TonWalletAppletApduCommands {
       le);
   }
 
+  /**
+   RESET_KEYCHAIN
+
+   CLA: 0xB0
+   INS: 0xBC
+   P1: 0x00
+   P2: 0x00
+   LC: 0x40
+   Data: sault (32 bytes) | mac (32 bytes)
+
+   Clears all internal buffers and counters. So after it keychain is clear. In the end it always switches applet state into APP_PERSONALIZED.
+   Precondition:  GET_SAULT should be called before to get new sault from card.
+   Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public static CAPDU getResetKeyChainAPDU(byte[] sault) throws Exception {
     byte[] data = prepareSaultBasedApduData(sault);
     return new CAPDU(WALLET_APPLET_CLA, INS_RESET_KEYCHAIN, P1, P2, data);
   }
 
+  /**
+   GET_NUMBER_OF_KEYS
+
+   CLA: 0xB0
+   INS: 0xB8
+   P1: 0x00
+   P2: 0x00
+   LC: 0x40
+   Data: sault (32 bytes) | mac (32 bytes)
+   LE: 0x02
+
+   Outputs the number of keys that are stored by KeyChain at the present moment.
+   Precondition:  GET_SAULT should be called before to get new sault from card.
+   Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public static CAPDU getNumberOfKeysAPDU(byte[] sault) throws Exception {
     byte[] data = prepareSaultBasedApduData(sault);
     return new CAPDU(WALLET_APPLET_CLA, INS_GET_NUMBER_OF_KEYS, P1, P2,
       data, GET_NUMBER_OF_KEYS_LE);
   }
 
+  /***
+   GET_OCCUPIED_STORAGE_SIZE
+
+   CLA: 0xB0
+   INS: 0xBA
+   P1: 0x00
+   P2: 0x00
+   LC: 0x40
+   Data: sault (32 bytes) | mac (32 bytes)
+   LE: 0x02
+
+   Outputs the volume of occupied size (in bytes) in KeyChain.
+   Precondition:  GET_SAULT should be called before to get new sault from card.
+   Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public static CAPDU getGetOccupiedSizeAPDU(byte[] sault) throws Exception {
     byte[] data = prepareSaultBasedApduData(sault);
     return new CAPDU(
@@ -310,6 +525,21 @@ public class TonWalletAppletApduCommands {
       data, GET_OCCUPIED_SIZE_LE);
   }
 
+  /***
+   GET_FREE_STORAGE_SIZE
+
+   CLA: 0xB0
+   INS: 0xB9
+   P1: 0x00
+   P2: 0x00
+   LC: 0x40
+   Data: sault (32 bytes) | mac (32 bytes)
+   LE: 0x02
+
+   Outputs the volume of free size in keyStore.
+   Precondition:  GET_SAULT should be called before to get new sault from card.
+   Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public static CAPDU getGetFreeSizeAPDU(byte[] sault) throws Exception {
     byte[] data = prepareSaultBasedApduData(sault);
     return new CAPDU(
@@ -318,6 +548,21 @@ public class TonWalletAppletApduCommands {
       data, GET_FREE_SIZE_LE);
   }
 
+  /***
+   CHECK_AVAILABLE_VOL_FOR_NEW_KEY
+
+   CLA: 0xB0
+   INS: 0xB3
+   P1: 0x00
+   P2: 0x00
+   LC: 0x42
+   Data: length of new key (2 bytes) | sault (32 bytes) | mac (32 bytes)
+
+   Gets from host the size of new key that user wants to add. It checks free space. And if it's enough it saves this value into internal applet variable.
+   Otherwise it will throw an exception. This command always should be called before adding new key.
+   Precondition:  GET_SAULT should be called before to get new sault from card.
+   Available in applet state PERSONALIZED.
+   */
   public static CAPDU getCheckAvailableVolForNewKeyAPDU(short keySize, byte[] sault) throws Exception {
     if (keySize <= 0 || keySize > MAX_KEY_SIZE_IN_KEYCHAIN)
       throw new IllegalArgumentException(ERROR_MSG_KEY_SIZE_INCORRECT);
@@ -329,6 +574,20 @@ public class TonWalletAppletApduCommands {
       data);
   }
 
+  /***
+   CHECK_KEY_HMAC_CONSISTENCY
+
+   CLA: 0xB0
+   INS: 0xB0
+   P1: 0x00
+   P2: 0x00
+   LC: 0x60
+   Data: keyMac (32 bytes) | sault (32 bytes) | mac (32 bytes)
+
+   Gets mac of key and checks that *mac(key bytes in keyStore)* coincides with this mac.
+   Precondition:  GET_SAULT should be called before to get new sault from card.
+   Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public static CAPDU getCheckKeyHmacConsistencyAPDU(byte[] keyMac, byte[] sault) throws Exception {
     checkHmac(keyMac);
     checkSault(sault);
@@ -336,6 +595,20 @@ public class TonWalletAppletApduCommands {
     return new CAPDU(WALLET_APPLET_CLA, INS_CHECK_KEY_HMAC_CONSISTENCY, P1, P2, data);
   }
 
+  /***
+   INITIATE_CHANGE_OF_KEY
+
+   CLA: 0xB0
+   INS: 0xB5
+   P1: 0x00
+   P2: 0x00
+   LC: 0x42
+   Data: index of key (2 bytes) | sault (32 bytes) | mac (32 bytes)
+
+   Gets from the host  the real index of key to be changed and stores this index into internal applet variable.
+   Precondition:  GET_SAULT should be called before to get new sault from card.
+   Available in applet state PERSONALIZED.
+   */
   public static CAPDU getInitiateChangeOfKeyAPDU(byte[] keyIndex, byte[] sault) throws Exception {
     checkKeyChainKeyIndex(keyIndex);
     checkSault(sault);
@@ -346,6 +619,21 @@ public class TonWalletAppletApduCommands {
       data);
   }
 
+  /***
+   GET_KEY_INDEX_IN_STORAGE_AND_LEN
+
+   CLA: 0xB0
+   INS: 0xB1
+   P1: 0x00
+   P2: 0x00
+   LC: 0x60
+   Data: hmac of key (32 bytes) | sault (32 bytes) | mac (32 bytes)
+   LE: 0x04
+
+   Gets hmac of the key from host. It outputs its real index in keyOffsets array and key length.
+   Precondition:  GET_SAULT should be called before to get new sault from card.
+   Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public static CAPDU getGetIndexAndLenOfKeyInKeyChainAPDU(byte[] keyMac, byte[] sault) throws Exception {
     checkHmac(keyMac);
     checkSault(sault);
@@ -357,6 +645,22 @@ public class TonWalletAppletApduCommands {
       GET_KEY_INDEX_IN_STORAGE_AND_LEN_LE);
   }
 
+  /***
+   INITIATE_DELETE_KEY
+
+   CLA: 0xB0
+   INS: 0xB7
+   P1: 0x00
+   P2: 0x00
+   LC: 0x42
+   Data: key  index (2 bytes) | sault (32 bytes) | mac (32 bytes)
+   LE: 0x02
+
+   Gets from host the real index of key in keyOffsets array and stores this index into internal applet variable.
+   Outputs length of key to be deleted. In the case of success in the end it changes the state of applet on DELETE_KEY_FROM_KEYCHAIN_MODE.
+   Precondition:  1) GET_SAULT should be called before to get new sault from card. 2) call GET_KEY_INDEX_IN_STORAGE_AND_LEN to get key index.
+   Available in applet state PERSONALIZED.
+   */
   public static CAPDU getInitiateDeleteOfKeyAPDU(byte[] keyIndex, byte[] sault) throws Exception {
     checkKeyChainKeyIndex(keyIndex);
     checkSault(sault);
@@ -368,6 +672,21 @@ public class TonWalletAppletApduCommands {
       INITIATE_DELETE_KEY_LE);
   }
 
+  /**
+   * GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS
+   *
+   * CLA: 0xB0
+   * INS: 0xE1
+   * P1: 0x00
+   * P2: 0x00
+   * LC: 0x40
+   * Data: sault (32 bytes) | mac (32 bytes)
+   * LE: 0x02
+   *
+   * Outputs total number of iterations that is necessary to remove key chunk from keychain.
+   * Precondition:  GET_SAULT should be called before to get new sault from card.
+   * Available in applet state DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public static CAPDU getDeleteKeyChunkNumOfPacketsAPDU(byte[] sault) throws Exception {
     byte[] data = prepareSaultBasedApduData(sault);
     return new CAPDU(
@@ -376,6 +695,21 @@ public class TonWalletAppletApduCommands {
       data, GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_LE);
   }
 
+  /**
+   * GET_DELETE_KEY_RECORD_NUM_OF_PACKETS
+   *
+   * CLA: 0xB0
+   * INS: 0xE2
+   * P1: 0x00
+   * P2: 0x00
+   * LC: 0x40
+   * Data: sault (32 bytes) | mac (32 bytes)
+   * LE: 0x02
+   *
+   * Outputs total number of iterations that is necessary to remove key record from keychain.
+   * Precondition:  GET_SAULT should be called before to get new sault from card.
+   * Available in applet state DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public static CAPDU getDeleteKeyRecordNumOfPacketsAPDU(byte[] sault) throws Exception {
     byte[] data = prepareSaultBasedApduData(sault);
     return new CAPDU(
@@ -384,6 +718,25 @@ public class TonWalletAppletApduCommands {
       data, GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_LE);
   }
 
+  /***
+   DELETE_KEY_CHUNK
+
+   CLA: 0xB0
+   INS: 0xBE
+   P1: 0x00
+   P2: 0x00
+   LC: 0x40
+   Data: sault (32 bytes) | mac (32 bytes)
+   LE: 0x01
+
+   Deletes the portion of key bytes in internal buffer. Max size of portion = 128 bytes.
+   The command should be called (totalOccupied size - offsetOfNextKey) / 128  times + 1 times for tail having length  (totalOccupied size - offsetOfNextKey) % 128.
+   The response contains status byte. If status == 0 then we should continue calling DELETE_LEY_CHUNK. Else if status == 1 then process is finished.
+   Such splitting into multiple calls was implemented only because we wanted to use javacard transaction for deleting to control data integrity in keychain.
+   But our device has small internal buffer for transactions and can not handle big transactions.
+   Precondition: 1) GET_SAULT should be called before to get new sault from card.  2) INITIATE_DELETE_KEY should be called before to set the index of key to be deleted.
+   Available in applet state DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public static CAPDU getDeleteKeyChunkAPDU(byte[] sault) throws Exception {
     byte[] data = prepareSaultBasedApduData(sault);
     return new CAPDU(
@@ -393,6 +746,28 @@ public class TonWalletAppletApduCommands {
       DELETE_KEY_CHUNK_LE);
   }
 
+  /***
+   DELETE_KEY_RECORD
+
+   CLA: 0xB0
+   INS: 0xBF
+   P1: 0x00
+   P2: 0x00
+   LC: 0x40
+   Data: sault (32 bytes) | mac (32 bytes)
+   LE: 0x01
+
+   Processes the portion of elements in internal buffer storing record about keys. Max size of portion = 12.
+   The command should be called (numberOfStoredKeys - indOfKeyToDelete - 1) / 12  times + 1 times for tail having length  (numberOfStoredKeys - indOfKeyToDelete - 1) % 12.
+   The response contains status byte. If status == 0 then we should continue calling DELETE_LEY_RECORD. Else if status == 1 then process is finished.
+   In the end when status is set to 1 and delete operation is finished applet state is changed on APP_PERSONALIZED.
+   And again one may conduct new add, change or delete operation in keychain,
+   Such splitting into multiple calls was implemented only because we wanted to use javacard transaction for deleting to control data integrity in keychain.
+   But our device has small internal buffer for transactions and can not handle big transactions.
+   Precondition: 1) GET_SAULT should be called before to get new sault from card.  2) DELETE_KEY _CHUNK should be called before to clear keyStore array
+   (it should be called until it will return response byte = 1).
+   Available in applet state DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public static CAPDU getDeleteKeyRecordAPDU(byte[] sault) throws Exception {
     byte[] data = prepareSaultBasedApduData(sault);
     return new CAPDU(
@@ -402,6 +777,21 @@ public class TonWalletAppletApduCommands {
       DELETE_KEY_RECORD_LE);
   }
 
+  /***
+   GET_HMAC
+
+   CLA: 0xB0
+   INS: 0xBB
+   P1: 0x00
+   P2: 0x00
+   LC: 0x42
+   Data: index of key (2 bytes) | sault (32 bytes) | mac (32 bytes)
+   LE: 0x22
+
+   Gets the index of key (≥ 0 and  < numberOfStoredKeys) and outputs its hmac.
+   Precondition:  GET_SAULT should be called before to get new sault from card.
+   Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public static CAPDU getGetHmacAPDU(byte[] keyIndex, byte[] sault) throws Exception {
     checkKeyChainKeyIndex(keyIndex);
     checkSault(sault);
@@ -413,6 +803,23 @@ public class TonWalletAppletApduCommands {
       GET_HMAC_LE);
   }
 
+  /***
+   GET_KEY_CHUNK
+
+   CLA: 0xB0
+   INS: 0xB2
+   P1: 0x00
+   P2: 0x00
+   LC: 0x44
+   Data: key  index (2 bytes) | startPos (2 bytes) | sault (32 bytes) | mac (32 bytes)
+   LE: Key chunk length
+
+   Gets from host  the real index of key in keyOffsets array and relative start position from which key bytes should be read (at first time startPos = 0).
+   Applet calculates real offset inside keyStore based on its data and startPos and outputs key chunk. Max size of key chunk is 255 bytes.
+   So if key size > 255 bytes GET_KEY_CHUNK will be called multiple times. After getting all data host should verify that hmac of received data is correct and we did not lose any packet.
+   Precondition:  1) GET_SAULT should be called before to get new sault from card. 2)  call GET_KEY_INDEX_IN_STORAGE_AND_LEN.
+   Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
+   */
   public static CAPDU getGetKeyChunkAPDU(byte[] keyIndex, short startPos, byte[] sault, byte le) throws Exception {
     checkKeyChainKeyIndex(keyIndex);
     checkSault(sault);
@@ -424,10 +831,61 @@ public class TonWalletAppletApduCommands {
       le);
   }
 
+  /***
+   ADD_KEY_CHUNK
+
+   CLA: 0xB0
+   INS: 0xB4
+   P1: 0x00 (START_OF_TRANSMISSION), 0x01 or 0x02 (END_OF_TRANSMISSION)
+   P2: 0x00
+   LC:
+   if (P1 = 0x00 OR  0x01): 0x01 +  length of key chunk + 0x40
+   if (P1 = 0x02): 0x60
+
+   Data:
+   if (P1 = 0x00 OR  0x01): length of key chunk (1 byte) | key chunk | sault (32 bytes) | mac (32 bytes)
+   if (P1 = 0x02): hmac of key (32 bytes) | sault (32 bytes) | mac (32 bytes)
+
+   LE: if (P1 = 0x02): 0x02
+
+   Gets keychunk from the host and adds it into the end of keyStore array. Max size of key chunk is 128 bytes.
+   So if total key size > 128 bytes ADD_KEY_CHUNK will be called multiple times. After all key data is transmitted we call ADD_KEY_CHUNK once again, its input data is Hmac of the key.
+   Applet checks that hmac of received sequence equals to this hmac got from host. So we did not lose any packet and key is not replaced by adversary.
+   And also  ADD_KEY_CHUNK  checks that size of new key equals to size set previously by command CHECK_AVAILABLE_VOL_FOR_NEW_KEY.
+   If verification is ok all ket data is added into keyMacs, keyOffsets and keyLebs buffers, keys counter is incremented  and since this moment the key is registered and can be requested from the card.
+   Precondition:  1) GET_SAULT should be called before to get new sault from card. 2) call CHECK_AVAILABLE_VOL_FOR_NEW_KEY.
+   Then ADD_KEY_CHUNK is called multiple times.
+   Available in applet states PERSONALIZED.
+   */
   public static CAPDU getAddKeyChunkAPDU(byte p1, byte[] keyChunkOrMacBytes, byte[] sault) throws Exception {
     return getSendKeyChunkAPDU(INS_ADD_KEY_CHUNK, p1, keyChunkOrMacBytes, sault);
   }
 
+  /***
+   CHANGE_KEY_CHUNK
+
+   CLA: 0xB0
+   INS: 0xB6
+   P1: 0x00 (START_OF_TRANSMISSION), 0x01 or 0x02 (END_OF_TRANSMISSION)
+   P2: 0x00
+   LC:
+   if (P1 = 0x00 OR  0x01): 0x01 +  length of key chunk + 0x40
+   if (P1 = 0x02): 0x60
+
+   Data:
+   if (P1 = 0x00 OR  0x01): length of key chunk (1 byte) | key chunk | sault (32 bytes) | mac (32 bytes)
+   if (P1 = 0x02): hmac of key (32 bytes) | sault (32 bytes) | mac (32 bytes)
+
+   LE: if (P1 = 0x02): 0x02
+
+   Gets keychunk bytes from the host and puts it into keyStore array in place of old key bytes. Max size of key chunk is 128 bytes.
+   So if total key size > 128 bytes CHANGE_KEY_CHUNK will be called multiple times.  We control that lengthes of old key and new key are the same.
+   After all new key data is transmitted we call CHANGE_KEY_CHUNK once again, its input data is Hmac of new key and it is verified by applet.
+   If it is ok then corresponding data about key  is changed in keyOffsets, keyMacs and keyLens buffers.
+   Precondition:  1) GET_SAULT should be called before to get new sault from card. 2)call  GET_KEY_INDEX_IN_STORAGE_AND_LEN , INIATE_CHANGE_OF_KEY.
+   Then call CHANGE_KEY_CHUNK multiple times.
+   Available in applet states PERSONALIZED.
+   */
   public static CAPDU getChangeKeyChunkAPDU(byte p1, byte[] keyChunkOrMacBytes, byte[] sault) throws Exception {
     return getSendKeyChunkAPDU(INS_CHANGE_KEY_CHUNK, p1, keyChunkOrMacBytes, sault);
   }

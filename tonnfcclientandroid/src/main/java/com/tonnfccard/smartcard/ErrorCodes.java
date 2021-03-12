@@ -9,6 +9,9 @@ import java.util.Map;
 
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_RESPONSE_IS_NULL;
 
+/**
+ * Here there are all status words that can be produced by applet
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class ErrorCodes {
     private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
@@ -40,7 +43,8 @@ public class ErrorCodes {
     public final static short SW_WRONG_DATA = (short) 0x6A80;
 
 
-    /** TonWalletApplet status words*/
+    /** TonWalletApplet and CoinManager status words*/
+
     // Common errors
     public final static short SW_INTERNAL_BUFFER_IS_NULL_OR_TOO_SMALL  = (short) 0x4F00;
     public final static short SW_PERSONALIZATION_NOT_FINISHED  = (short) 0x4F01;
@@ -65,9 +69,7 @@ public class ErrorCodes {
     public final static short SW_INCORRECT_PIN_COIN_MANAGER = (short) 0x9B01;
     public final static short SW_UPDATE_PIN_ERROR = (short) 0x9B02;
 
-
     public final static short SW_LOAD_SEED_ERROR = (short) 0x9B03;
-
 
     // Key chain errors
     public final static short SW_INCORRECT_KEY_INDEX  = (short) 0x7F00;
@@ -80,7 +82,6 @@ public class ErrorCodes {
     public final static short SW_INCORRECT_KEY_INDEX_TO_CHANGE  = (short) 0x7F07;
     public final static short SW_MAX_KEYS_NUMBER_EXCEEDED  = (short) 0x7F08;
     public final static short SW_DELETE_KEY_CHUNK_IS_NOT_FINISHED  = (short) 0x7F09;
-
 
     // Hmac errors
     public final static short SW_INCORRECT_SAULT   = (short) 0x8F01;
@@ -99,6 +100,8 @@ public class ErrorCodes {
     public final static short SW_SERIAL_NUMBER_IS_NOT_SET    = (short) 0xA001;
     public final static short SW_SERIAL_NUMBER_INCORRECT_FORMAT = (short) 0xA002;
 
+
+    // Messages for status words
     public final static  String SW_SUCCESS_MSG =  "No error.";
     public final static  String SW_APPLET_SELECT_FAILED_MSG = "Applet select failed.";
     public final static  String SW_RESPONSE_BYTES_REMAINING_MSG = "Response bytes remaining.";
@@ -122,7 +125,6 @@ public class ErrorCodes {
     public final static  String SW_COMMAND_ABORTED_MSG = "Command aborted, No precise diagnosis.";
     public final static  String SW_WRONG_DATA_MSG = "Wrong data.";
     public final static  String SW_WRONG_LENGTH_MSG = "Wrong length.";
-
     public final static  String SW_INTERNAL_BUFFER_IS_NULL_OR_TOO_SMALL_MSG = "Internal buffer is null or too small.";
     public final static  String SW_PERSONALIZATION_NOT_FINISHED_MSG = "Personalization is not finished.";
     public final static  String SW_INCORRECT_OFFSET_MSG = "Internal error: incorrect offset. ";
@@ -147,7 +149,6 @@ public class ErrorCodes {
     public final static  String SW_HMAC_EXISTS_MSG = "Hmac exists already.";
     public final static  String SW_INCORRECT_KEY_INDEX_TO_CHANGE_MSG = "Incorrect key index to change";
     public final static  String SW_MAX_KEYS_NUMBER_EXCEEDED_MSG = "Max number of keys (1023) is exceeded.";
-
     public final static  String SW_DELETE_KEY_CHUNK_IS_NOT_FINISHED_MSG = "Delete key chunk is not finished.";
     public final static  String SW_INCORRECT_SAULT_MSG = "Incorrect sault.";
     public final static  String SW_DATA_INTEGRITY_CORRUPTED_MSG = "Data integrity corrupted.";

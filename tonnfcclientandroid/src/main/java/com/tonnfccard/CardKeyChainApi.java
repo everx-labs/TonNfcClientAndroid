@@ -81,7 +81,7 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getResetKeyCh
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getSendKeyChunkAPDU;
 
 public final class CardKeyChainApi extends TonWalletApi {
-  public static final String KEY_INDEX_FIELD = "index";
+  public static final String KEY_INDEX_FIELD = "keyIndex";
   public static final String KEY_LENGTH_FIELD = "length";
   public static final String KEY_HMAC_FIELD = "hmac";
   public static final String NUMBER_OF_KEYS_FIELD = "numberOfKeys";

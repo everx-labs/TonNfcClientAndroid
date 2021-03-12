@@ -415,7 +415,6 @@ public class TonWalletAppletApduCommandsTest {
      LC: Number of decimal places in ind
      Data: Ascii encoding of ind decimal places
      LE: 0x20
-
      */
 
     @Test
@@ -466,7 +465,6 @@ public class TonWalletAppletApduCommandsTest {
      * LC: If (P1 ≠ 0x02) Length of recovery data piece else 0x20
      * Data: If (P1 ≠ 0x02) recovery data piece else SHA256(recovery data)
      */
-
 
     @Test
     public void testGetAddRecoveryDataPartAPDU() {
@@ -1255,7 +1253,6 @@ public class TonWalletAppletApduCommandsTest {
      LE: 0x01
      */
 
-
     @Test
     public void testGetDeleteKeyChunkAPDU() {
         try {
@@ -1670,12 +1667,4 @@ public class TonWalletAppletApduCommandsTest {
         assertArrayEquals(capdu.getData(), data);
         assertEquals(capdu.getLe(), le);
     }
-
-
-
-
-
-
-
-
 }

@@ -54,10 +54,32 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.INS_VERIFY_PI
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public enum TonWalletAppletStates {
 
+  /**
+   * After applet loading and installation on the card it is in mode INSTALLED. It waits for personalization. Personalization is done at factory.
+   * You do not meet this state of applet here.
+   */
   INSTALLED ((byte) 0x07, INSTALLED_STATE_MSG),
+
+  /**
+   * After card activation we get applet in PERSONALIZED state. And here the main card functionality is available.
+   */
   PERSONALIZED ((byte) 0x17, PERSONALIZED_STATE_MSG),
+
+  /**
+   * After finishing the production applet will be in WAITE_AUTHORIZATION_MODE. After getting the device the end user should complete the procedure of two-factor authorization
+   * to make applet working. For this he must know unencrypted activation password, common secret and iv.
+   */
   WAITE_AUTHORIZATION_MODE ((byte) 0x27, WAITE_AUTHORIZATION_MSG),
+
+  /**
+   * In DELETE_KEY_FROM_KEYCHAIN_MODE all commands from PERSONALIZED state are available except of: CHECK_AVAILABLE_VOL_FOR_NEW_KEY,  ADD_KEY_CHUNK,  INITIATE_DELETE_KEY, INITIATE_CHANGE_OF_KEY, CHANGE_KEY_CHUNK.
+   * We want to isolate delete operation as much as possible to control data integrity in keychain.
+   */
   DELETE_KEY_FROM_KEYCHAIN_MODE ((byte) 0x37, DELETE_KEY_FROM_KEYCHAIN_MSG),
+
+  /**
+   * Only two APDU commands will be available here. There is no way to change this state of applet.
+   */
   BLOCKED_MODE ((byte) 0x47, BLOCKED_MSG);
 
   public static final List<TonWalletAppletStates> ALL_APPLET_STATES = Arrays.asList(TonWalletAppletStates.values());
