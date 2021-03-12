@@ -1,8 +1,6 @@
 ## 1. General information
 
-This document describes in detail the process of TON Labs Security card delivery from the ordering to its activation by the user. 
-
-The information about Recovery service is described in separate document.  
+This document describes in detail the process of TON Labs Security card delivery from the ordering to its activation by the user. The information about Recovery service is described in separate document.  
 
 [Secure card constants](https://www.notion.so/7ee85a68c3994e8ab998f88de6566001)
 
@@ -154,10 +152,9 @@ In all cases multisig wallet address will not be changed.
 
 ## 7. Recovery via service
 
-If the user use Recovery service and has lost either the Card or Device with Surf or Seed Phrase it can initiate a recovery procedure by logging into and signing a message with two remaining signatures to SetCode with only one castodian signature. Recovery service user flow described in separate document.
+If the user use Recovery service and has lost either the Card or Device with Surf or Seed Phrase it can initiate a recovery procedure by logging into and signing a message with two remaining signatures to SetCode with only one castodian signature. Recovery service user flow described in separate document (link will be added later).
 
-[Recovery design service  [Eng]](https://www.notion.so/Recovery-design-service-Eng-9deaa4135d68474398966378c72cf226)
 
 ## 8. Recovery without service
 
-When user don't use Recovery-service he(she) takes full responsibility for the safety of the keys. In this case user for example can buy several cards and ...
+When user don't use Recovery-service he(she) takes full responsibility for the safety of the keys. 
