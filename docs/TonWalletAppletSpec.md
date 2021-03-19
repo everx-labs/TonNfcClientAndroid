@@ -1705,3 +1705,17 @@ Only two APDU commands will be available here. There is no way to change this st
 <p align="center">
 <img src="images/statesNew.jpg" width="1000">
 </p>
+
+## Auxiliary APDU commands of Coin Manager
+
+This set of APDU commandsis not a part of TON Wallet applet. So one must make the following SELECT operation before using them
+
+- **SELECT_COIN_MANAGER_APDU (probably this is not correct title, but now we use it)**
+
+CLA: 0x00
+
+INS:0xA4
+
+P1: 0x04
+
+P2:0x00
