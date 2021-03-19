@@ -1418,3 +1418,285 @@ The following APDU commands will be available here.
     *Protocols violation errors:*
 
     7F07 — key index to change was not set
+
+## **APP_DELETE_KEY_FROM_KEYCHAIN_MODE**
+
+Here all commands from APP_PERSONALIZED state are available except of: CHECK_AVAILABLE_VOL_FOR_NEW_KEY,  ADD_KEY_CHUNK,  INITIATE_DELETE_KEY, INITIATE_CHANGE_OF_KEY, CHANGE_KEY_CHUNK .
+
+We want to isolate delete operation as much as possible to control data integrity in keychain.
+
+Aditional commands are available:
+
+- **DELETE_KEY_CHUNK**
+
+    Deletes the portion of key bytes in internal buffer. Max size of portion = 128 bytes. The command should be called (totalOccupied size - offsetOfNextKey) / 128  times + 1 times for tail having length  (totalOccupied size - offsetOfNextKey) % 128. The response contains status byte. If status == 0 then we should continue calling DELETE_LEY_CHUNK. Else if status == 1 then process is finished.
+
+    Such splitting into multiple calls was implemented only because we wanted to use javacard transaction for deleting to control data integrity in keychain. But our device has small internal buffer for transactions and can not handle big transactions.
+
+    *Precondition:*  1) GET_SAULT should be called before to get new sault from card.  2) INITIATE_DELETE_KEY should be called before to set the index of key to be deleted.
+
+    ***APDU input params:***
+
+    CLA: 0xB0
+
+    INS: 0xBE
+
+    P1: 0x00 
+
+    P2: 0x00
+
+    LC: 0x40
+
+    Data: sault (32 bytes) | mac (32 bytes)
+
+    LE: 0x01
+
+    ***Note:*** mac = HMACSHA256(key  index | sault)
+
+    ***APDU response status msg:***
+
+    9000 — success
+
+    *Incorrect APDU data errors:*
+
+    6700 (Wrong length) — LC ≠ 64 OR LE ≠ 1
+
+    8F01 — Incorrect sault
+
+    *Unauthorized access errors*
+
+    8F03 — HMAC verification for APDU input data failed
+
+    8F04 — HMAC verification for APDU input data failed, HMAC verification is expired. This error is thrown after no more than 20 successive fails to verify HMAC. Before throwing this error applet state APP_BLOCKED_MODE is switched on.
+
+- **DELETE_KEY_RECORD**
+
+    Processes the portion of elements in internal buffer storing record about keys. Max size of portion = 12. The command should be called (numberOfStoredKeys - indOfKeyToDelete - 1) / 12  times + 1 times for tail having length  (numberOfStoredKeys - indOfKeyToDelete - 1) % 12. The response contains status byte. If status == 0 then we should continue calling DELETE_LEY_RECORD. Else if status == 1 then process is finished.
+
+    In the end when status is set to 1 and delete operation is finished applet state is changed on APP_PERSONALIZED. And again one may conduct new add, change or delete operation in keychain,
+
+    Such splitting into multiple calls was implemented only because we wanted to use javacard transaction for deleting to control data integrity in keychain. But our device has small internal buffer for transactions and can not handle big transactions.
+
+    *Precondition:*  1) GET_SAULT should be called before to get new sault from card.  2) DELETE_KEY _CHUNK should be called before to clear keyStore array (it should be called until it will return response byte = 1).
+
+    ***APDU input params:***
+
+    CLA: 0xB0
+
+    INS: 0xBF
+
+    P1: 0x00 
+
+    P2: 0x00
+
+    LC: 0x40
+
+    Data: sault (32 bytes) | mac (32 bytes)
+
+    LE: 0x01
+
+    ***Note:*** mac = HMACSHA256(key  index | sault)
+
+    ***APDU response status msg:***
+
+    9000 — success
+
+    *Incorrect APDU data errors:*
+
+    6700 (Wrong length) — LC ≠ 64 OR LE ≠ 1
+
+    8F01 — Incorrect sault
+
+    *Unauthorized access errors*
+
+    8F03 — HMAC verification for APDU input data failed
+
+    8F04 — HMAC verification for APDU input data failed, HMAC verification is expired. This error is thrown after no more than 20 successive fails to verify HMAC. Before throwing this error applet state APP_BLOCKED_MODE is switched on.
+
+    *Protocol violation*
+
+    7F09 — DELETE_KEY_CHUNK did not finish its work
+
+- **GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS**
+
+    Outputs total number of iterations that is necessary to remove key chunk from keychain.
+
+    *Precondition:*  GET_SAULT should be called before to get new sault from card. 
+
+    ***APDU input params:***
+
+    CLA: 0xB0
+
+    INS: 0xE1
+
+    P1: 0x00
+
+    P2: 0x00
+
+    LC: 0x40
+
+    Data: sault (32 bytes) | mac (32 bytes)
+
+    LE: 0x02
+
+    ***Note:*** mac = HMACSHA256(sault)
+
+    ***APDU response status msg:***
+
+    9000 — success
+
+    *Incorrect APDU data errors:*
+
+    6700 (Wrong length) — LC ≠ 64 OR LE ≠ 2.
+
+    8F01 — Incorrect sault
+
+    *Unauthorized access errors*
+
+    8F03 — HMAC verification for APDU input data failed
+
+    8F04 — HMAC verification for APDU input data failed, HMAC verification is expired. This error is thrown after no more than 20 successive fails to verify HMAC. Before throwing this error applet state APP_BLOCKED_MODE is switched on.
+
+    ***APDU response data:*** 
+
+    2 bytes storing total number of iterations that is necessary to remove key chunk from keychain
+
+- **GET_DELETE_KEY_RECORD_NUM_OF_PACKETS**
+
+    Outputs total number of iterations that is necessary to remove key record from keychain.
+
+    *Precondition:*  GET_SAULT should be called before to get new sault from card. 
+
+    ***APDU input params:***
+
+    CLA: 0xB0
+
+    INS: 0xE2
+
+    P1: 0x00
+
+    P2: 0x00
+
+    LC: 0x40
+
+    Data: sault (32 bytes) | mac (32 bytes)
+
+    LE: 0x02
+
+    ***Note:*** mac = HMACSHA256(sault)
+
+    ***APDU response status msg:***
+
+    9000 — success
+
+    *Incorrect APDU data errors:*
+
+    6700 (Wrong length) — LC ≠ 64 OR LE ≠ 2.
+
+    8F01 — Incorrect sault
+
+    *Unauthorized access errors*
+
+    8F03 — HMAC verification for APDU input data failed
+
+    8F04 — HMAC verification for APDU input data failed, HMAC verification is expired. This error is thrown after no more than 20 successive fails to verify HMAC. Before throwing this error applet state APP_BLOCKED_MODE is switched on.
+
+    ***APDU response data:*** 
+
+    2 bytes storing total number of iterations that is necessary to remove key record from keychain
+
+- **GET_DELETE_KEY_CHUNK_COUNTER**
+
+    Outputs number of passed iterations that have been already done to remove key chunk from keychain. This may be necessary to finish key deleting after interruption.
+
+    *Precondition:*  GET_SAULT should be called before to get new sault from card. 
+
+    ***APDU input params:***
+
+    CLA: 0xB0
+
+    INS: 0xE3
+
+    P1: 0x00
+
+    P2: 0x00
+
+    LC: 0x40
+
+    Data: sault (32 bytes) | mac (32 bytes)
+
+    LE: 0x02
+
+    ***Note:*** mac = HMACSHA256(sault)
+
+    ***APDU response status msg:***
+
+    9000 — success
+
+    *Incorrect APDU data errors:*
+
+    6700 (Wrong length) — LC ≠ 64 OR LE ≠ 2.
+
+    8F01 — Incorrect sault
+
+    *Unauthorized access errors*
+
+    8F03 — HMAC verification for APDU input data failed
+
+    8F04 — HMAC verification for APDU input data failed, HMAC verification is expired. This error is thrown after no more than 20 successive fails to verify HMAC. Before throwing this error applet state APP_BLOCKED_MODE is switched on.
+
+    ***APDU response data:*** 
+
+    2 bytes storing  number of passed iterations that have been already done to remove key chunk from keychain
+
+- **GET_DELETE_KEY_RECORD_COUNTER**
+
+    Outputs number of passed iterations that have been already done to remove key record from keychain. This may be necessary to finish key deleting after interruption.
+
+    *Precondition:*  GET_SAULT should be called before to get new sault from card. 
+
+    ***APDU input params:***
+
+    CLA: 0xB0
+
+    INS: 0xE4
+
+    P1: 0x00
+
+    P2: 0x00
+
+    LC: 0x40
+
+    Data: sault (32 bytes) | mac (32 bytes)
+
+    LE: 0x02
+
+    ***Note:*** mac = HMACSHA256(sault)
+
+    ***APDU response status msg:***
+
+    9000 — success
+
+    *Incorrect APDU data errors:*
+
+    6700 (Wrong length) — LC ≠ 64 OR LE ≠ 2.
+
+    8F01 — Incorrect sault
+
+    *Unauthorized access errors*
+
+    8F03 — HMAC verification for APDU input data failed
+
+    8F04 — HMAC verification for APDU input data failed, HMAC verification is expired. This error is thrown after no more than 20 successive fails to verify HMAC. Before throwing this error applet state APP_BLOCKED_MODE is switched on.
+
+    ***APDU response data:*** 
+
+    2 bytes storing  number of passed iterations that have been already done to remove key record from keychain
+    
+### APP_BLOCKED_MODE
+
+Only two APDU commands will be available here. There is no way to change this state of applet. 
+
+- **INS_GET_APP_INFO**
+- **INS_GET_SERIAL_NUMBER**
+
