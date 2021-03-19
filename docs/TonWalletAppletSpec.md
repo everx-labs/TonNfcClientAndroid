@@ -42,6 +42,8 @@ CLA | INS | P1 | P2 | LE
 
 After applet loading and installation on the card it will be in mode APP_INSTALLED. It will wait for personalization. Personalization will be done at factory. The following APDU commands will be available.
 
+**Note**: After personalization is done applet state is switched into APP_WAITE_AUTHORIZATION_MODE. And this transition is irreversible. So the end user will not ever get the card with applet in this state.
+
 - **SET_SERIAL_NUMBER**
 
     ***APDU input params:***
@@ -247,3 +249,65 @@ After applet loading and installation on the card it will be in mode APP_INSTALL
     *APDU response data:* 
 
     24 bytes digital byte array containing serial number
+    
+    - **GET_HASH_OF_ENCRYPTED_COMMON_SECRET**
+
+    ***APDU input params:***
+
+    CLA: 0xB0
+
+    INS: 0x95
+
+    P1: 0x00
+
+    P2: 0x00
+
+    LE: 0x20
+
+    ***APDU response status msg:***
+
+    9000 — success
+
+    *Incorrect APDU data errors:*
+
+    6700 (Wrong length) — LE ≠ 32.
+
+    ***APDU response data:*** 
+
+    32 bytes of SHA256(common secret)
+    
+## APP_WAITE_AUTHORIZATION_MODE state/Applet authorization
+
+After finishing the production applet will be in APP_WAITE_AUTHORIZATION_MODE. After getting the device the end user should complete the procedure of two-factor authorization to make applet working. For this he must know unencrypted activation password.
+
+The following APDU commands will be available here.   
+
+- **VERIFY_PASSWORD**
+
+    ***APDU input params:***
+
+    CLA: 0xB0
+
+    INS: 0x92
+
+    P1: 0x00
+
+    P2: 0x00
+
+    LC: 0x90
+
+    Data: 128 bytes of unencrypted activation password | 16 bytes of IV for AES128 CBC
+
+    ***APDU response status msg:***
+
+    9000 — success, in this case applet state  APP_PERSONALIZED is set up and key for HMAC signature is produced based on common secret and sha256(unencrypted activation password ).
+
+    *Incorrect APDU data errors:*
+
+    6700 (Wrong length) — Length of input APDU Data field  ≠ 144.
+
+    *Unauthorized access errors*
+
+    5f00 — Incorrect password for card authentication.
+
+    5f01 — Incorrect password, card is locked. This error is thrown after 20 successive fails to verify password. Before throwing this error applet state  APP_BLOCKED_MODE is set up.
