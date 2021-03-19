@@ -1700,3 +1700,8 @@ Only two APDU commands will be available here. There is no way to change this st
 - **INS_GET_APP_INFO**
 - **INS_GET_SERIAL_NUMBER**
 
+## Diagram showing applet states transitions
+
+<p align="center">
+<img src="images/statesNew.jpg" width="1000">
+</p>
