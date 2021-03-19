@@ -148,9 +148,14 @@ Second step:
     Done. Multisig is updated.
 
 2. Case: multisig wallet has 3 custodians: Recovery, Surf and Card. One of custodian's private key was lost or stolen or compromised. Need to update all custodians in multisig.
-    1. call `submitUpdate` signed by one of multisig custodians (i.e. card). Use arguments as described in [1.1](https://www.notion.so/tonlabs/TonLabs-security-card-production-step-6cedb9ad6d0745c089afd47c988a98e7#58c5d900d5a3457ebf56622d54e5b834). Supply new array of custodian public keys. `submitUpdate` returns `updateId`.
-    2. call `confirmUpdate` signed by another current custodian (i.e. Recovery) with `updateId` from above step.
-    3. call `executeUpdate` signed by any of current custodians.
+    1. call `submitUpdate` signed by one of multisig custodians (i.e. card). Use arguments:
+        - `codeHash` - representation hash of the tree of cells of the mulisig code (extract code from multisig tvc file).
+        - `owners` - array of public keys of new custodians. There should be array of 3 elements [Surf_pubkey, Recovery_pubkey, Card_pubkey].
+        - `reqConfirms` - required number of confirmations, should be 2. It means that 2/3 signatures are required to execute transaction in multisig.
+        The function returns `updateId`.
+    2. Supply new array of custodian public keys. `submitUpdate` returns `updateId`.
+    4. call `confirmUpdate` signed by another current custodian (i.e. Recovery) with `updateId` from above step.
+    5. call `executeUpdate` signed by any of current custodians.
 
     Done. Multisig is updated.
 
@@ -158,7 +163,7 @@ In all cases multisig wallet address will not be changed.
 
 ## 7. Recovery via service
 
-If the user use Recovery service and has lost either the Card or Device with Surf or Seed Phrase it can initiate a recovery procedure by logging into and signing a message with two remaining signatures to SetCode with only one castodian signature. Recovery service user flow described in separate document (link will be added later).
+If the user use Recovery service and has lost either the Card or Device with Surf or Seed Phrase it can initiate a recovery procedure by logging into and signing a message with two remaining signatures to SetCode with only one castodian signature. Recovery service user flow described in [separate document](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/docs/RecoveryDesignService.md).
 
 
 ## 8. Recovery without service
