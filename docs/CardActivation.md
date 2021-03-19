@@ -152,6 +152,7 @@ Second step:
         - `codeHash` - representation hash of the tree of cells of the mulisig code (extract code from multisig tvc file).
         - `owners` - array of public keys of new custodians. There should be array of 3 elements [Surf_pubkey, Recovery_pubkey, Card_pubkey].
         - `reqConfirms` - required number of confirmations, should be 2. It means that 2/3 signatures are required to execute transaction in multisig.
+        
         The function returns `updateId`.
     2. Supply new array of custodian public keys. `submitUpdate` returns `updateId`.
     4. call `confirmUpdate` signed by another current custodian (i.e. Recovery) with `updateId` from above step.
