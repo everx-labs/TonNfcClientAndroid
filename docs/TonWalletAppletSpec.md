@@ -38,6 +38,25 @@ CLA | INS | P1 | P2 | LC | Data | LE
 
 CLA | INS | P1 | P2 | LE
 
+- **SELECT_TON_WALLET_APPLET **
+   
+   ***APDU input params:***
+
+   CLA: 0x00
+
+   INS:0xA4
+
+   P1: 0x04
+
+   P2:0x00
+   
+   LC: 0x0D
+   
+   Data: 0x31 0x31 0x32 0x32 0x33 0x33 0x34 0x34 0x35 0x35 0x36 0x36
+   
+   LE:  0x00
+
+
 ## APP_INSTALLED state/Personalization
 
 After applet loading and installation on the card it will be in mode APP_INSTALLED. It will wait for personalization. Personalization will be done at factory. The following APDU commands will be available.
@@ -1708,9 +1727,9 @@ Only two APDU commands will be available here. There is no way to change this st
 
 ## Auxiliary APDU commands of Coin Manager
 
-This set of APDU commandsis not a part of TON Wallet applet. So one must make the following SELECT operation before using them
+This set of APDU commands is not a part of TON Wallet applet. So one must make the following SELECT operation before using them
 
-- **SELECT_COIN_MANAGER_APDU (probably this is not correct title, but now we use it)**
+- **SELECT_COIN_MANAGER (probably this is not correct title, but now we use it)**
    
    ***APDU input params:***
 
@@ -1721,3 +1740,5 @@ This set of APDU commandsis not a part of TON Wallet applet. So one must make th
    P1: 0x04
 
    P2:0x00
+ 
+ 
