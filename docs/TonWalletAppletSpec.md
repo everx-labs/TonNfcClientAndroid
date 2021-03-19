@@ -38,7 +38,9 @@ CLA | INS | P1 | P2 | LC | Data | LE
 
 CLA | INS | P1 | P2 | LE
 
-- **SELECT_TON_WALLET_APPLET **
+APDU command to select TON Wallet applet.
+
+- **SELECT_TON_WALLET_APPLET**
    
    ***APDU input params:***
 
