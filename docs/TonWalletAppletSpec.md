@@ -250,7 +250,7 @@ After applet loading and installation on the card it will be in mode APP_INSTALL
 
     24 bytes digital byte array containing serial number
     
-    - **GET_HASH_OF_ENCRYPTED_COMMON_SECRET**
+ - **GET_HASH_OF_ENCRYPTED_COMMON_SECRET**
 
     ***APDU input params:***
 
