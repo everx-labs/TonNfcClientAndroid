@@ -1711,11 +1711,13 @@ Only two APDU commands will be available here. There is no way to change this st
 This set of APDU commandsis not a part of TON Wallet applet. So one must make the following SELECT operation before using them
 
 - **SELECT_COIN_MANAGER_APDU (probably this is not correct title, but now we use it)**
+   
+   ***APDU input params:***
 
-CLA: 0x00
+   CLA: 0x00
 
-INS:0xA4
+   INS:0xA4
 
-P1: 0x04
+   P1: 0x04
 
-P2:0x00
+   P2:0x00
