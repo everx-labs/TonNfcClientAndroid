@@ -54,6 +54,11 @@ public final class NfcApduRunner extends ApduRunner {
     this.nfcAdapter = nfcAdapter;
   }
 
+  @RestrictTo(RestrictTo.Scope.TESTS)
+  public void setCardTag(IsoDep nfcTag) {
+    this.nfcTag = nfcTag;
+  }
+
   public boolean setCardTag(Intent intent) throws Exception{
     if (intent == null) throw new Exception(ERROR_MSG_INTENT_EMPTY);
     Tag tag = intent.getParcelableExtra(EXTRA_TAG);
@@ -97,6 +102,9 @@ public final class NfcApduRunner extends ApduRunner {
 
   @Override
   public RAPDU transmitCommand(CAPDU commandAPDU) throws  Exception {
+    if (nfcTag == null) {
+      throw new Exception(ERROR_MSG_NO_TAG);
+    }
     if (commandAPDU == null) {
       throw new Exception(ERROR_MSG_APDU_EMPTY);
     }
