@@ -1,8 +1,12 @@
 package com.tonnfccard.helpers;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import com.tonnfccard.utils.ByteArrayUtil;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import static com.tonnfccard.TonWalletConstants.EMPTY_SERIAL_NUMBER;
 import static com.tonnfccard.TonWalletConstants.SHA_HASH_SIZE;
@@ -13,11 +17,13 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ERR_KEY_BYTES_
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_TOO_SHORT;
 import static org.junit.Assert.*;
 
+@RunWith(RobolectricTestRunner.class)
 public class HmacHelperTest {
     public static final HmacHelper HMAC_HELPER = HmacHelper.getInstance();
 
     @Test
     public void testNullKeyForComputeMac()   {
+        ApplicationProvider.getApplicationContext();
         try {
             HMAC_HELPER.computeMac(null, null);
             fail();

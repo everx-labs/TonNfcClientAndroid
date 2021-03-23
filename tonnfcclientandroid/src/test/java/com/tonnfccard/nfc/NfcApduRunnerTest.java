@@ -1,8 +1,87 @@
 package com.tonnfccard.nfc;
 
-import static org.junit.Assert.*;
+import android.content.Context;
+import android.nfc.tech.IsoDep;
+import android.os.Build;
 
+import androidx.test.core.app.ApplicationProvider;
+
+import com.tonnfccard.helpers.ResponsesConstants;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+
+import java.io.IOException;
+
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SAULT_APDU;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = Build.VERSION_CODES.P)
 public class NfcApduRunnerTest {
+
+    private Context context  = ApplicationProvider.getApplicationContext();
+
+    @Test
+    public void getInstanceTestNullAdapter() {
+        try {
+            NfcApduRunner.getInstance(null);
+            fail();
+        }
+        catch (Exception e){
+            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_CONTEXT);
+        }
+    }
+
+    @Test
+    public void disconnectTestNoTag() throws Exception{
+        NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(context);
+        IsoDep isoDep = null;
+        nfcApduRunner.setCardTag(isoDep);
+        try {
+            nfcApduRunner.disconnectCard();
+            fail();
+        }
+        catch (Exception e){
+            //System.out.println(e.getMessage());
+            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_TAG);
+        }
+    }
+
+    @Test
+    public void transmitCommandNoTag() throws Exception{
+        NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(context);
+        IsoDep isoDep = null;
+        nfcApduRunner.setCardTag(isoDep);
+        try {
+            nfcApduRunner.transmitCommand(GET_SAULT_APDU);
+            fail();
+        }
+        catch (Exception e){
+            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_TAG);
+        }
+    }
+
+    @Test
+    public void disconnectTest() throws Exception {
+        IsoDep tag = mock(IsoDep.class);
+        Mockito.doThrow(new IOException()).when(tag).close();
+        NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(context);
+        nfcApduRunner.setCardTag(tag);
+        try {
+            nfcApduRunner.disconnectCard();
+            fail();
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            assertTrue(e.getMessage().contains(ResponsesConstants.ERROR_MSG_NFC_DISCONNECT));
+        }
+    }
 
 }
 
