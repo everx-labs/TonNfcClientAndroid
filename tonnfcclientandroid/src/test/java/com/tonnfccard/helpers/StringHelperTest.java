@@ -29,53 +29,11 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_STRING_IS_NOT_
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_STRING_IS_NULL;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
 
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
-//import org.robolectric.RobolectricTestRunner;
-
-//import androidx.test.runner.AndroidJUnit4;
-
-
-// 2
-
-@RunWith(RobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.P)
 public class StringHelperTest {
     private static final StringHelper STRING_HELPER = StringHelper.getInstance();
 
     private Activity activity;
-
-   /* @Before
-    public void setUp() throws Exception {
-        activity = Robolectric.buildActivity(Activity.class).create().get();
-    }*/
-
-    @Test
-    public void disconnectTest() throws Exception {
-        IsoDep tag = mock(IsoDep.class);
-        Context context  = ApplicationProvider.getApplicationContext();
-        //Testtt t = mock(Testtt.class);
-       // IsoDep isoDep = mock(IsoDep.class);
-       // Mockito.doThrow(new IOException()).when(tag).close();
-        NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(context);
-        Mockito.doThrow(new IOException()).when(tag).close();
-        nfcApduRunner.setCardTag(tag);
-        try {
-            nfcApduRunner.disconnectCard();
-            fail();
-        }
-        catch (Exception e){
-            System.out.println(e.getMessage());
-            assertTrue(e.getMessage().contains(ResponsesConstants.ERROR_MSG_NFC_DISCONNECT));
-        }
-    }
 
     @Test
     public void isHexStringTest() {

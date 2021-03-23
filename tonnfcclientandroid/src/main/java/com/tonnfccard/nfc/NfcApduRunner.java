@@ -11,6 +11,7 @@ import androidx.annotation.RestrictTo;
 import com.tonnfccard.smartcard.ApduRunner;
 import com.tonnfccard.smartcard.CAPDU;
 import com.tonnfccard.smartcard.RAPDU;
+import com.tonnfccard.utils.ByteArrayUtil;
 
 import java.io.IOException;
 
@@ -50,13 +51,14 @@ public final class NfcApduRunner extends ApduRunner {
     return nfcApduRunner;
   }
 
-  public void setNfcAdapter(NfcAdapter nfcAdapter){
-    this.nfcAdapter = nfcAdapter;
+  @RestrictTo(RestrictTo.Scope.TESTS)
+  void setCardTag(IsoDep nfcTag) {
+    this.nfcTag = nfcTag;
   }
 
   @RestrictTo(RestrictTo.Scope.TESTS)
-  public void setCardTag(IsoDep nfcTag) {
-    this.nfcTag = nfcTag;
+  void setNfcAdapter(NfcAdapter nfcAdapter){
+    this.nfcAdapter = nfcAdapter;
   }
 
   public boolean setCardTag(Intent intent) throws Exception{
@@ -83,7 +85,7 @@ public final class NfcApduRunner extends ApduRunner {
         nfcTag.connect();
         nfcTag.setTimeout(TIME_OUT);
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
         throw new Exception(ERROR_MSG_NFC_CONNECT);
     }
   }
@@ -95,7 +97,7 @@ public final class NfcApduRunner extends ApduRunner {
     }
     try {
       nfcTag.close();
-    } catch (IOException e) {
+    } catch (Exception e) {
         throw new Exception(ERROR_MSG_NFC_DISCONNECT + ", more details: " + e.getMessage());
     }
   }
@@ -117,9 +119,10 @@ public final class NfcApduRunner extends ApduRunner {
     byte[] response;
     try {
       response = nfcTag.transceive(apduCommandBytes);
-    } catch (IOException e) {
+    } catch (Exception e) {
         throw new Exception(ERROR_TRANSCEIVE + ", More details: " + e.getMessage());
     }
+   // System.out.println("!! = " + ByteArrayUtil.getInstance().hex(response));
     if (response == null || response.length <= 1) {
       throw new Exception(ERROR_BAD_RESPONSE);
     }

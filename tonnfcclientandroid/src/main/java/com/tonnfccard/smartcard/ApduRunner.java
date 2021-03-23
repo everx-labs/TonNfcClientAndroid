@@ -46,11 +46,13 @@ public abstract class ApduRunner {
   }
 
   public RAPDU sendCoinManagerAppletAPDU(CAPDU commandAPDU) throws Exception {
+    if (commandAPDU == null) throw new Exception(ERROR_MSG_APDU_EMPTY);
     sendAPDU(SELECT_COIN_MANAGER_APDU);
     return sendAPDU(commandAPDU);
   }
 
   public RAPDU sendTonWalletAppletAPDU(CAPDU commandAPDU) throws Exception {
+    if (commandAPDU == null) throw new Exception(ERROR_MSG_APDU_EMPTY);
     RAPDU response = sendAPDUList(GET_APPLET_STATE_APDU_LIST);
     if (response.getData().length != 0x01) throw new Exception(ERROR_MSG_STATE_RESPONSE_LEN_INCORRECT);
     if (commandAPDU.getIns() == INS_GET_APP_INFO) return response;
