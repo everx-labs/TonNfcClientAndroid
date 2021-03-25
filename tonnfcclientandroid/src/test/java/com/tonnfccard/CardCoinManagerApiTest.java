@@ -8,6 +8,8 @@ import android.os.Build;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.tonnfccard.callback.NfcCallback;
+import com.tonnfccard.callback.NfcRejecter;
+import com.tonnfccard.callback.NfcResolver;
 import com.tonnfccard.helpers.ExceptionHelper;
 import com.tonnfccard.helpers.JsonHelper;
 import com.tonnfccard.helpers.ResponsesConstants;
@@ -91,7 +93,6 @@ public class CardCoinManagerApiTest {
     private Random random = new Random();
     private NfcApduRunner nfcApduRunner;
     private Context context;
-
     private final RAPDU SUCCESS_RAPDU = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
 
     private final CardApiInterface<List<String>> setDeviceLabel = list ->  cardCoinManagerApi.setDeviceLabelAndGetJson(list.get(0));
@@ -109,9 +110,6 @@ public class CardCoinManagerApiTest {
 
     List<CardApiInterface<List<String>>> cardOperationsList = Arrays.asList(setDeviceLabel, generateSeed, changePin, getDeviceLabel,
             getAppsList, getAvailableMemory, getCsn, getMaxPinTries, getRootKeyStatus, getSeVersion, getRemainingPinTries, resetWallet);
-
-
-
 
     @Before
     public  void init() throws Exception {
@@ -474,7 +472,4 @@ public class CardCoinManagerApiTest {
             assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_GET_DEVICE_LABEL_RESPONSE_LEN_INCORRECT)));
         }
     }
-
-
-
 }
