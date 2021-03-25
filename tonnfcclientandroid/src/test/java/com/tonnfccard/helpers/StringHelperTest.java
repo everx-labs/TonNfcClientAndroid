@@ -1,28 +1,11 @@
 package com.tonnfccard.helpers;
 
 import android.app.Activity;
-import android.content.Context;
-import android.nfc.tech.IsoDep;
-import android.os.Build;
-import android.util.Log;
 
-import androidx.lifecycle.LifecycleRegistry;
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import com.tonnfccard.BuildConfig;
-import com.tonnfccard.nfc.NfcApduRunner;
-import com.tonnfccard.utils.Testtt;
-
-import org.junit.Before;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ARRAY_ELEMENTS_ARE_NOT_DIGITS;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ARRAY_TO_MAKE_DIGITAL_STR_MUST_NOT_BE_EMPTY;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_MALFORMED_JSON_MSG;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_FORMAT_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_STRING_IS_NOT_ASCII;

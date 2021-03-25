@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.tonnfccard.callback.NfcCallback;
+import com.tonnfccard.nfc.NfcApduRunner;
 import com.tonnfccard.smartcard.ApduRunner;
 import com.tonnfccard.smartcard.RAPDU;
 
@@ -26,7 +27,7 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getVerifyPinA
 public final class CardCryptoApi extends TonWalletApi {
   private static final String TAG = "CardCryptoNfcApi";
 
-  public CardCryptoApi(Context activity, ApduRunner apduRunner) {
+  public CardCryptoApi(Context activity, NfcApduRunner apduRunner) {
     super(activity, apduRunner);
   }
 

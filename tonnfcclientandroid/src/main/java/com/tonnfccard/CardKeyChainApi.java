@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.tonnfccard.callback.NfcCallback;
+import com.tonnfccard.nfc.NfcApduRunner;
 import com.tonnfccard.smartcard.TonWalletAppletStates;
 import com.tonnfccard.smartcard.ApduRunner;
 import com.tonnfccard.smartcard.RAPDU;
@@ -92,7 +93,7 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   private List<String> keyMacs = new ArrayList<>();
 
-  public CardKeyChainApi(Context activity, ApduRunner apduRunner) {
+  public CardKeyChainApi(Context activity, NfcApduRunner apduRunner) {
     super(activity, apduRunner);
   }
 

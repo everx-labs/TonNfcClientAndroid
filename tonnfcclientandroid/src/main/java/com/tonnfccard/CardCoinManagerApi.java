@@ -4,9 +4,13 @@ import android.content.Context;
 import android.util.Log;
 
 import com.tonnfccard.callback.NfcCallback;
+import com.tonnfccard.nfc.NfcApduRunner;
 import com.tonnfccard.smartcard.ApduRunner;
 import com.tonnfccard.smartcard.RAPDU;
 import com.tonnfccard.smartcard.CAPDU;
+
+import javax.xml.transform.Result;
+
 import static com.tonnfccard.TonWalletConstants.DONE_MSG;
 import static com.tonnfccard.TonWalletConstants.GENERATED_MSG;
 import static com.tonnfccard.TonWalletConstants.MAX_PIN_TRIES;
@@ -32,7 +36,7 @@ import static com.tonnfccard.smartcard.CoinManagerApduCommands.getSetDeviceLabel
 public final class CardCoinManagerApi extends TonWalletApi {
   private static final String TAG = "CardCoinManagerNfcApi";
 
-  public CardCoinManagerApi(Context activity, ApduRunner apduRunner) {
+  public CardCoinManagerApi(Context activity, NfcApduRunner apduRunner) {
     super(activity, apduRunner);
   }
 
@@ -53,9 +57,9 @@ public final class CardCoinManagerApi extends TonWalletApi {
   public String setDeviceLabelAndGetJson(String deviceLabel) throws Exception {
     try {
       if (!STR_HELPER.isHexString(deviceLabel))
-        throw new Exception(ERROR_MSG_DEVICE_LABEL_NOT_HEX);
+        throw new IllegalArgumentException(ERROR_MSG_DEVICE_LABEL_NOT_HEX);
       if (deviceLabel.length() != 2 * LABEL_LENGTH)
-        throw new Exception(ERROR_MSG_DEVICE_LABEL_LEN_INCORRECT);
+        throw new IllegalArgumentException(ERROR_MSG_DEVICE_LABEL_LEN_INCORRECT);
       apduRunner.sendCoinManagerAppletAPDU(getSetDeviceLabelAPDU(BYTE_ARR_HELPER.bytes(deviceLabel)));
       return JSON_HELPER.createResponseJson(DONE_MSG);
     }
@@ -267,9 +271,9 @@ public final class CardCoinManagerApi extends TonWalletApi {
   public String generateSeedAndGetJson(String pin) throws Exception {
     try {
       if (!STR_HELPER.isNumericString(pin))
-        throw new Exception(ERROR_MSG_PIN_FORMAT_INCORRECT);
+        throw new IllegalArgumentException(ERROR_MSG_PIN_FORMAT_INCORRECT);
       if (pin.length() != PIN_SIZE)
-        throw new Exception(ERROR_MSG_PIN_LEN_INCORRECT);
+        throw new IllegalArgumentException(ERROR_MSG_PIN_LEN_INCORRECT);
       apduRunner.sendCoinManagerAppletAPDU(getGenerateSeedAPDU(BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(pin))));
       return JSON_HELPER.createResponseJson(DONE_MSG);
     }

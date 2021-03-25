@@ -4,6 +4,8 @@ import androidx.annotation.RestrictTo;
 
 import com.tonnfccard.utils.ByteArrayUtil;
 
+import java.util.Arrays;
+
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_RESPONSE_TOO_LONG;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SW_TOO_SHORT;
 
@@ -68,5 +70,25 @@ public class RAPDU {
                 (getData()!=null && getData().length > 0
                         ? " '"+   BYTE_ARRAY_HELPER.hex(getData())+"'"
                         : "");
+    }
+
+    public String prepareSwFormatted() {
+        return BYTE_ARRAY_HELPER.hex(new byte[]{getSW1()})
+                + BYTE_ARRAY_HELPER.hex(new byte[]{getSW2()});
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        // If the object is compared with itself then return true
+        if (o == this) {
+            return true;
+        }
+        /* Check if o is an instance of Complex or not
+          "null instanceof [type]" also returns false */
+        if (!(o instanceof RAPDU)) {
+            return false;
+        }
+        RAPDU rapdu = (RAPDU) o;
+        return Arrays.equals(bytes, ((RAPDU) o).bytes);
     }
 }

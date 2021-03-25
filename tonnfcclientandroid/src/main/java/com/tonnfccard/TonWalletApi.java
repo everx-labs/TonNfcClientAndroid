@@ -10,6 +10,7 @@ import com.tonnfccard.callback.NfcCallback;
 import com.tonnfccard.helpers.ExceptionHelper;
 import com.tonnfccard.helpers.JsonHelper;
 import com.tonnfccard.helpers.StringHelper;
+import com.tonnfccard.nfc.NfcApduRunner;
 import com.tonnfccard.smartcard.TonWalletAppletStates;
 import com.tonnfccard.helpers.HmacHelper;
 import com.tonnfccard.smartcard.ApduRunner;
@@ -56,11 +57,11 @@ public class TonWalletApi {
   static MessageDigest digest;
   static String currentSerialNumber = EMPTY_SERIAL_NUMBER;
 
-  public void setApduRunner(ApduRunner apduRunner) {
+  public void setApduRunner(NfcApduRunner apduRunner) {
     this.apduRunner = apduRunner;
   }
 
-  ApduRunner apduRunner;
+  NfcApduRunner apduRunner;
 
   private Context activity;
 
@@ -72,7 +73,7 @@ public class TonWalletApi {
     }
   }
 
-  TonWalletApi(Context activity, ApduRunner apduRunner) {
+  TonWalletApi(Context activity, NfcApduRunner apduRunner) {
     this.activity = activity;
     this.apduRunner = apduRunner;
   }

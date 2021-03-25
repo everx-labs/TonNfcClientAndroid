@@ -42,6 +42,8 @@ public final class TonWalletConstants {
     // Default PIN code "5555" is set for all cards
     public static final byte[] DEFAULT_PIN = new byte[]{0x35, 0x35, 0x35, 0x35};
 
+    public static String DEFAULT_PIN_STR = "5555";
+
     // Size of card PIN code
     public static final byte PIN_SIZE = (byte) 4;
 

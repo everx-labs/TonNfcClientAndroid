@@ -21,6 +21,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.internal.DoNotInstrument;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -50,6 +51,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.P)
+@DoNotInstrument
 public class NfcApduRunnerTest {
 
     private Context context;

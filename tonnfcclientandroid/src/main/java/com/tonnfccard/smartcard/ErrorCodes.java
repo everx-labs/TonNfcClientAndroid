@@ -5,6 +5,7 @@ import androidx.annotation.RestrictTo;
 import com.tonnfccard.utils.ByteArrayUtil;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_RESPONSE_IS_NULL;
@@ -15,7 +16,7 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_RESPONSE_
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class ErrorCodes {
     private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
-    private static Map<Short, String> codeToMsg = new HashMap<>();
+    private static Map<Short, String> codeToMsg = new LinkedHashMap<>();
 
     /** Javacard standard status words */
     public final static short SW_SUCCESS  = (short) 0x9000;

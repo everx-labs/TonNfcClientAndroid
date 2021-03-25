@@ -18,6 +18,7 @@ import java.io.IOException;
 import static android.nfc.NfcAdapter.EXTRA_TAG;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_BAD_RESPONSE;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_EMPTY;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_RESPONSE_TOO_LONG;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_INTENT_EMPTY;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_CONNECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_DISABLED;
@@ -26,6 +27,7 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_CONTEXT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_NFC;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_TAG;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_TRANSCEIVE;
+import static com.tonnfccard.smartcard.RAPDU.MAX_LENGTH;
 
 //@RestrictTo(RestrictTo.Scope.LIBRARY)
 
@@ -39,11 +41,17 @@ public final class NfcApduRunner extends ApduRunner {
 
   private NfcAdapter nfcAdapter;
   private IsoDep nfcTag = null;
+  private CAPDU lastSentAPDU = null;
 
   private NfcApduRunner(Context context) {
     super();
     apiContext = context;
   }
+
+  public CAPDU getLastSentAPDU() {
+    return lastSentAPDU;
+  }
+
 
   public synchronized static NfcApduRunner getInstance(Context context) throws Exception{
     if (context == null) throw new Exception(ERROR_MSG_NO_CONTEXT);
@@ -52,12 +60,12 @@ public final class NfcApduRunner extends ApduRunner {
   }
 
   @RestrictTo(RestrictTo.Scope.TESTS)
-  void setCardTag(IsoDep nfcTag) {
+  public void setCardTag(IsoDep nfcTag) {
     this.nfcTag = nfcTag;
   }
 
   @RestrictTo(RestrictTo.Scope.TESTS)
-  void setNfcAdapter(NfcAdapter nfcAdapter){
+  public void setNfcAdapter(NfcAdapter nfcAdapter){
     this.nfcAdapter = nfcAdapter;
   }
 
@@ -110,7 +118,9 @@ public final class NfcApduRunner extends ApduRunner {
     if (commandAPDU == null) {
       throw new Exception(ERROR_MSG_APDU_EMPTY);
     }
-    return new RAPDU(transceive(commandAPDU.getBytes()));
+    RAPDU res = new RAPDU(transceive(commandAPDU.getBytes()));
+    lastSentAPDU = commandAPDU;
+    return res;
   }
 
   private byte[] transceive(byte[] apduCommandBytes) throws Exception{
@@ -126,6 +136,7 @@ public final class NfcApduRunner extends ApduRunner {
     if (response == null || response.length <= 1) {
       throw new Exception(ERROR_BAD_RESPONSE);
     }
+    if (response.length > MAX_LENGTH ) throw new IllegalArgumentException(ERROR_MSG_APDU_RESPONSE_TOO_LONG);
     return response;
   }
 }

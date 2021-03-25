@@ -45,6 +45,10 @@ public abstract class ApduRunner {
     return result;
   }
 
+  public RAPDU selectCoinManagerApplet() throws Exception {
+    return sendAPDU(SELECT_COIN_MANAGER_APDU);
+  }
+
   public RAPDU sendCoinManagerAppletAPDU(CAPDU commandAPDU) throws Exception {
     if (commandAPDU == null) throw new Exception(ERROR_MSG_APDU_EMPTY);
     sendAPDU(SELECT_COIN_MANAGER_APDU);
@@ -82,8 +86,7 @@ public abstract class ApduRunner {
 
     StringBuilder msg = new StringBuilder();
 
-    String swFormatted = BYTE_ARRAY_HELPER.hex(new byte[]{rapdu.getSW1()})
-      + BYTE_ARRAY_HELPER.hex(new byte[]{rapdu.getSW2()});
+    String swFormatted = rapdu.prepareSwFormatted();
 
     StringBuilder swMsg = new StringBuilder().append(swFormatted);
 

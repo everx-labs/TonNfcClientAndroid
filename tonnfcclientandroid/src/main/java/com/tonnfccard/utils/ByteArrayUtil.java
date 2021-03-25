@@ -120,6 +120,11 @@ public class ByteArrayUtil {
     return hex(new byte[]{b});
   }
 
+  public String hex(short i) {
+    if (i >= 0 && i <= 0xFF) return String.format("%02X", i);
+    else  return String.format("%04X", i);
+  }
+
   //Convert integer to hex string representation of even length
   public String hex(int i) {
     if (i >= 0 && i <= 0xFF) return String.format("%02X", i);
@@ -159,6 +164,11 @@ public class ByteArrayUtil {
   //Make byte array (1-byte length) from one byte
   public byte[] bytes(byte b) {
     return new byte[]{b};
+  }
+
+  public byte[] bytes(short i) {
+    if (i>= 0 && i <= 0xFF) return new byte[]{(byte) i};
+    else  return new byte[]{(byte) (i >> 8), (byte) i};
   }
 
   //Make byte array from integer. Depending on integer value array has size 1, 2, 3 or 4 respectively.

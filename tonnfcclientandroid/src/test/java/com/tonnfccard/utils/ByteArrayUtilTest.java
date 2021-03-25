@@ -411,12 +411,14 @@ public class ByteArrayUtilTest {
 
     @Test
     public void testHexForInt() {
+        assertEquals("9000", BYTE_ARRAY_HELPER.hex((short)0x9000));
         assertEquals("00", BYTE_ARRAY_HELPER.hex(0x00));
         assertEquals("0F", BYTE_ARRAY_HELPER.hex(0x0F));
         assertEquals("FF", BYTE_ARRAY_HELPER.hex(0xFF));
         assertEquals("0100", BYTE_ARRAY_HELPER.hex(0x100));
         assertEquals("6543", BYTE_ARRAY_HELPER.hex(0x6543));
         assertEquals("FFFF", BYTE_ARRAY_HELPER.hex(0xffff));
+        assertEquals("9000", BYTE_ARRAY_HELPER.hex(0x9000));
         assertEquals("010000", BYTE_ARRAY_HELPER.hex(0x10000));
         assertEquals("FFFFFE", BYTE_ARRAY_HELPER.hex(0xfffffe));
         assertEquals("FFFFFF", BYTE_ARRAY_HELPER.hex(0xfffffF));
