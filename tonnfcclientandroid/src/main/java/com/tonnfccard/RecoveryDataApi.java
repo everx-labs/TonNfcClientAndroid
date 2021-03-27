@@ -171,7 +171,7 @@ public final class RecoveryDataApi extends TonWalletApi {
     try {
       if (!STR_HELPER.isHexString(recoveryData))
         throw new Exception(ERROR_MSG_RECOVERY_DATA_NOT_HEX);
-      if (recoveryData.length() == 0 || recoveryData.length() > 2 * RECOVERY_DATA_MAX_SIZE)
+      if (recoveryData.length() > 2 * RECOVERY_DATA_MAX_SIZE)
         throw new Exception(ERROR_MSG_RECOVERY_DATA_LEN_INCORRECT);
       addRecoveryData(BYTE_ARR_HELPER.bytes(recoveryData));
       return JSON_HELPER.createResponseJson(DONE_MSG);
@@ -223,6 +223,7 @@ public final class RecoveryDataApi extends TonWalletApi {
       return JSON_HELPER.createResponseJson(response);
     }
     catch (Exception e) {
+      e.printStackTrace();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -233,6 +234,7 @@ public final class RecoveryDataApi extends TonWalletApi {
     int numberOfPackets = len / DATA_RECOVERY_PORTION_MAX_SIZE;
     short startPos = 0;
     Log.d(TAG, "numberOfPackets = " + numberOfPackets);
+    System.out.println("00");
     for (int i = 0; i < numberOfPackets; i++) {
       Log.d(TAG, "packet " + i);
       byte[] dataChunk = new byte[]{(byte) (startPos >> 8), (byte) (startPos)};

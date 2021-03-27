@@ -180,6 +180,7 @@ public class CardCoinManagerApiTest {
                 .thenReturn(true);
         nfcApduRunner.setCardTag(isoDep);
         nfcApduRunner.setNfcAdapter(nfcAdapterMock);
+        cardCoinManagerApi.setApduRunner(nfcApduRunner);
         prepareNfcTest(ERROR_MSG_NFC_CONNECT);
     }
 
@@ -195,6 +196,7 @@ public class CardCoinManagerApiTest {
         Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
         Mockito.doThrow(new IOException()).when(tag).transceive(any());
         nfcApduRunner.setCardTag(tag);
+        cardCoinManagerApi.setApduRunner(nfcApduRunner);
         prepareNfcTest(ERROR_TRANSCEIVE + ", More details: null");
     }
 
@@ -216,6 +218,7 @@ public class CardCoinManagerApiTest {
                 when(tag.transceive(any())).thenReturn(null);
             }
             nfcApduRunner.setCardTag(tag);
+            cardCoinManagerApi.setApduRunner(nfcApduRunner);
             prepareNfcTest(ERROR_BAD_RESPONSE);
         }
     }
@@ -311,6 +314,8 @@ public class CardCoinManagerApiTest {
         }
     }
 
+    /** Tests for incorrect input arguments **/
+
 
     /** setDeviceLabel **/
     @Test
@@ -403,6 +408,8 @@ public class CardCoinManagerApiTest {
         });
     }
 
+    /** Tests for incorrect card responses **/
+
     @Test
     public void getPinTriesTestWrongValResponse() throws Exception {
         NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
@@ -435,6 +442,8 @@ public class CardCoinManagerApiTest {
         }
     }
 
+    /** Invalid RAPDU object/responses from card tests **/
+
     @Test
     public void testInvalidRAPDU() throws Exception {
         Map<CardApiInterface<List<String>>, String> opsErrors = new LinkedHashMap<>();
@@ -448,6 +457,7 @@ public class CardCoinManagerApiTest {
         NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
         Mockito.doReturn(null).when(nfcApduRunnerMock).sendCoinManagerAppletAPDU(any());
         cardCoinManagerApi.setApduRunner(nfcApduRunnerMock);
+
         for(CardApiInterface<List<String>> op : opsErrors.keySet()) {
             try {
                 op.accept(Collections.EMPTY_LIST);
@@ -462,14 +472,19 @@ public class CardCoinManagerApiTest {
     @Test
     public void getDeviceLabelCheckWrongResponseLength() throws Exception {
         NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
-        Mockito.doReturn(new RAPDU(new byte[LABEL_LENGTH + 1])).when(nfcApduRunnerMock).sendCoinManagerAppletAPDU(any());
-        cardCoinManagerApi.setApduRunner(nfcApduRunnerMock);
-        try {
-            cardCoinManagerApi.getDeviceLabelAndGetJson();
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_GET_DEVICE_LABEL_RESPONSE_LEN_INCORRECT)));
-        }
+        List<Integer> badLens = Arrays.asList(LABEL_LENGTH + 1, LABEL_LENGTH + 3);
+        badLens.forEach(len -> {
+            System.out.println(len);
+            try {
+                Mockito.doReturn(new RAPDU(new byte[len])).when(nfcApduRunnerMock).sendCoinManagerAppletAPDU(any());
+                cardCoinManagerApi.setApduRunner(nfcApduRunnerMock);
+                cardCoinManagerApi.getDeviceLabelAndGetJson();
+                fail();
+            }
+            catch (Exception e){
+                assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_GET_DEVICE_LABEL_RESPONSE_LEN_INCORRECT)));
+            }
+        });
+
     }
 }
