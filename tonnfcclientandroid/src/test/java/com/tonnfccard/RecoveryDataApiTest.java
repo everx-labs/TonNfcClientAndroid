@@ -90,7 +90,7 @@ public class RecoveryDataApiTest {
     private Random random = new Random();
     private NfcApduRunner nfcApduRunner;
     private Context context;
-    private final RAPDU SUCCESS_RAPDU = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
+
 
     private RecoveryDataApi recoveryDataApi;
 
