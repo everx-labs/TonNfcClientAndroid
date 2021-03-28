@@ -40,6 +40,7 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SAULT_RESPONSE
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SERIAL_NUMBER_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SERIAL_NUMBER_NOT_NUMERIC;
 import static com.tonnfccard.TonWalletConstants.EMPTY_SERIAL_NUMBER;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_STATE_RESPONSE_LEN_INCORRECT;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_APP_INFO_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SAULT_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SERIAL_NUMBER_APDU;
@@ -433,26 +434,27 @@ public class TonWalletApi {
   }
 
   TonWalletAppletStates getTonAppletState() throws Exception {
-    byte[] state = apduRunner.sendTonWalletAppletAPDU(GET_APP_INFO_APDU).getData();
-    return TonWalletAppletStates.findByStateValue(state[0]);
+    RAPDU rapdu = apduRunner.sendTonWalletAppletAPDU(GET_APP_INFO_APDU);
+    if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != 0x01) throw new Exception(ERROR_MSG_STATE_RESPONSE_LEN_INCORRECT);
+    return TonWalletAppletStates.findByStateValue(rapdu.getData()[0]);
   }
 
   byte[] getSerialNumber() throws Exception {
-    byte[] serialNumber = apduRunner.sendTonWalletAppletAPDU(GET_SERIAL_NUMBER_APDU).getData();
-    if (serialNumber.length != SERIAL_NUMBER_SIZE) throw new Exception(ERROR_MSG_GET_SERIAL_NUMBER_RESPONSE_LEN_INCORRECT);
-    return serialNumber;
+    RAPDU rapdu = apduRunner.sendTonWalletAppletAPDU(GET_SERIAL_NUMBER_APDU);
+    if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != SERIAL_NUMBER_SIZE) throw new Exception(ERROR_MSG_GET_SERIAL_NUMBER_RESPONSE_LEN_INCORRECT);
+    return rapdu.getData();
   }
 
   byte[] getSaultBytes() throws Exception {
-    byte[] sault = getSault().getData();
-    if (sault.length != SAULT_LENGTH) throw new Exception(ERROR_MSG_SAULT_RESPONSE_LEN_INCORRECT);
-    return sault;
+    RAPDU rapdu = getSault();
+    if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != SAULT_LENGTH) throw new Exception(ERROR_MSG_SAULT_RESPONSE_LEN_INCORRECT);
+    return rapdu.getData();
   }
 
   private byte[] selectTonWalletAppletAndGetSaultBytes() throws Exception {
-    byte[] sault = selectTonWalletAppletAndGetSault().getData();
-    if (sault.length != SAULT_LENGTH) throw new Exception(ERROR_MSG_SAULT_RESPONSE_LEN_INCORRECT);
-    return sault;
+    RAPDU rapdu = selectTonWalletAppletAndGetSault();
+    if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != SAULT_LENGTH) throw new Exception(ERROR_MSG_SAULT_RESPONSE_LEN_INCORRECT);
+    return rapdu.getData();
   }
 
   private RAPDU getSault() throws Exception {

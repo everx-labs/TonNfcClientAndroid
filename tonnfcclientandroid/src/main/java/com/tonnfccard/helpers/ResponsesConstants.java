@@ -257,7 +257,7 @@ public class ResponsesConstants {
    * CARD_RESPONSE_DATA_ERROR_TYPE_ID = 4
    */
   public static final String ERROR_MSG_SAULT_RESPONSE_LEN_INCORRECT =  "Sault response from card must have length " + SAULT_LENGTH + ". Current length is ";
-  public static final String ERROR_MSG_STATE_RESPONSE_LEN_INCORRECT =  "Applet state response from card must have length 1. Current length is ";
+  public static final String ERROR_MSG_STATE_RESPONSE_LEN_INCORRECT =  "Applet state response from card must have length 1.";
   public static final String ERROR_MSG_STATE_RESPONSE_INCORRECT =  "Unknown applet state = ";
   public static final String ERROR_MSG_RECOVERY_DATA_HASH_RESPONSE_LEN_INCORRECT = "Recovery data hash must have length " + SHA_HASH_SIZE + ".";
   public static final String ERROR_MSG_RECOVERY_DATA_LENGTH_RESPONSE_LEN_INCORRECT = "Recovery data length byte array must have length 2.";

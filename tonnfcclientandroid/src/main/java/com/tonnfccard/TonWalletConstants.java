@@ -21,6 +21,11 @@ public final class TonWalletConstants {
     /**
      * Applet states
      */
+    public static final byte INSTALLED_STATE = (byte) 0x07;
+    public static final byte PERSONALIZED_STATE = (byte) 0x17;
+    public static final byte WAITE_AUTHORIZATION_STATE = (byte) 0x27;
+    public static final byte DELETE_KEY_FROM_KEYCHAIN_STATE = (byte) 0x37;
+    public static final byte BLOCKED_STATE = (byte) 0x47;
     public static final String INSTALLED_STATE_MSG =  "TonWalletApplet is invalid (is not personalized)";
     public static final String PERSONALIZED_STATE_MSG = "TonWalletApplet is personalized.";
     public static final String WAITE_AUTHORIZATION_MSG =  "TonWalletApplet waits two-factor authorization.";
