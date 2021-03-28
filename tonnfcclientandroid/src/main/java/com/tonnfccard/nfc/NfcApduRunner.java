@@ -34,7 +34,7 @@ import static com.tonnfccard.smartcard.RAPDU.MAX_LENGTH;
 /**
  * This class is responsible for connecting NFC cards (tags), transmitting APDU commands via NFC and getting responses from the card.
  */
-public final class NfcApduRunner extends ApduRunner {
+public class NfcApduRunner extends ApduRunner {
   public static final int TIME_OUT = 60000;
   private static NfcApduRunner nfcApduRunner;
   private static Context apiContext;
