@@ -83,7 +83,7 @@ import static org.mockito.Mockito.when;
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.P)
 @DoNotInstrument
-public class CardCoinManagerApiTest {
+public class CardCoinManagerApiTest extends TonWalletApiTest {
 
     private CardCoinManagerApi cardCoinManagerApi;
     private final ExceptionHelper EXCEPTION_HELPER = ExceptionHelper.getInstance();
@@ -148,52 +148,36 @@ public class CardCoinManagerApiTest {
 
     @Test
     public void testNoNfc() {
+        mockNfcAdapterToBeNull(nfcApduRunner);
         IsoDep isoDep = mock(IsoDep.class);
         nfcApduRunner.setCardTag(isoDep);
-        MockedStatic<NfcAdapter> nfcAdapterMockedStatic = Mockito.mockStatic(NfcAdapter.class);
-        nfcAdapterMockedStatic
-                .when(() -> NfcAdapter.getDefaultAdapter(any()))
-                .thenReturn(null);
-        nfcApduRunner.setNfcAdapter(null);
         cardCoinManagerApi.setApduRunner(nfcApduRunner);
         prepareNfcTest(ERROR_MSG_NO_NFC);
     }
 
     @Test
     public void testNfcDisabled() {
+        mockNfcAdapter(nfcApduRunner, false);
         IsoDep isoDep = mock(IsoDep.class);
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(false);
         nfcApduRunner.setCardTag(isoDep);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
         cardCoinManagerApi.setApduRunner(nfcApduRunner);
         prepareNfcTest(ERROR_MSG_NFC_DISABLED);
     }
 
     @Test
     public void testNfcConnectFail() throws Exception{
+        mockNfcAdapter(nfcApduRunner, true);
         IsoDep isoDep = mock(IsoDep.class);
         Mockito.doThrow(new IOException()).when(isoDep).connect();
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
         nfcApduRunner.setCardTag(isoDep);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
         cardCoinManagerApi.setApduRunner(nfcApduRunner);
         prepareNfcTest(ERROR_MSG_NFC_CONNECT);
     }
 
     @Test
     public void testNfcTransceiveFail() throws Exception{
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
+        mockNfcAdapter(nfcApduRunner, true);
+        IsoDep tag = prepareTagMock();
         Mockito.doThrow(new IOException()).when(tag).transceive(any());
         nfcApduRunner.setCardTag(tag);
         cardCoinManagerApi.setApduRunner(nfcApduRunner);
@@ -202,15 +186,9 @@ public class CardCoinManagerApiTest {
 
     @Test
     public void testNfcTooShortResponse() throws Exception{
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
+        mockNfcAdapter(nfcApduRunner, true);
         for (int i = 0; i < 3 ; i++) {
-            IsoDep tag = mock(IsoDep.class);
-            when(tag.isConnected()).thenReturn(false);
-            Mockito.doNothing().when(tag).connect();
-            Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
+            IsoDep tag = prepareTagMock();
             if (i <  2) {
                 when(tag.transceive(any())).thenReturn(new byte[i]);
             }
@@ -227,13 +205,8 @@ public class CardCoinManagerApiTest {
 
     @Test
     public void testAppletSuccessfullOperations() throws Exception {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         Mockito.doReturn(SUCCESS_RAPDU).when(nfcApduRunnerMock).sendAPDU(SELECT_COIN_MANAGER_APDU);
-        nfcApduRunnerMock.setNfcAdapter(nfcAdapterMock);
-
         Map<CardApiInterface<List<String>>, String> map = new LinkedHashMap<>();
         map.put(setDeviceLabel, BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
         map.put(generateSeed, BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
@@ -247,23 +220,17 @@ public class CardCoinManagerApiTest {
         map.put(getSeVersion, "1008" + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
         map.put(getRemainingPinTries,"09" + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
         map.put(resetWallet, BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-
         for(int i = 0 ; i < cardOperationsList.size(); i++) {
             List<String> args = i == 0 ? Collections.singletonList(STRING_HELPER.randomHexString(2 * LABEL_LENGTH))
                     : i == 1 ? Collections.singletonList(DEFAULT_PIN_STR)
                     : i == 2 ? Arrays.asList(DEFAULT_PIN_STR, DEFAULT_PIN_STR)
                     : Collections.emptyList();
             CardApiInterface<List<String>> op = cardOperationsList.get(i);
-
-            IsoDep tag = mock(IsoDep.class);
-            when(tag.isConnected()).thenReturn(false);
-            Mockito.doNothing().when(tag).connect();
-            Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
+            IsoDep tag = prepareTagMock();
             when(tag.transceive(any())).thenReturn(BYTE_ARRAY_HELPER.bytes(map.get(op)));
             nfcApduRunnerMock.setCardTag(tag);
             cardCoinManagerApi.setApduRunner(nfcApduRunnerMock);
             String response = op.accept(args);
-
             String res = map.get(op).substring(0, map.get(op).length() - 4);
             if (op == getMaxPinTries || op == getRemainingPinTries) {
                 res = Byte.toString(BYTE_ARRAY_HELPER.bytes(res)[0]);
@@ -271,7 +238,6 @@ public class CardCoinManagerApiTest {
             else if (op == getRootKeyStatus) {
                 res = GENERATED_MSG;
             }
-
             String msg = map.get(op).equals(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS)) ? DONE_MSG : res;
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(msg).toLowerCase());
         }
@@ -282,18 +248,12 @@ public class CardCoinManagerApiTest {
     @Test
     public void testAppletFailedOperation() throws Exception{
         RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_INS_NOT_SUPPORTED));
-        NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         Mockito.doReturn(SUCCESS_RAPDU).when(nfcApduRunnerMock).sendAPDU(SELECT_COIN_MANAGER_APDU);
-
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
+        IsoDep tag = prepareTagMock();
         when(tag.transceive(any())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
-
         nfcApduRunnerMock.setCardTag(tag);
         cardCoinManagerApi.setApduRunner(nfcApduRunnerMock);
-
         for(int i = 0 ; i < cardOperationsList.size(); i++) {
             List<String> args = i == 0 ? Collections.singletonList(STRING_HELPER.randomHexString(2 * LABEL_LENGTH))
                     : i == 1 ? Collections.singletonList(DEFAULT_PIN_STR)
@@ -396,7 +356,6 @@ public class CardCoinManagerApiTest {
     }
 
     private void checkChangePinArgs(List<List<String>> argsToTest, String errMsg) {
-
         argsToTest.forEach(pins -> {
             try {
                 cardCoinManagerApi.changePinAndGetJson(pins.get(0), pins.get(1));
@@ -412,26 +371,18 @@ public class CardCoinManagerApiTest {
 
     @Test
     public void getPinTriesTestWrongValResponse() throws Exception {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         Mockito.doReturn(SUCCESS_RAPDU).when(nfcApduRunnerMock).sendAPDU(SELECT_COIN_MANAGER_APDU);
-        nfcApduRunnerMock.setNfcAdapter(nfcAdapterMock);
-
         List<CardApiInterface<List<String>>> ops = Arrays.asList(getMaxPinTries, getRemainingPinTries);
         List<Byte> wrongTriesNum = Arrays.asList((byte)-120, (byte)-1, (byte)(MAX_PIN_TRIES+1), (byte)100);
         for(CardApiInterface<List<String>> op : ops) {
             for (Byte n : wrongTriesNum) {
-                IsoDep tag = mock(IsoDep.class);
-                when(tag.isConnected()).thenReturn(false);
-                Mockito.doNothing().when(tag).connect();
-                Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
+                IsoDep tag = prepareTagMock();
                 when(tag.transceive(any())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{n}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
                 nfcApduRunnerMock.setCardTag(tag);
                 cardCoinManagerApi.setApduRunner(nfcApduRunnerMock);
                 try {
-                    op.accept(Collections.EMPTY_LIST);
+                    op.accept(Collections.emptyList());
                     fail();
                 }
                 catch (Exception e){
@@ -457,10 +408,9 @@ public class CardCoinManagerApiTest {
         NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
         Mockito.doReturn(null).when(nfcApduRunnerMock).sendCoinManagerAppletAPDU(any());
         cardCoinManagerApi.setApduRunner(nfcApduRunnerMock);
-
         for(CardApiInterface<List<String>> op : opsErrors.keySet()) {
             try {
-                op.accept(Collections.EMPTY_LIST);
+                op.accept(Collections.emptyList());
                 fail();
             }
             catch (Exception e){

@@ -82,7 +82,7 @@ import static org.mockito.Mockito.when;
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.P)
 @DoNotInstrument
-public class RecoveryDataApiTest {
+public class RecoveryDataApiTest extends TonWalletApiTest {
     private final ExceptionHelper EXCEPTION_HELPER = ExceptionHelper.getInstance();
     private final StringHelper STRING_HELPER = StringHelper.getInstance();
     private final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
@@ -141,52 +141,36 @@ public class RecoveryDataApiTest {
 
     @Test
     public void testNoNfc() {
+        mockNfcAdapterToBeNull(nfcApduRunner);
         IsoDep isoDep = mock(IsoDep.class);
         nfcApduRunner.setCardTag(isoDep);
-        MockedStatic<NfcAdapter> nfcAdapterMockedStatic = Mockito.mockStatic(NfcAdapter.class);
-        nfcAdapterMockedStatic
-                .when(() -> NfcAdapter.getDefaultAdapter(any()))
-                .thenReturn(null);
-        nfcApduRunner.setNfcAdapter(null);
         recoveryDataApi.setApduRunner(nfcApduRunner);
         prepareNfcTest(ERROR_MSG_NO_NFC);
     }
 
     @Test
     public void testNfcDisabled() {
+        mockNfcAdapter(nfcApduRunner, false);
         IsoDep isoDep = mock(IsoDep.class);
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(false);
         nfcApduRunner.setCardTag(isoDep);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
         recoveryDataApi.setApduRunner(nfcApduRunner);
         prepareNfcTest(ERROR_MSG_NFC_DISABLED);
     }
 
     @Test
     public void testNfcConnectFail() throws Exception{
+        mockNfcAdapter(nfcApduRunner, true);
         IsoDep isoDep = mock(IsoDep.class);
         Mockito.doThrow(new IOException()).when(isoDep).connect();
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
         nfcApduRunner.setCardTag(isoDep);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
         recoveryDataApi.setApduRunner(nfcApduRunner);
         prepareNfcTest(ERROR_MSG_NFC_CONNECT);
     }
 
     @Test
     public void testNfcTransceiveFail() throws Exception{
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
+        mockNfcAdapter(nfcApduRunner, true);;
+        IsoDep tag = prepareTagMock();
         Mockito.doThrow(new IOException()).when(tag).transceive(any());
         nfcApduRunner.setCardTag(tag);
         recoveryDataApi.setApduRunner(nfcApduRunner);
@@ -195,15 +179,9 @@ public class RecoveryDataApiTest {
 
     @Test
     public void testNfcTooShortResponse() throws Exception{
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
+        mockNfcAdapter(nfcApduRunner, true);
         for (int i = 0; i < 3 ; i++) {
-            IsoDep tag = mock(IsoDep.class);
-            when(tag.isConnected()).thenReturn(false);
-            Mockito.doNothing().when(tag).connect();
-            Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
+            IsoDep tag = prepareTagMock();
             if (i <  2) {
                 when(tag.transceive(any())).thenReturn(new byte[i]);
             }
@@ -231,7 +209,7 @@ public class RecoveryDataApiTest {
         recoveryDataApi.setApduRunner(nfcApduRunnerMock);
         for(CardApiInterface<List<String>> op : opsErrors.keySet()) {
             try {
-                op.accept(Collections.EMPTY_LIST);
+                op.accept(Collections.emptyList());
                 fail();
             }
             catch (Exception e){
@@ -246,7 +224,7 @@ public class RecoveryDataApiTest {
         Mockito.doReturn(null).when(nfcApduRunnerMock1).sendTonWalletAppletAPDU(getGetRecoveryDataPartAPDU(new byte[]{0, 0}, tailLen));
         recoveryDataApi.setApduRunner(nfcApduRunnerMock1);
         try {
-            getRecoveryData.accept(Collections.EMPTY_LIST);
+            getRecoveryData.accept(Collections.emptyList());
             fail();
         }
         catch (Exception e){
@@ -264,7 +242,6 @@ public class RecoveryDataApiTest {
         opsLens.put(getRecoveryDataHash,  Arrays.asList(SHA_HASH_SIZE + 1, SHA_HASH_SIZE + 3));
         opsLens.put(getRecoveryDataLen, Arrays.asList(3, 5));
         opsLens.put(isRecoveryDataSet, Arrays.asList(2, 4));
-
         for(CardApiInterface<List<String>> op : opsErrors.keySet()) {
             NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
             List<Integer> badLens = opsLens.get(op);
@@ -274,7 +251,7 @@ public class RecoveryDataApiTest {
                 try {
                     Mockito.doReturn(new RAPDU(new byte[len])).when(nfcApduRunnerMock).sendTonWalletAppletAPDU(any());
                     recoveryDataApi.setApduRunner(nfcApduRunnerMock);
-                    op.accept(Collections.EMPTY_LIST);
+                    op.accept(Collections.emptyList());
                     fail();
                 }
                 catch (Exception e){
@@ -292,7 +269,7 @@ public class RecoveryDataApiTest {
             try {
                 Mockito.doReturn(new RAPDU(new byte[len])).when(nfcApduRunnerMock1).sendTonWalletAppletAPDU(getGetRecoveryDataPartAPDU(new byte[]{0, 0}, tailLen));
                 recoveryDataApi.setApduRunner(nfcApduRunnerMock1);
-                getRecoveryData.accept(Collections.EMPTY_LIST);
+                getRecoveryData.accept(Collections.emptyList());
                 fail();
             }
             catch (Exception e){
@@ -303,27 +280,19 @@ public class RecoveryDataApiTest {
 
     @Test
     public void getRecoveryDataLenTestWrongValResponse() throws Exception {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x17}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
                 .when(nfcApduRunnerMock).sendAPDUList(GET_APPLET_STATE_APDU_LIST);
-        nfcApduRunnerMock.setNfcAdapter(nfcAdapterMock);
-
         List<Short> wrongLens = Arrays.asList((short) -120, (short) -1, (short) 0, (short)(RECOVERY_DATA_MAX_SIZE + 1));
         for (Short len : wrongLens) {
-            IsoDep tag = mock(IsoDep.class);
-            when(tag.isConnected()).thenReturn(false);
-            Mockito.doNothing().when(tag).connect();
-            Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
+            IsoDep tag = prepareTagMock();
             byte[] lenBytes = new byte[2];
             BYTE_ARRAY_HELPER.setShort(lenBytes, (short)0, len);
             when(tag.transceive(any())).thenReturn(BYTE_ARRAY_HELPER.bConcat(lenBytes, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
             nfcApduRunnerMock.setCardTag(tag);
             recoveryDataApi.setApduRunner(nfcApduRunnerMock);
             try {
-                getRecoveryDataLen.accept(Collections.EMPTY_LIST);
+                getRecoveryDataLen.accept(Collections.emptyList());
                 fail();
             }
             catch (Exception e){
@@ -362,12 +331,9 @@ public class RecoveryDataApiTest {
 
     @Test
     public void testAppletSuccessfullOperations() throws Exception {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled()).thenReturn(true);
-        NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x17}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
                 .when(nfcApduRunnerMock).sendAPDUList(GET_APPLET_STATE_APDU_LIST);
-        nfcApduRunnerMock.setNfcAdapter(nfcAdapterMock);
         short recoveryDataLen = (short) Math.abs(random.nextInt(RECOVERY_DATA_MAX_SIZE) + 1);
         System.out.println(recoveryDataLen);
         String recoveryData = STRING_HELPER.randomHexString(2 * recoveryDataLen);
@@ -377,20 +343,15 @@ public class RecoveryDataApiTest {
         map.put(getRecoveryDataHash, STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE) + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
         map.put(getRecoveryDataLen, BYTE_ARRAY_HELPER.hex(recoveryDataLen) + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
         map.put(isRecoveryDataSet, "01" + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-
         for(int i = 0 ; i < cardOperationsListShort.size(); i++) {
             List<String> args = i == 0 ? Collections.singletonList(recoveryData)
                     : Collections.emptyList();
             CardApiInterface<List<String>> op = cardOperationsListShort.get(i);
-            IsoDep tag = mock(IsoDep.class);
-            when(tag.isConnected()).thenReturn(false);
-            Mockito.doNothing().when(tag).connect();
-            Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
+            IsoDep tag = prepareTagMock();
             when(tag.transceive(any())).thenReturn(BYTE_ARRAY_HELPER.bytes(map.get(op)));
             nfcApduRunnerMock.setCardTag(tag);
             recoveryDataApi.setApduRunner(nfcApduRunnerMock);
             String response = op.accept(args);
-
             String res = map.get(op).substring(0, map.get(op).length() - 4);
             if (op == isRecoveryDataSet) {
                 res = res.equals("00") ? FALSE_MSG : TRUE_MSG;
@@ -398,9 +359,7 @@ public class RecoveryDataApiTest {
             else if (op == getRecoveryDataLen) {
                 res = String.valueOf(recoveryDataLen);
             }
-
             String msg = map.get(op).equals(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS)) ? DONE_MSG : res;
-
             System.out.println(response.toLowerCase());
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(msg).toLowerCase());
         }
@@ -408,10 +367,7 @@ public class RecoveryDataApiTest {
 
     @Test
     public void getRecoveryDataTestAppletSuccessfullOperations1() throws Exception {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled()).thenReturn(true);
-        NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
-        nfcApduRunnerMock.setNfcAdapter(nfcAdapterMock);
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         short tailLen = 20;
         int portionsNum = 8;
         short recoveryDataLen = (short) ( portionsNum * DATA_RECOVERY_PORTION_MAX_SIZE + tailLen);
@@ -419,10 +375,8 @@ public class RecoveryDataApiTest {
         BYTE_ARRAY_HELPER.setShort(recoveryDataLenBytes, (short) 0, recoveryDataLen);
         String recoveryData = STRING_HELPER.randomHexString(2 * recoveryDataLen);
         byte[] recoveryDataBytes = BYTE_ARRAY_HELPER.bytes(recoveryData);
-
         Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(recoveryDataLenBytes, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
                 .when(nfcApduRunnerMock).sendTonWalletAppletAPDU(GET_RECOVERY_DATA_LEN_APDU);
-
         for (int i = 0; i < portionsNum + 1; i++) {
             short start = (short)(i * DATA_RECOVERY_PORTION_MAX_SIZE);
             short len = i == portionsNum ? tailLen : DATA_RECOVERY_PORTION_MAX_SIZE;
@@ -441,10 +395,7 @@ public class RecoveryDataApiTest {
 
     @Test
     public void getRecoveryDataTestAppletSuccessfullOperations2() throws Exception {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled()).thenReturn(true);
-        NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
-        nfcApduRunnerMock.setNfcAdapter(nfcAdapterMock);
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         short recoveryDataLen = 20;
         byte[] recoveryDataLenBytes = new byte[2];
         BYTE_ARRAY_HELPER.setShort(recoveryDataLenBytes, (short) 0, recoveryDataLen);
@@ -453,10 +404,7 @@ public class RecoveryDataApiTest {
                 .when(nfcApduRunnerMock).sendTonWalletAppletAPDU(GET_RECOVERY_DATA_LEN_APDU);
         Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x17}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
                 .when(nfcApduRunnerMock).sendAPDUList(GET_APPLET_STATE_APDU_LIST);
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
+        IsoDep tag = prepareTagMock();
         when(tag.transceive(any())).thenReturn(BYTE_ARRAY_HELPER.bytes(recoveryData + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS)));
         nfcApduRunnerMock.setCardTag(tag);
         recoveryDataApi.setApduRunner(nfcApduRunnerMock);
@@ -468,29 +416,20 @@ public class RecoveryDataApiTest {
 
     @Test
     public void testAppletFailedOperation() throws Exception{
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled()).thenReturn(true);
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         short recoveryDataLen = 100;
         String recoveryData = STRING_HELPER.randomHexString(2 * recoveryDataLen);
         RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_INS_NOT_SUPPORTED));
-        NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
-        nfcApduRunnerMock.setNfcAdapter(nfcAdapterMock);
         Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x17}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
                 .when(nfcApduRunnerMock).sendAPDUList(GET_APPLET_STATE_APDU_LIST);
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
+        IsoDep tag = prepareTagMock();
         when(tag.transceive(any())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
-
         nfcApduRunnerMock.setCardTag(tag);
         recoveryDataApi.setApduRunner(nfcApduRunnerMock);
-
         for(int i = 0 ; i < cardOperationsListShort.size(); i++) {
             List<String> args = i == 0 ? Collections.singletonList(recoveryData)
                     : Collections.emptyList();
             CardApiInterface<List<String>> op = cardOperationsListShort.get(i);
-
             try {
                 op.accept(args);
                 fail();
@@ -507,22 +446,16 @@ public class RecoveryDataApiTest {
 
     @Test
     public void getRecoveryDataTestAppletFailedOperation() throws Exception{
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled()).thenReturn(true);
+        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         short recoveryDataLen = 30;
         byte[] recoveryDataLenBytes = new byte[2];
         BYTE_ARRAY_HELPER.setShort(recoveryDataLenBytes, (short) 0, recoveryDataLen);
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_INS_NOT_SUPPORTED));
-        NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
-        nfcApduRunnerMock.setNfcAdapter(nfcAdapterMock);
         Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x17}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
                 .when(nfcApduRunnerMock).sendAPDUList(GET_APPLET_STATE_APDU_LIST);
         Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(recoveryDataLenBytes, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
                 .when(nfcApduRunnerMock).sendTonWalletAppletAPDU(GET_RECOVERY_DATA_LEN_APDU);
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
+        IsoDep tag = prepareTagMock();
         when(tag.transceive(any())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
         nfcApduRunnerMock.setCardTag(tag);
         recoveryDataApi.setApduRunner(nfcApduRunnerMock);
@@ -537,8 +470,4 @@ public class RecoveryDataApiTest {
             assertEquals(e.getMessage(), errMsg);
         }
     }
-
-
-
-
 }
