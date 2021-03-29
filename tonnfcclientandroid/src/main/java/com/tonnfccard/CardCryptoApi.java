@@ -59,6 +59,8 @@ public final class CardCryptoApi extends TonWalletApi {
     }
   }
 
+
+
   public void getPublicKeyForDefaultPath(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -244,6 +246,7 @@ public final class CardCryptoApi extends TonWalletApi {
     if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != PUBLIC_KEY_LEN) throw new Exception(ERROR_MSG_PUBLIC_KEY_RESPONSE_LEN_INCORRECT);
     return rapdu;
   }
+
 
   private RAPDU getPublicKey(byte[] indBytes) throws Exception {
     RAPDU rapdu = apduRunner.sendTonWalletAppletAPDU(getPublicKeyAPDU(indBytes));

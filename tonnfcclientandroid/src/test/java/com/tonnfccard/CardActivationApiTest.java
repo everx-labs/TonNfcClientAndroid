@@ -493,13 +493,7 @@ public class CardActivationApiTest extends TonWalletApiTest {
             when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
             nfcApduRunnerMock.setCardTag(tag);
             cardActivationApi.setApduRunner(nfcApduRunnerMock);
-            KeyStore keyStoreMock = mock(KeyStore.class);
-            MockedStatic<KeyStore> keyStoreMockStatic = Mockito.mockStatic(KeyStore.class);
-            keyStoreMockStatic
-                    .when(() -> KeyStore.getInstance(any()))
-                    .thenReturn(keyStoreMock);
-            Mockito.doNothing().when(keyStoreMock).load(any());
-            Mockito.doNothing().when(keyStoreMock).setEntry(any(), any(), any());
+            mockAndroidKeyStore();
             String response = cardActivationApi.turnOnWalletAndGetJson(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV);
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(PERSONALIZED_STATE_MSG).toLowerCase());
         }
