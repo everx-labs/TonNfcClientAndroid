@@ -874,7 +874,6 @@ public class CardActivationApiTest extends TonWalletApiTest {
     }
 
 
-
     @Test
     public void turnOnWalletAndGetJsonTestBadPassword() {
         List<String> incorrectPasswords = Arrays.asList(null, "", "ABC", "12345", "ssAA", "1234k7");
