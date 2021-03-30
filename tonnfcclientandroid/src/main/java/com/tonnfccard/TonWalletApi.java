@@ -228,10 +228,10 @@ public class TonWalletApi {
 
   public String deleteKeyForHmacAndGetJson(String serialNumber)  throws Exception {
     try {
-      if (serialNumber.length() != SERIAL_NUMBER_SIZE)
-        throw new Exception(ERROR_MSG_SERIAL_NUMBER_LEN_INCORRECT);
       if (!STR_HELPER.isNumericString(serialNumber))
         throw new Exception(ERROR_MSG_SERIAL_NUMBER_NOT_NUMERIC);
+      if (serialNumber.length() != SERIAL_NUMBER_SIZE)
+        throw new Exception(ERROR_MSG_SERIAL_NUMBER_LEN_INCORRECT);
       deleteKeyForHmac(serialNumber);
       return JSON_HELPER.createResponseJson(DONE_MSG);
     }
@@ -264,10 +264,10 @@ public class TonWalletApi {
         throw new Exception(ERROR_MSG_COMMON_SECRET_NOT_HEX);
       if (commonSecret.length() != 2 * COMMON_SECRET_SIZE)
         throw new Exception(ERROR_MSG_COMMON_SECRET_LEN_INCORRECT);
-      if (serialNumber.length() != SERIAL_NUMBER_SIZE)
-        throw new Exception(ERROR_MSG_SERIAL_NUMBER_LEN_INCORRECT);
       if (!STR_HELPER.isNumericString(serialNumber))
         throw new Exception(ERROR_MSG_SERIAL_NUMBER_NOT_NUMERIC);
+      if (serialNumber.length() != SERIAL_NUMBER_SIZE)
+        throw new Exception(ERROR_MSG_SERIAL_NUMBER_LEN_INCORRECT);
       createKeyForHmac(BYTE_ARR_HELPER.bytes(password), BYTE_ARR_HELPER.bytes(commonSecret), serialNumber);
       return JSON_HELPER.createResponseJson(DONE_MSG);
     }
@@ -292,10 +292,10 @@ public class TonWalletApi {
 
   public String isKeyForHmacExistAndGetJson(String serialNumber) throws Exception {
     try {
-      if (serialNumber.length() != SERIAL_NUMBER_SIZE)
-        throw new Exception(ERROR_MSG_SERIAL_NUMBER_LEN_INCORRECT);
       if (!STR_HELPER.isNumericString(serialNumber))
         throw new Exception(ERROR_MSG_SERIAL_NUMBER_NOT_NUMERIC);
+      if (serialNumber.length() != SERIAL_NUMBER_SIZE)
+        throw new Exception(ERROR_MSG_SERIAL_NUMBER_LEN_INCORRECT);
       boolean res = isKeyForHmacExist(serialNumber);
       return JSON_HELPER.createResponseJson(res ? TRUE_MSG : FALSE_MSG);
     }
@@ -320,10 +320,10 @@ public class TonWalletApi {
 
   public String selectKeyForHmacAndGetJson(String serialNumber) throws Exception {
     try {
-      if (serialNumber.length() != SERIAL_NUMBER_SIZE)
-        throw new Exception(ERROR_MSG_SERIAL_NUMBER_LEN_INCORRECT);
       if (!STR_HELPER.isNumericString(serialNumber))
         throw new Exception(ERROR_MSG_SERIAL_NUMBER_NOT_NUMERIC);
+      if (serialNumber.length() != SERIAL_NUMBER_SIZE)
+        throw new Exception(ERROR_MSG_SERIAL_NUMBER_LEN_INCORRECT);
       selectKeyForHmac(serialNumber);
       return JSON_HELPER.createResponseJson(DONE_MSG);
     }

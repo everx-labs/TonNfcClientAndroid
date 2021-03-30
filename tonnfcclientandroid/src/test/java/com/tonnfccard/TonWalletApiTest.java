@@ -39,9 +39,11 @@ import javax.crypto.spec.SecretKeySpec;
 
 import static com.tonnfccard.TonWalletApi.BYTE_ARR_HELPER;
 import static com.tonnfccard.TonWalletApi.STR_HELPER;
+import static com.tonnfccard.TonWalletConstants.COMMON_SECRET_SIZE;
 import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN;
 import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN_STR;
 import static com.tonnfccard.TonWalletConstants.DONE_MSG;
+import static com.tonnfccard.TonWalletConstants.PASSWORD_SIZE;
 import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE;
 import static com.tonnfccard.TonWalletConstants.PUBLIC_KEY_LEN;
 import static com.tonnfccard.TonWalletConstants.SAULT_LENGTH;
@@ -50,13 +52,21 @@ import static com.tonnfccard.TonWalletConstants.SHA_HASH_SIZE;
 import static com.tonnfccard.TonWalletConstants.SIG_LEN;
 import static com.tonnfccard.TonWalletConstants.STATE_MAP;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_BAD_RESPONSE;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_COMMON_SECRET_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_COMMON_SECRET_NOT_HEX;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_SERIAL_NUMBER_RESPONSE_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_CONNECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_DISABLED;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_DISCONNECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_NFC;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_TAG;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PASSWORD_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PASSWORD_NOT_HEX;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_FORMAT_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SAULT_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SERIAL_NUMBER_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SERIAL_NUMBER_NOT_NUMERIC;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SIG_RESPONSE_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_STATE_RESPONSE_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_TRANSCEIVE;
@@ -70,6 +80,7 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.SELECT_TON_WA
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getPublicKeyAPDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getSignShortMessageAPDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getSignShortMessageWithDefaultPathAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getVerifyPasswordAPDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getVerifyPinAPDU;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -95,7 +106,14 @@ public class TonWalletApiTest {
     private final CardApiInterface<List<String>> getSerialNumber = list -> tonWalletApi.getSerialNumberAndGetJson();
     private final CardApiInterface<List<String>> getTonAppletState = list -> tonWalletApi.getTonAppletStateAndGetJson();
 
+    private final CardApiInterface<List<String>> selectKeyForHmac = list -> tonWalletApi.selectKeyForHmacAndGetJson(list.get(0));
+    private final CardApiInterface<List<String>> deleteKeyForHmac = list -> tonWalletApi.deleteKeyForHmacAndGetJson(list.get(0));
+    private final CardApiInterface<List<String>> isKeyForHmacExist = list -> tonWalletApi.isKeyForHmacExistAndGetJson(list.get(0));
+    private final CardApiInterface<List<String>> createKeyForHmac = list -> tonWalletApi.createKeyForHmacAndGetJson(list.get(0), list.get(1), list.get(2));
+
+
     List<CardApiInterface<List<String>>> cardOperationsList = Arrays.asList(getSault, getSerialNumber, getTonAppletState);
+    List<CardApiInterface<List<String>>> keyOperationsList = Arrays.asList(selectKeyForHmac, deleteKeyForHmac, isKeyForHmacExist);
 
     public static final String SERIAL_NUMBER = "504394802433901126813236";
     public  static final String SN = "050004030904080002040303090001010206080103020306";
@@ -400,7 +418,119 @@ public class TonWalletApiTest {
         });
     }
 
+    /** Tests for incorrect input arguments **/
 
+    /** createKeyForHmac **/
+
+    @Test
+    public void createKeyForHmacAndGetJsonTestBadPassword() {
+        List<String> incorrectPasswords = Arrays.asList(null, "", "ABC", "12345", "ssAA", "1234k7");
+        incorrectPasswords.forEach(password -> {
+            try {
+                tonWalletApi.createKeyForHmacAndGetJson(password, STRING_HELPER.randomHexString(2 * COMMON_SECRET_SIZE), STRING_HELPER.randomDigitalString(SERIAL_NUMBER_SIZE));
+                fail();
+            }
+            catch (Exception e){
+                assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_PASSWORD_NOT_HEX)));
+            }
+        });
+
+        for(int i = 0 ; i < 100 ; i++) {
+            int len = random.nextInt(400);
+            if (len == 2 * PASSWORD_SIZE || len % 2 != 0 || len == 0) continue;
+            String password = STRING_HELPER.randomHexString(len);
+            try {
+                tonWalletApi.createKeyForHmacAndGetJson(password, STRING_HELPER.randomHexString(2 * COMMON_SECRET_SIZE), STRING_HELPER.randomDigitalString(SERIAL_NUMBER_SIZE));
+                fail();
+            }
+            catch (Exception e){
+                assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_PASSWORD_LEN_INCORRECT)));
+            }
+        }
+    }
+
+    @Test
+    public void createKeyForHmacAndGetJsonTestBadCommonSecret() {
+        List<String> incorrectCS = Arrays.asList(null, "", "ABC", "12345", "ssAA", "1234k7", "123456789", "jj55667788aa");
+        incorrectCS.forEach(cs -> {
+            try {
+                tonWalletApi.createKeyForHmacAndGetJson(STRING_HELPER.randomHexString(2 * PASSWORD_SIZE), cs, STRING_HELPER.randomDigitalString(SERIAL_NUMBER_SIZE));
+                fail();
+            }
+            catch (Exception e){
+                assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_COMMON_SECRET_NOT_HEX)));
+            }
+        });
+
+        for(int i = 0 ; i < 100 ; i++) {
+            int len = random.nextInt(500);
+            if (len == 2 * COMMON_SECRET_SIZE || len % 2 != 0 || len == 0) continue;
+            String cs = STRING_HELPER.randomHexString(len);
+            try {
+                tonWalletApi.createKeyForHmacAndGetJson(STRING_HELPER.randomHexString(2 * PASSWORD_SIZE), cs, STRING_HELPER.randomDigitalString(SERIAL_NUMBER_SIZE));
+                fail();
+            }
+            catch (Exception e){
+                assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_COMMON_SECRET_LEN_INCORRECT)));
+            }
+        }
+    }
+
+    @Test
+    public void createKeyForHmacAndGetJsonTestBadSN() {
+        List<String> incorrectSN = Arrays.asList(null, "", "ssAA", "1234k7", "1234f56789", "jj55667788aa");
+        incorrectSN.forEach(sn -> {
+            try {
+                tonWalletApi.createKeyForHmacAndGetJson(STRING_HELPER.randomHexString(2 * PASSWORD_SIZE), STRING_HELPER.randomHexString(2 * COMMON_SECRET_SIZE), sn);
+                fail();
+            }
+            catch (Exception e){
+                assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_SERIAL_NUMBER_NOT_NUMERIC)));
+            }
+        });
+
+        for(int i = 0 ; i < 100 ; i++) {
+            int len = random.nextInt(500);
+            if (len == SERIAL_NUMBER_SIZE ||  len == 0) continue;
+            String sn = STRING_HELPER.randomDigitalString(len);
+            try {
+                tonWalletApi.createKeyForHmacAndGetJson(STRING_HELPER.randomHexString(2 * PASSWORD_SIZE), STRING_HELPER.randomHexString(2 * COMMON_SECRET_SIZE), sn);
+                fail();
+            }
+            catch (Exception e){
+                assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_SERIAL_NUMBER_LEN_INCORRECT)));
+            }
+        }
+    }
+
+    @Test
+    public void testBadSN() {
+        List<String> incorrectSN = Arrays.asList(null, "", "ssAA", "1234k7", "1234f56789", "jj55667788aa");
+        for(int j = 0 ; j < keyOperationsList.size(); j++) {
+            for ( String sn : incorrectSN) {
+                try {
+                    keyOperationsList.get(j).accept(Collections.singletonList(sn));
+                    fail();
+                }
+                catch (Exception e){
+                    assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_SERIAL_NUMBER_NOT_NUMERIC)));
+                }
+            }
+
+            for (int i = 0; i < 100; i++) {
+                int len = random.nextInt(500);
+                if (len == SERIAL_NUMBER_SIZE || len == 0) continue;
+                String sn = STRING_HELPER.randomDigitalString(len);
+                try {
+                    keyOperationsList.get(j).accept(Collections.singletonList(sn));
+
+                    fail();
+                } catch (Exception e) {
+                    assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_SERIAL_NUMBER_LEN_INCORRECT)));
+                }
+            }
+        }
+    }
 
     protected IsoDep prepareTagMock() throws Exception {
         IsoDep tag = mock(IsoDep.class);
