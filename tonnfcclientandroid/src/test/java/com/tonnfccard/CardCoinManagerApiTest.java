@@ -86,11 +86,6 @@ import static org.mockito.Mockito.when;
 public class CardCoinManagerApiTest extends TonWalletApiTest {
 
     private CardCoinManagerApi cardCoinManagerApi;
-    private final ExceptionHelper EXCEPTION_HELPER = ExceptionHelper.getInstance();
-    private final StringHelper STRING_HELPER = StringHelper.getInstance();
-    private final  ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
-    private final JsonHelper JSON_HELPER = JsonHelper.getInstance();
-    private Random random = new Random();
     private NfcApduRunner nfcApduRunner;
     private Context context;
     private final RAPDU SUCCESS_RAPDU = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));

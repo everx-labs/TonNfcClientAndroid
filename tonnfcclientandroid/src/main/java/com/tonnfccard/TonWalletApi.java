@@ -434,7 +434,7 @@ public class TonWalletApi {
   }
 
   TonWalletAppletStates getTonAppletState() throws Exception {
-    RAPDU rapdu = apduRunner.sendTonWalletAppletAPDU(GET_APP_INFO_APDU);
+    RAPDU rapdu= apduRunner.sendTonWalletAppletAPDU(GET_APP_INFO_APDU);
     if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != 0x01) throw new Exception(ERROR_MSG_STATE_RESPONSE_LEN_INCORRECT);
     return TonWalletAppletStates.findByStateValue(rapdu.getData()[0]);
   }

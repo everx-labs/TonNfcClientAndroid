@@ -1,5 +1,12 @@
 package com.tonnfccard;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DATA_FOR_SIGNING_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DATA_FOR_SIGNING_NOT_HEX;
+
 /**
  * The most import constants are collected here.
  */
@@ -31,6 +38,14 @@ public final class TonWalletConstants {
     public static final String WAITE_AUTHORIZATION_MSG =  "TonWalletApplet waits two-factor authorization.";
     public static final String DELETE_KEY_FROM_KEYCHAIN_MSG = "TonWalletApplet is personalized and waits finishing key deleting from keychain.";
     public static final String BLOCKED_MSG = "TonWalletApplet is blocked.";
+
+    public static final Map<Byte, String> STATE_MAP =  new LinkedHashMap<Byte, String>() {{
+        put(INSTALLED_STATE, INSTALLED_STATE_MSG);
+        put(PERSONALIZED_STATE, PERSONALIZED_STATE_MSG);
+        put(WAITE_AUTHORIZATION_STATE, WAITE_AUTHORIZATION_MSG);
+        put(DELETE_KEY_FROM_KEYCHAIN_STATE, DELETE_KEY_FROM_KEYCHAIN_MSG);
+        put(BLOCKED_STATE, BLOCKED_MSG);
+    }};
 
     public final static String DEFAULT_SERIAL_NUMBER = "504394802433901126813236";
     public final static String EMPTY_SERIAL_NUMBER = "empty";
