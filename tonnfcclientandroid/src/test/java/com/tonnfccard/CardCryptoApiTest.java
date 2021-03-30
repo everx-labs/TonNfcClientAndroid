@@ -34,6 +34,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static com.tonnfccard.NfcMockHelper.mockAndroidKeyStore;
+import static com.tonnfccard.NfcMockHelper.prepareHmacHelperMock;
+import static com.tonnfccard.NfcMockHelper.prepareNfcApduRunnerMock;
+import static com.tonnfccard.NfcMockHelper.prepareTagMock;
 import static com.tonnfccard.TonWalletApi.BYTE_ARR_HELPER;
 import static com.tonnfccard.TonWalletApi.STR_HELPER;
 import static com.tonnfccard.TonWalletConstants.DATA_FOR_SIGNING_MAX_SIZE;
@@ -82,9 +86,13 @@ import  com.tonnfccard.smartcard.TonWalletAppletApduCommands;
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.P)
 @DoNotInstrument
-public class CardCryptoApiTest extends TonWalletApiTest {
+public class CardCryptoApiTest  {
+    private static final ExceptionHelper EXCEPTION_HELPER = ExceptionHelper.getInstance();
+    private static final StringHelper STRING_HELPER = StringHelper.getInstance();
+    private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
+    private static final JsonHelper JSON_HELPER = JsonHelper.getInstance();
+    private static final HmacHelper HMAC_HELPER = HmacHelper.getInstance();
     private CardCryptoApi cardCryptoApi;
-
     private Random random = new Random();
     private NfcApduRunner nfcApduRunner;
     private Context context;
@@ -108,91 +116,6 @@ public class CardCryptoApiTest extends TonWalletApiTest {
         context = ApplicationProvider.getApplicationContext();
         nfcApduRunner = NfcApduRunner.getInstance(context);
         cardCryptoApi = new CardCryptoApi(context, nfcApduRunner);
-    }
-
-    /** Common tests for NFC errors**/
-
-    private void prepareNfcTest(String errMsg) {
-        for(int i = 0 ; i < cardOperationsList.size(); i++) {
-            List<String> args = i == 0 ? Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), "1")
-                    : i == 1 ? Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), "2", DEFAULT_PIN_STR)
-                    : i == 2 ? Collections.singletonList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH))
-                    : i == 3 ? Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), DEFAULT_PIN_STR)
-                    : i == 4 ? Collections.singletonList(DEFAULT_PIN_STR)
-                    : i == 5 ? Collections.singletonList("3")
-                    : Collections.emptyList();
-            CardApiInterface<List<String>> op = cardOperationsList.get(i);
-            try {
-                op.accept(args);
-                fail();
-            }
-            catch (Exception e){
-                assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(errMsg)));
-            }
-        }
-    }
-
-    @Test
-    public void testNoNfcTag() throws Exception{
-        IsoDep isoDep = null;
-        nfcApduRunner.setCardTag(isoDep);
-        cardCryptoApi.setApduRunner(nfcApduRunner);
-        prepareNfcTest(ERROR_MSG_NO_TAG);
-    }
-
-    @Test
-    public void testNoNfc() {
-        mockNfcAdapterToBeNull(nfcApduRunner);
-        IsoDep isoDep = mock(IsoDep.class);
-        nfcApduRunner.setCardTag(isoDep);
-        cardCryptoApi.setApduRunner(nfcApduRunner);
-        prepareNfcTest(ERROR_MSG_NO_NFC);
-    }
-
-    @Test
-    public void testNfcDisabled() {
-        mockNfcAdapter(nfcApduRunner, false);
-        IsoDep isoDep = mock(IsoDep.class);
-        nfcApduRunner.setCardTag(isoDep);
-        cardCryptoApi.setApduRunner(nfcApduRunner);
-        prepareNfcTest(ERROR_MSG_NFC_DISABLED);
-    }
-
-    @Test
-    public void testNfcConnectFail() throws Exception{
-        mockNfcAdapter(nfcApduRunner, true);
-        IsoDep isoDep = mock(IsoDep.class);
-        Mockito.doThrow(new IOException()).when(isoDep).connect();
-        nfcApduRunner.setCardTag(isoDep);
-        cardCryptoApi.setApduRunner(nfcApduRunner);
-        prepareNfcTest(ERROR_MSG_NFC_CONNECT);
-    }
-
-    @Test
-    public void testNfcTransceiveFail() throws Exception{
-        mockNfcAdapter(nfcApduRunner, true);
-        IsoDep tag = prepareTagMock();
-        Mockito.doThrow(new IOException()).when(tag).transceive(any());
-        nfcApduRunner.setCardTag(tag);
-        cardCryptoApi.setApduRunner(nfcApduRunner);
-        prepareNfcTest(ERROR_TRANSCEIVE + ", More details: null");
-    }
-
-    @Test
-    public void testNfcTooShortResponse() throws Exception{
-        mockNfcAdapter(nfcApduRunner, true);
-        for (int i = 0; i < 3 ; i++) {
-            IsoDep tag = prepareTagMock();
-            if (i <  2) {
-                when(tag.transceive(any())).thenReturn(new byte[i]);
-            }
-            else {
-                when(tag.transceive(any())).thenReturn(null);
-            }
-            nfcApduRunner.setCardTag(tag);
-            cardCryptoApi.setApduRunner(nfcApduRunner);
-            prepareNfcTest(ERROR_BAD_RESPONSE);
-        }
     }
 
     /** Test for successfull response from applet **/
