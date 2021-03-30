@@ -46,7 +46,6 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SAULT_APD
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SERIAL_NUMBER_APDU;
 
 public class TonWalletApi {
-  private static final String SERIAl_NUMBERS_FIELD = "serial_number_field";
   private static final String TAG = "TonWalletApi";
 
   protected static final StringHelper STR_HELPER = StringHelper.getInstance();
@@ -254,7 +253,6 @@ public class TonWalletApi {
       }
     }).start();
   }
-
 
   public String createKeyForHmacAndGetJson(String password, String commonSecret, String serialNumber) throws Exception {
     try {

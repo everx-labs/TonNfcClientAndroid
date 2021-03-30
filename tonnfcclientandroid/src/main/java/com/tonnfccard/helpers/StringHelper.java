@@ -21,6 +21,7 @@ public class StringHelper {
   private final Pattern PATTERN_HEX = Pattern.compile("[0-9a-fA-F]+");
   private final Pattern PATTERN_NUMERIC = Pattern.compile("[0-9]+");
   private final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+  private final char[] DECIMAL_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
   private Random random = new Random();
 
@@ -40,6 +41,14 @@ public class StringHelper {
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < size; i++) {
       sb.append(HEX_DIGITS[random.nextInt(HEX_DIGITS.length)]);
+    }
+    return sb.toString();
+  }
+
+  public String randomDigitalString(int size) {
+    StringBuffer sb = new StringBuffer();
+    for (int i = 0; i < size; i++) {
+      sb.append(DECIMAL_DIGITS[random.nextInt(DECIMAL_DIGITS.length)]);
     }
     return sb.toString();
   }

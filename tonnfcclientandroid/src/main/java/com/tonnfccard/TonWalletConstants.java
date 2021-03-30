@@ -132,5 +132,6 @@ public final class TonWalletConstants {
     public static final String MESSAGE_FIELD = "message";
     public static final String CARD_INSTRUCTION_FIELD = "cardInstruction";
     public static final String APDU_FIELD = "apdu";
+    public static final String SERIAl_NUMBERS_FIELD = "serial_number_field";
 
 }
