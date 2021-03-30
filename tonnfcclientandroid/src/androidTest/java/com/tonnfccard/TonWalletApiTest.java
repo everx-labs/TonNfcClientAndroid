@@ -1,6 +1,7 @@
 package com.tonnfccard;
 
 import android.content.Context;
+import android.security.keystore.KeyProperties;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -20,10 +21,15 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.security.KeyStore;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
+
+import javax.crypto.Mac;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import static com.tonnfccard.TonWalletConstants.COMMON_SECRET_SIZE;
 import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN;
@@ -31,6 +37,7 @@ import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN_STR;
 import static com.tonnfccard.TonWalletConstants.DONE_MSG;
 import static com.tonnfccard.TonWalletConstants.EMPTY_SERIAL_NUMBER;
 import static com.tonnfccard.TonWalletConstants.FALSE_MSG;
+import static com.tonnfccard.TonWalletConstants.HMAC_KEYS_DOES_NOT_FOUND_MSG;
 import static com.tonnfccard.TonWalletConstants.PASSWORD_SIZE;
 import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE;
 import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE_MSG;
@@ -40,6 +47,7 @@ import static com.tonnfccard.TonWalletConstants.STATUS_FIELD;
 import static com.tonnfccard.TonWalletConstants.SUCCESS_STATUS;
 import static com.tonnfccard.TonWalletConstants.TRUE_MSG;
 import static com.tonnfccard.TonWalletConstants.WAITE_AUTHORIZATION_STATE;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ERR_IS_NOT_SEC_KEY_ENTRY;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_DISCONNECT;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.RESET_WALLET_APDU;
@@ -59,10 +67,9 @@ public class TonWalletApiTest {
     private final ExceptionHelper EXCEPTION_HELPER = ExceptionHelper.getInstance();
     private final StringHelper STRING_HELPER = StringHelper.getInstance();
     private final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
+    private static HmacHelper HMAC_HELPER = HmacHelper.getInstance();
     private final JsonHelper JSON_HELPER = JsonHelper.getInstance();
     private Random random = new Random();
-    private Context context;
-    private NfcApduRunner nfcApduRunner;
 
     private static final String SERIAL_NUMBER = "504394802433901126813236";
     private static final String COMMON_SECRET = "7256EFE7A77AFC7E9088266EF27A93CB01CD9432E0DB66D600745D506EE04AC4";
@@ -70,10 +77,13 @@ public class TonWalletApiTest {
 
     @Before
     public void init() throws Exception{
-        context = ApplicationProvider.getApplicationContext();
-        nfcApduRunner = NfcApduRunner.getInstance(context);
+        Context context = ApplicationProvider.getApplicationContext();
+        NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(context);
         tonWalletApi = new CardActivationApi(context, nfcApduRunner);
+        clearKeyStore();
+    }
 
+    private void clearKeyStore() throws Exception {
         final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
         Enumeration<String> aliases = keyStore.aliases();
@@ -99,6 +109,16 @@ public class TonWalletApiTest {
             assertTrue(keyStore.containsAlias(keyAlias));
             response = tonWalletApi.getCurrentSerialNumber();
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(sn).toLowerCase());
+            byte[] data = new byte[20];
+            random.nextBytes(data);
+            KeyStore.Entry entry = keyStore.getEntry(keyAlias, null);
+            Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
+            sha256_HMAC.init(((KeyStore.SecretKeyEntry) entry).getSecretKey());
+            byte[] sig1 = sha256_HMAC.doFinal(data);
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] key = HMAC_HELPER.computeMac(digest.digest(BYTE_ARRAY_HELPER.bytes(password)), BYTE_ARRAY_HELPER.bytes(cs));
+            byte[] sig2 = HMAC_HELPER.computeMac(key, data);
+            assertArrayEquals(sig1, sig2);
         }
         catch (Exception e) {
             fail();
@@ -140,7 +160,7 @@ public class TonWalletApiTest {
     }
 
     @Test
-    public void testDeleteKeyForHmactFail()  {
+    public void testDeleteKeyForHmacFail()  {
         try {
             String sn = STRING_HELPER.randomDigitalString(SERIAL_NUMBER_SIZE);
             tonWalletApi.deleteKeyForHmacAndGetJson(sn);
@@ -148,7 +168,6 @@ public class TonWalletApiTest {
         }
         catch (Exception e) {
             assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN)));
-
         }
     }
 
@@ -174,8 +193,45 @@ public class TonWalletApiTest {
     }
 
     @Test
+    public void testDeleteKeyForHmacSuccessfullOperation2()  {
+        try {
+            clearKeyStore();
+            List<String> serialNumbers = new ArrayList<>();
+            for(int i = 0; i < 100; i++) {
+                String sn = STRING_HELPER.randomDigitalString(SERIAL_NUMBER_SIZE);
+                String password = STRING_HELPER.randomHexString(2 * PASSWORD_SIZE);
+                String cs = STRING_HELPER.randomHexString(2 * COMMON_SECRET_SIZE);
+                tonWalletApi.createKeyForHmacAndGetJson(password, cs, sn);
+                serialNumbers.add(sn);
+            }
+            String response = tonWalletApi.deleteKeyForHmacAndGetJson(serialNumbers.get(43));
+            assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(DONE_MSG).toLowerCase());
+            response = tonWalletApi.isKeyForHmacExistAndGetJson(serialNumbers.get(43));
+            System.out.println(response);
+            assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(FALSE_MSG).toLowerCase());
+            response = tonWalletApi.getCurrentSerialNumber();
+            assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(serialNumbers.get(serialNumbers.size() - 1)).toLowerCase());
+            int counter = 0;
+            final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            keyStore.load(null);
+            Enumeration<String> aliases = keyStore.aliases();
+            while (aliases.hasMoreElements()) {
+                String alias = aliases.nextElement();
+                if (alias.startsWith(HmacHelper.HMAC_KEY_ALIAS))
+                    counter++;
+            }
+            assertEquals(counter, 99);
+        }
+        catch (Exception e) {
+            fail();
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void testGetAllSerialNumbersSuccessfullOperation()  {
         try {
+            clearKeyStore();
             List<String> serialNumbers = new ArrayList<>();
             for(int i = 0; i < 100; i++) {
                 String sn = STRING_HELPER.randomDigitalString(SERIAL_NUMBER_SIZE);
@@ -203,6 +259,98 @@ public class TonWalletApiTest {
         }
     }
 
+    @Test
+    public void testGetAllSerialNumbersAndDeleteSuccessfullOperation()  {
+        try {
+            clearKeyStore();
+            List<String> serialNumbers = new ArrayList<>();
+            for(int i = 0; i < 100; i++) {
+                String sn = STRING_HELPER.randomDigitalString(SERIAL_NUMBER_SIZE);
+                String password = STRING_HELPER.randomHexString(2 * PASSWORD_SIZE);
+                String cs = STRING_HELPER.randomHexString(2 * COMMON_SECRET_SIZE);
+                tonWalletApi.createKeyForHmacAndGetJson(password, cs, sn);
+                serialNumbers.add(sn);
+            }
+            tonWalletApi.deleteKeyForHmacAndGetJson(serialNumbers.get(21));
+            String response = tonWalletApi.getAllSerialNumbersAndGetJson();
+            System.out.println(response);
+            JSONObject obj = new JSONObject(response);
+            assertEquals(obj.get(TonWalletConstants.STATUS_FIELD), SUCCESS_STATUS);
+            JSONArray sns = obj.getJSONArray(SERIAl_NUMBERS_FIELD);
+            assertEquals(sns.length(), 99);
+            serialNumbers.remove(21);
+            for (int i = 0 ; i < sns.length(); i++) {
+                assertTrue(serialNumbers.contains(sns.getString(i)));
+            }
+            response = tonWalletApi.getCurrentSerialNumber();
+            System.out.println(response);
+            assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(serialNumbers.get(serialNumbers.size() - 1)).toLowerCase());
+        }
+        catch (Exception e) {
+            fail();
+            e.printStackTrace();
+        }
+    }
 
+    @Test
+    public void testGetAllSerialNumbersEmpty()  {
+        try {
+            clearKeyStore();
+            String response = tonWalletApi.getAllSerialNumbersAndGetJson();
+            assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(HMAC_KEYS_DOES_NOT_FOUND_MSG).toLowerCase());
+        }
+        catch (Exception e) {
+            fail();
+            e.printStackTrace();
+        }
+    }
 
+    @Test
+    public void testSelectKeyForHmacFail()  {
+        try {
+            String sn = STRING_HELPER.randomDigitalString(SERIAL_NUMBER_SIZE);
+            tonWalletApi.selectKeyForHmacAndGetJson(sn);
+            fail();
+        }
+        catch (Exception e) {
+            assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN)));
+
+        }
+    }
+
+    @Test
+    public void testSelectKeyForHmacSuccessfullOperation()  {
+        try {
+            clearKeyStore();
+            List<String> serialNumbers = new ArrayList<>();
+            for(int i = 0; i < 100; i++) {
+                String sn = STRING_HELPER.randomDigitalString(SERIAL_NUMBER_SIZE);
+                String password = STRING_HELPER.randomHexString(2 * PASSWORD_SIZE);
+                String cs = STRING_HELPER.randomHexString(2 * COMMON_SECRET_SIZE);
+                tonWalletApi.createKeyForHmacAndGetJson(password, cs, sn);
+                serialNumbers.add(sn);
+            }
+            String response = tonWalletApi.selectKeyForHmacAndGetJson(serialNumbers.get(56));
+            assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(DONE_MSG).toLowerCase());
+            response = tonWalletApi.isKeyForHmacExistAndGetJson(serialNumbers.get(56));
+            System.out.println(response);
+            assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(TRUE_MSG).toLowerCase());
+            response = tonWalletApi.getCurrentSerialNumber();
+            assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(serialNumbers.get(56)).toLowerCase());
+            int counter = 0;
+            final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            keyStore.load(null);
+            Enumeration<String> aliases = keyStore.aliases();
+            while (aliases.hasMoreElements()) {
+                String alias = aliases.nextElement();
+                if (alias.startsWith(HmacHelper.HMAC_KEY_ALIAS))
+                    counter++;
+            }
+            assertEquals(counter, 100);
+        }
+        catch (Exception e) {
+            fail();
+            e.printStackTrace();
+        }
+    }
 }
