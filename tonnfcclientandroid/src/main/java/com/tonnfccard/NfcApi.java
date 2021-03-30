@@ -28,7 +28,6 @@ public final class NfcApi {
         this.activity = activity;
     }
 
-
     public void openNfcSettings(final NfcCallback callback) {
         new Thread(new Runnable() {
             public void run() {

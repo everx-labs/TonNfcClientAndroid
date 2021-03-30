@@ -48,6 +48,7 @@ public class NfcMockHelper {
         nfcApduRunner.setNfcAdapter(nfcAdapterMock);
     }
 
+
     public static void mockNfcAdapterToBeNull(NfcApduRunner nfcApduRunner) {
         MockedStatic<NfcAdapter> nfcAdapterMockedStatic = Mockito.mockStatic(NfcAdapter.class);
         nfcAdapterMockedStatic
