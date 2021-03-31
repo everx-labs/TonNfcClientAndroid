@@ -857,6 +857,7 @@ public final class CardKeyChainApi extends TonWalletApi {
     Map<String, Short> hmacs = new LinkedHashMap<>();
     keyMacs.clear();
     int numOfKeys = getNumberOfKeys();
+    System.out.println("67");
     byte[] ind = new byte[2];
     for (short i = 0; i < numOfKeys; i++) {
       BYTE_ARR_HELPER.setShort(ind, 0, i);

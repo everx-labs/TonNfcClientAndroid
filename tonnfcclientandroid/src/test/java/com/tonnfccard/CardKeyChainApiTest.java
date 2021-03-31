@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.Random;
 
 import static com.tonnfccard.CardKeyChainApi.FREE_SIZE_FIELD;
+import static com.tonnfccard.CardKeyChainApi.KEYS_DATA_FIELD;
+import static com.tonnfccard.CardKeyChainApi.KEY_HMAC_FIELD;
 import static com.tonnfccard.CardKeyChainApi.KEY_INDEX_FIELD;
 import static com.tonnfccard.CardKeyChainApi.KEY_LENGTH_FIELD;
 import static com.tonnfccard.CardKeyChainApi.NUMBER_OF_KEYS_FIELD;
@@ -64,6 +66,7 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getCheckAvail
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getDeleteKeyChunkNumOfPacketsAPDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getDeleteKeyRecordNumOfPacketsAPDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getGetFreeSizeAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getGetHmacAPDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getGetIndexAndLenOfKeyInKeyChainAPDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getGetOccupiedSizeAPDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getNumberOfKeysAPDU;
@@ -244,6 +247,43 @@ public class CardKeyChainApiTest {
             JSONObject obj1 =  new JSONObject(obj.getString(MESSAGE_FIELD));
             assertEquals(obj1.get(KEY_INDEX_FIELD ), 1);
             assertEquals(obj1.get(KEY_LENGTH_FIELD), 32);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testGetKeyChainDataAboutAllKeysAppletSuccessfullOperation() throws Exception {
+        byte[] hmac1 = new byte[SHA_HASH_SIZE];
+        byte[] hmac2 = new byte[SHA_HASH_SIZE];
+        random.nextBytes(hmac1); random.nextBytes(hmac2);
+        byte[] sault = createSault();
+        byte len1 = 2;
+        byte len2 = 100;
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
+        TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
+        IsoDep tag =  prepareAdvancedTagMock(sault, PERSONALIZED_STATE);
+        when(tag.transceive(getNumberOfKeysAPDU(sault).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x00, (byte) 0x02}, SW_SUCCESS));
+        when(tag.transceive(getGetHmacAPDU(new byte[]{0x00, 0x00}, sault).getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(hmac1, new byte[]{0x00, len1}, SW_SUCCESS));
+        when(tag.transceive(getGetHmacAPDU(new byte[]{0x00, 0x01}, sault).getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(hmac2, new byte[]{0x00, len2}, SW_SUCCESS));
+        nfcApduRunnerMock.setCardTag(tag);
+        cardKeyChainApi.setApduRunner(nfcApduRunnerMock);
+        mockAndroidKeyStore();
+        try {
+            String response = cardKeyChainApi.getKeyChainDataAboutAllKeysAndGetJson();
+            System.out.println(response);
+            JSONObject obj = new JSONObject(response);
+            assertEquals(obj.get(TonWalletConstants.STATUS_FIELD), SUCCESS_STATUS);
+            JSONArray arr = obj.getJSONArray(KEYS_DATA_FIELD);
+            System.out.println(arr);
+            assertEquals(arr.getJSONObject(0).get(KEY_HMAC_FIELD), BYTE_ARRAY_HELPER.hex(hmac1));
+            assertEquals(arr.getJSONObject(0).get(KEY_LENGTH_FIELD), Byte.valueOf(len1).toString());
+            assertEquals(arr.getJSONObject(1).get(KEY_HMAC_FIELD), BYTE_ARRAY_HELPER.hex(hmac2));
+            assertEquals(arr.getJSONObject(1).get(KEY_LENGTH_FIELD), Byte.valueOf(len2).toString());
         }
         catch (Exception e){
             System.out.println(e.getMessage());
