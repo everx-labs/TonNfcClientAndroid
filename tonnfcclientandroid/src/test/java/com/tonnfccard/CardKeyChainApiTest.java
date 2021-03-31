@@ -53,6 +53,7 @@ import static com.tonnfccard.TonWalletConstants.SERIAl_NUMBERS_FIELD;
 import static com.tonnfccard.TonWalletConstants.SHA_HASH_SIZE;
 import static com.tonnfccard.TonWalletConstants.STATUS_FIELD;
 import static com.tonnfccard.TonWalletConstants.SUCCESS_STATUS;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APPLET_DOES_NOT_WAIT_TO_DELETE_KEY;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APPLET_IS_NOT_PERSONALIZED;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SIG_RESPONSE_LEN_INCORRECT;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_APP_INFO_APDU;
@@ -265,11 +266,11 @@ public class CardKeyChainApiTest {
         nfcApduRunnerMock.setCardTag(tag);
         cardKeyChainApi.setApduRunner(nfcApduRunnerMock);
         mockAndroidKeyStore();
-        String errMsg = ERROR_MSG_APPLET_IS_NOT_PERSONALIZED + TonWalletAppletStates.findByStateValue(DELETE_KEY_FROM_KEYCHAIN_STATE) + ".";
+        String errMsg = ERROR_MSG_APPLET_IS_NOT_PERSONALIZED + TonWalletAppletStates.findByStateValue(DELETE_KEY_FROM_KEYCHAIN_STATE).getDescription() + ".";
         for(int i = 0 ; i < ops.size(); i++) {
-            List<String> args = i == 0 ? Arrays.asList(STRING_HELPER.randomHexString(10), keyHmac)
+            List<String> args = i == 0 ? Arrays.asList(STRING_HELPER.randomHexString(64), keyHmac)
                     : i == 1 ? Collections.singletonList(STRING_HELPER.randomHexString(20))
-                    : Collections.singletonList(STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE));
+                    : Collections.singletonList(keyHmac);
             try {
                 ops.get(i).accept(args);
                 fail();
@@ -279,6 +280,26 @@ public class CardKeyChainApiTest {
 
                 Assert.assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(errMsg)));
             }
+        }
+    }
+
+    @Test
+    public void testForFinishDeleteKeyFromKeyChainAfterInterruption() throws Exception {
+        byte[] sault = createSault();
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
+        TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
+        IsoDep tag =  prepareAdvancedTagMock(sault, PERSONALIZED_STATE);
+        nfcApduRunnerMock.setCardTag(tag);
+        cardKeyChainApi.setApduRunner(nfcApduRunnerMock);
+        mockAndroidKeyStore();
+        String errMsg = ERROR_MSG_APPLET_DOES_NOT_WAIT_TO_DELETE_KEY + TonWalletAppletStates.findByStateValue(PERSONALIZED_STATE).getDescription() + ".";
+        try {
+            cardKeyChainApi.finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson();
+            fail();
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            Assert.assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(errMsg)));
         }
     }
 

@@ -351,10 +351,6 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson() throws Exception {
     try {
-    /*if (!STR_HELPER.isHexString(keyHmac))
-      throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
-    if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
-      throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);*/
       int numOfKeys = finishDeleteKeyFromKeyChainAfterInterruption();
       return JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
     }
