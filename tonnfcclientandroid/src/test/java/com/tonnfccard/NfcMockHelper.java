@@ -6,6 +6,8 @@ import android.nfc.tech.IsoDep;
 import com.tonnfccard.helpers.HmacHelper;
 import com.tonnfccard.helpers.StringHelper;
 import com.tonnfccard.nfc.NfcApduRunner;
+import com.tonnfccard.smartcard.ErrorCodes;
+import com.tonnfccard.smartcard.RAPDU;
 import com.tonnfccard.utils.ByteArrayUtil;
 
 import org.mockito.MockedStatic;
@@ -22,8 +24,11 @@ import static org.mockito.Mockito.when;
 public class NfcMockHelper {
     public static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
     public static final StringHelper STRING_HELPER = StringHelper.getInstance();
+    public static boolean androidKeyStoreIsMocked = false;
 
-    protected static boolean androidKeyStoreIsMocked = false;
+    public static final byte[] SW_SUCCESS = BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS);
+
+    public static final RAPDU SUCCESS_RAPDU = new RAPDU(SW_SUCCESS);
 
     public static IsoDep prepareTagMock() throws Exception {
         IsoDep tag = mock(IsoDep.class);
