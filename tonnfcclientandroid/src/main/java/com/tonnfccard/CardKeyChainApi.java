@@ -861,9 +861,7 @@ public final class CardKeyChainApi extends TonWalletApi {
   private Map<String, Short> getAllHmacsOfKeysFromCard() throws Exception {
     Map<String, Short> hmacs = new LinkedHashMap<>();
     keyMacs.clear();
-    System.out.println("hh");
     int numOfKeys = getNumberOfKeys();
-    System.out.println("ff");
     byte[] ind = new byte[2];
     for (short i = 0; i < numOfKeys; i++) {
       BYTE_ARR_HELPER.setShort(ind, 0, i);
