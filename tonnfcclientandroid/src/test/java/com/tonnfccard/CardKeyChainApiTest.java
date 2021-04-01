@@ -811,8 +811,9 @@ public class CardKeyChainApiTest {
         }
     }
 
+
     @Test
-    public void testDeleteKeyFromKeyChainAppletFailOperation1() throws Exception {
+    public void testDeleteKeyFromKeyChainAppletFailOperation() throws Exception {
         RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_WRONG_LENGTH));
         String mac = STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE);
         byte[] ind = new byte[]{(byte) 0x00, (byte) 0x01};
@@ -823,126 +824,29 @@ public class CardKeyChainApiTest {
         TonWalletApi.setHmacHelper(hmacHelperMock);
         IsoDep tag =  prepareAdvancedTagMock(sault, PERSONALIZED_STATE);
         when(tag.transceive(getGetIndexAndLenOfKeyInKeyChainAPDU(BYTE_ARRAY_HELPER.bytes(mac), sault).getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH));
-        nfcApduRunnerMock.setCardTag(tag);
-        cardKeyChainApi.setApduRunner(nfcApduRunnerMock);
-        mockAndroidKeyStore();
-        try {
-            cardKeyChainApi.deleteKeyFromKeyChainAndGetJson(mac);
-            fail();
-        }
-        catch (Exception e){
-            System.out.println(e.getMessage());
-            String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
-            Assert.assertEquals(e.getMessage(), errMsg);
-        }
-    }
-
-    @Test
-    public void testDeleteKeyFromKeyChainAppletSuccessfullOperation2() throws Exception {
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_WRONG_LENGTH));
-        String mac = STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE);
-        byte[] ind = new byte[]{(byte) 0x00, (byte) 0x01};
-        byte[] sault = createSault();
-        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        HmacHelper hmacHelperMock = prepareHmacHelperMock(HMAC_HELPER);
-        TonWalletAppletApduCommands.setHmacHelper(hmacHelperMock);
-        TonWalletApi.setHmacHelper(hmacHelperMock);
-        IsoDep tag =  prepareAdvancedTagMock(sault, PERSONALIZED_STATE);
-        when(tag.transceive(getGetIndexAndLenOfKeyInKeyChainAPDU(BYTE_ARRAY_HELPER.bytes(mac), sault).getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
                 .thenReturn(BYTE_ARRAY_HELPER.bConcat(ind, new byte[]{ 0x02, 0x26}, SW_SUCCESS));
         when(tag.transceive(getInitiateDeleteOfKeyAPDU(ind, sault).getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH));
-        nfcApduRunnerMock.setCardTag(tag);
-        cardKeyChainApi.setApduRunner(nfcApduRunnerMock);
-        mockAndroidKeyStore();
-        try {
-            cardKeyChainApi.deleteKeyFromKeyChainAndGetJson(mac);
-            fail();
-        }
-        catch (Exception e){
-            System.out.println(e.getMessage());
-            String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
-            Assert.assertEquals(e.getMessage(), errMsg);
-        }
-    }
-
-    @Test
-    public void testDeleteKeyAndFinishDeleteGetDeleteKeyChunkAppletFailOperation() throws Exception {
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_CLA_NOT_SUPPORTED));
-        List<CardApiInterface<List<String>>> ops = Arrays.asList(deleteKeyFromKeyChain, finishDeleteKeyFromKeyChainAfterInterruption);
-        String mac = STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE);
-        byte[] ind = new byte[]{(byte) 0x00, (byte) 0x01};
-        byte[] sault = createSault();
-        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        HmacHelper hmacHelperMock = prepareHmacHelperMock(HMAC_HELPER);
-        TonWalletAppletApduCommands.setHmacHelper(hmacHelperMock);
-        TonWalletApi.setHmacHelper(hmacHelperMock);
-        IsoDep tag =  prepareAdvancedTagMock(sault);
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{DELETE_KEY_FROM_KEYCHAIN_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(getGetIndexAndLenOfKeyInKeyChainAPDU(BYTE_ARRAY_HELPER.bytes(mac), sault).getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(ind, new byte[]{ 0x02, 0x26}, SW_SUCCESS));
-        when(tag.transceive(getInitiateDeleteOfKeyAPDU(ind, sault).getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{ 0x02, 0x26}, SW_SUCCESS));
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{ 0x00, 0x05}, SW_SUCCESS));
         when(tag.transceive(getDeleteKeyChunkAPDU(sault).getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_CLA_NOT_SUPPORTED));
-        nfcApduRunnerMock.setCardTag(tag);
-        cardKeyChainApi.setApduRunner(nfcApduRunnerMock);
-        mockAndroidKeyStore();
-        for(int i = 0; i < ops.size() ; i++){
-            try {
-                System.out.println(i);
-                ops.get(i).accept(i == 0 || i == 1 ? Collections.singletonList(mac)
-                        : Collections.emptyList());
-                fail();
-            }
-            catch (Exception e){
-                System.out.println(e.getMessage());
-                String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
-                Assert.assertEquals(e.getMessage(), errMsg);
-            }
-        }
-    }
-
-    @Test
-    public void testDeleteKeyAndFinishDeleteGetDeleteKeyRecordAppletFailOperation() throws Exception {
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_CLA_NOT_SUPPORTED));
-        List<CardApiInterface<List<String>>> ops = Arrays.asList(deleteKeyFromKeyChain, finishDeleteKeyFromKeyChainAfterInterruption);
-        String mac = STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE);
-        byte[] ind = new byte[]{(byte) 0x00, (byte) 0x01};
-        byte[] sault = createSault();
-        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        HmacHelper hmacHelperMock = prepareHmacHelperMock(HMAC_HELPER);
-        TonWalletAppletApduCommands.setHmacHelper(hmacHelperMock);
-        TonWalletApi.setHmacHelper(hmacHelperMock);
-        IsoDep tag =  prepareAdvancedTagMock(sault);
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{DELETE_KEY_FROM_KEYCHAIN_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(getGetIndexAndLenOfKeyInKeyChainAPDU(BYTE_ARRAY_HELPER.bytes(mac), sault).getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(ind, new byte[]{ 0x02, 0x26}, SW_SUCCESS));
-        when(tag.transceive(getInitiateDeleteOfKeyAPDU(ind, sault).getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{ 0x02, 0x26}, SW_SUCCESS));
-        when(tag.transceive(getDeleteKeyChunkAPDU(sault).getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
                 .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x00}, SW_SUCCESS))
                 .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x01}, SW_SUCCESS));
         when(tag.transceive(getDeleteKeyRecordAPDU(sault).getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_CLA_NOT_SUPPORTED));
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x00}, SW_SUCCESS))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x00}, SW_SUCCESS))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x01}, SW_SUCCESS));
+        when(tag.transceive(getNumberOfKeysAPDU(sault).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH));
         nfcApduRunnerMock.setCardTag(tag);
         cardKeyChainApi.setApduRunner(nfcApduRunnerMock);
         mockAndroidKeyStore();
-        for(int i = 0; i < ops.size() ; i++){
+        for(int i = 0; i < 5 ; i++) {
             try {
-                System.out.println(i);
-                ops.get(i).accept(i == 0 || i == 1 ? Collections.singletonList(mac)
-                        : Collections.emptyList());
+                cardKeyChainApi.deleteKeyFromKeyChainAndGetJson(mac);
                 fail();
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
                 String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
                 Assert.assertEquals(e.getMessage(), errMsg);
@@ -950,46 +854,33 @@ public class CardKeyChainApiTest {
         }
     }
 
-
     @Test
-    public void testDeleteKeyAndFinishDeleteGetNumberOfKeysAppletFailOperation() throws Exception {
+    public void testFinishDeleteGetNumberOfKeysAppletFailedOperations() throws Exception {
         RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_COMMAND_ABORTED));
-        List<CardApiInterface<List<String>>> ops = Arrays.asList(deleteKeyFromKeyChain, finishDeleteKeyFromKeyChainAfterInterruption);
-        String mac = STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE);
-        byte[] ind = new byte[]{(byte) 0x00, (byte) 0x01};
         byte[] sault = createSault();
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         HmacHelper hmacHelperMock = prepareHmacHelperMock(HMAC_HELPER);
         TonWalletAppletApduCommands.setHmacHelper(hmacHelperMock);
         TonWalletApi.setHmacHelper(hmacHelperMock);
-        IsoDep tag =  prepareAdvancedTagMock(sault);
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{DELETE_KEY_FROM_KEYCHAIN_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(getGetIndexAndLenOfKeyInKeyChainAPDU(BYTE_ARRAY_HELPER.bytes(mac), sault).getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(ind, new byte[]{ 0x02, 0x26}, SW_SUCCESS));
-        when(tag.transceive(getInitiateDeleteOfKeyAPDU(ind, sault).getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{ 0x02, 0x26}, SW_SUCCESS));
+        IsoDep tag =  prepareAdvancedTagMock(sault, DELETE_KEY_FROM_KEYCHAIN_STATE);
         when(tag.transceive(getDeleteKeyChunkAPDU(sault).getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x00}, SW_SUCCESS))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x01}, SW_SUCCESS));
+        when(tag.transceive(getDeleteKeyRecordAPDU(sault).getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x00}, SW_SUCCESS))
                 .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x00}, SW_SUCCESS))
                 .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x01}, SW_SUCCESS));
         when(tag.transceive(getNumberOfKeysAPDU(sault).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED));
-        when(tag.transceive(getDeleteKeyRecordAPDU(sault).getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x00}, SW_SUCCESS))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x00}, SW_SUCCESS))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x01}, SW_SUCCESS));
         nfcApduRunnerMock.setCardTag(tag);
         cardKeyChainApi.setApduRunner(nfcApduRunnerMock);
         mockAndroidKeyStore();
-        for(int i = 0; i < ops.size() ; i++){
+        for(int i = 0; i < 3 ; i++) {
             try {
-                System.out.println(i);
-                ops.get(i).accept(i == 0 || i == 1 ? Collections.singletonList(mac)
-                        : Collections.emptyList());
+                cardKeyChainApi.finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson();
                 fail();
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
                 String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
                 Assert.assertEquals(e.getMessage(), errMsg);
@@ -997,6 +888,83 @@ public class CardKeyChainApiTest {
         }
     }
 
+
+    @Test
+    public void testAddKeyIntoKeyChainAppletFailedOperation() throws Exception {
+        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_COMMAND_ABORTED));
+        byte[] sault = createSault();
+        short len = 550;
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
+        HmacHelper hmacHelperMock = prepareHmacHelperMock(HMAC_HELPER);
+        TonWalletAppletApduCommands.setHmacHelper(hmacHelperMock);
+        TonWalletApi.setHmacHelper(hmacHelperMock);
+        IsoDep tag =  prepareAdvancedTagMock(sault, PERSONALIZED_STATE);
+        when(tag.transceive(getCheckAvailableVolForNewKeyAPDU(len, sault).getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED))
+                .thenReturn(SW_SUCCESS);
+        when(tag.transceive(getNumberOfKeysAPDU(sault).getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x00, (byte) 0x02}, SW_SUCCESS));
+        byte [] key = new byte[len];
+        random.nextBytes(key);
+        byte[] portion1 = BYTE_ARRAY_HELPER.bSub(key, (short) 0x00, DATA_PORTION_MAX_SIZE);
+        when(tag.transceive(getSendKeyChunkAPDU(INS_ADD_KEY_CHUNK, (byte) 0x00, portion1, sault).getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED));
+        nfcApduRunnerMock.setCardTag(tag);
+        cardKeyChainApi.setApduRunner(nfcApduRunnerMock);
+        mockAndroidKeyStore();
+        for (int i = 0; i < 3; i++) {
+            try {
+                cardKeyChainApi.addKeyIntoKeyChainAndGetJson(BYTE_ARRAY_HELPER.hex(key));
+                fail();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
+                Assert.assertEquals(e.getMessage(), errMsg);
+            }
+        }
+    }
+
+    @Test
+    public void testChangeKeyInKeyChainAppletFailedOperation() throws Exception {
+        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_COMMAND_ABORTED));
+        String oldHmac = STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE);
+        byte[] sault = createSault();
+        short len = 550;
+        byte[] ind = new byte[]{(byte) 0x00, (byte) 0x01};
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
+        HmacHelper hmacHelperMock = prepareHmacHelperMock(HMAC_HELPER);
+        TonWalletAppletApduCommands.setHmacHelper(hmacHelperMock);
+        TonWalletApi.setHmacHelper(hmacHelperMock);
+        IsoDep tag =  prepareAdvancedTagMock(sault, PERSONALIZED_STATE);
+        when(tag.transceive(getGetIndexAndLenOfKeyInKeyChainAPDU(BYTE_ARRAY_HELPER.bytes(oldHmac), sault).getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(ind, new byte[]{ 0x02, 0x26}, SW_SUCCESS));
+        when(tag.transceive(getInitiateChangeOfKeyAPDU(ind, sault).getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED))
+                .thenReturn(SW_SUCCESS);
+        when(tag.transceive(getNumberOfKeysAPDU(sault).getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{ 0x00, 0x02}, SW_SUCCESS));
+        byte [] key = new byte[len];
+        random.nextBytes(key);
+        byte[] portion1 = BYTE_ARRAY_HELPER.bSub(key, (short) 0x00, DATA_PORTION_MAX_SIZE);
+        when(tag.transceive(getSendKeyChunkAPDU(INS_CHANGE_KEY_CHUNK, (byte) 0x00, portion1, sault).getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED));
+        nfcApduRunnerMock.setCardTag(tag);
+        cardKeyChainApi.setApduRunner(nfcApduRunnerMock);
+        mockAndroidKeyStore();
+        for (int i = 0; i < 4; i++) {
+            try {
+                cardKeyChainApi.changeKeyInKeyChainAndGetJson(BYTE_ARRAY_HELPER.hex(key), oldHmac);
+                fail();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
+                Assert.assertEquals(e.getMessage(), errMsg);
+            }
+        }
+    }
 
     /** Tests for incorrect input arguments **/
 
@@ -1004,14 +972,6 @@ public class CardKeyChainApiTest {
         byte[] sault = new byte[SAULT_LENGTH];
         random.nextBytes(sault);
         return sault;
-    }
-
-    private IsoDep prepareAdvancedTagMock(byte[] sault) throws Exception {
-        IsoDep tag = prepareTagMock();
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-        when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_SAULT_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(sault, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        return tag;
     }
 
     private IsoDep prepareAdvancedTagMock(byte[] sault, byte state) throws Exception {
