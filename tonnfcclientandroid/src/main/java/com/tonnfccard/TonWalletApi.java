@@ -52,7 +52,8 @@ public class TonWalletApi {
   protected static final JsonHelper JSON_HELPER = JsonHelper.getInstance();
   protected static final ByteArrayUtil BYTE_ARR_HELPER = ByteArrayUtil.getInstance();
   protected static final ExceptionHelper EXCEPTION_HELPER = ExceptionHelper.getInstance();
-  protected static final HmacHelper HMAC_HELPER = HmacHelper.getInstance();
+
+  protected static HmacHelper HMAC_HELPER = HmacHelper.getInstance();
 
   static MessageDigest digest;
   static String currentSerialNumber = EMPTY_SERIAL_NUMBER;
@@ -76,6 +77,10 @@ public class TonWalletApi {
   TonWalletApi(Context activity, NfcApduRunner apduRunner) {
     this.activity = activity;
     this.apduRunner = apduRunner;
+  }
+
+  public static void setHmacHelper(HmacHelper hmacHelper) {
+    HMAC_HELPER = hmacHelper;
   }
 
   public boolean setCardTag(Intent intent) throws Exception {

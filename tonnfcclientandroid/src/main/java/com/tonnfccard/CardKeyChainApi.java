@@ -552,8 +552,14 @@ public final class CardKeyChainApi extends TonWalletApi {
         throw new Exception(ERROR_MSG_KEY_INDEX_VALUE_INCORRECT);
       byte[] indBytes = new byte[2];
       BYTE_ARR_HELPER.setShort(indBytes, 0, ind);
-      String response = BYTE_ARR_HELPER.hex(getHmac(indBytes));
-      return JSON_HELPER.createResponseJson(response);
+      byte[] data = getHmac(indBytes);
+      JSONObject jObject = new JSONObject();
+      byte[] mac = BYTE_ARR_HELPER.bSub(data, 0, HMAC_SHA_SIG_SIZE);
+      short len = BYTE_ARR_HELPER.makeShort(data, HMAC_SHA_SIG_SIZE);
+      jObject.put(KEY_HMAC_FIELD, BYTE_ARR_HELPER.hex(mac));
+      jObject.put(KEY_LENGTH_FIELD, len);
+      jObject.put(STATUS_FIELD, SUCCESS_STATUS);
+      return jObject.toString();
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -622,6 +628,7 @@ public final class CardKeyChainApi extends TonWalletApi {
     return jsonResponse;
   }
 
+  //todo: probably should check here the number of keys before operation, check the speed
   private int deleteKeyFromKeyChain(byte[] macBytes) throws Exception {
     JSONObject jsonObject = getIndexAndLenOfKeyInKeyChain(macBytes);
     byte[] ind = new byte[2];
@@ -775,7 +782,7 @@ public final class CardKeyChainApi extends TonWalletApi {
     for (int i = 0; i < numberOfPackets; i++) {
       sault = getSaultBytes();
       RAPDU rapdu = apduRunner.sendAPDU(getGetKeyChunkAPDU(ind, startPos, sault, (byte) DATA_PORTION_MAX_SIZE));
-      if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != DATA_RECOVERY_PORTION_MAX_SIZE) throw new Exception(ERROR_KEY_DATA_PORTION_INCORRECT_LEN + DATA_RECOVERY_PORTION_MAX_SIZE);
+      if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != DATA_PORTION_MAX_SIZE) throw new Exception(ERROR_KEY_DATA_PORTION_INCORRECT_LEN + DATA_PORTION_MAX_SIZE);
       byte[] res = rapdu.getData();
       BYTE_ARR_HELPER.arrayCopy(res, 0, key, startPos, DATA_PORTION_MAX_SIZE);
       startPos += DATA_PORTION_MAX_SIZE;
@@ -784,7 +791,7 @@ public final class CardKeyChainApi extends TonWalletApi {
     if (tailLen > 0) {
       sault = getSaultBytes();
       RAPDU rapdu = apduRunner.sendAPDU(getGetKeyChunkAPDU(ind, startPos, sault, (byte) tailLen));
-      if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != tailLen) throw new Exception(ERROR_KEY_DATA_PORTION_INCORRECT_LEN + DATA_RECOVERY_PORTION_MAX_SIZE);
+      if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != tailLen) throw new Exception(ERROR_KEY_DATA_PORTION_INCORRECT_LEN + tailLen);
       byte[] res = rapdu.getData();
       BYTE_ARR_HELPER.arrayCopy(res, 0, key, startPos, tailLen);
     }
@@ -811,6 +818,7 @@ public final class CardKeyChainApi extends TonWalletApi {
     for (int i = 0; i < numberOfPackets; i++) {
       sault = getSaultBytes();
       keyChunk = BYTE_ARR_HELPER.bSub(keyBytes, i * DATA_PORTION_MAX_SIZE, DATA_PORTION_MAX_SIZE);
+      System.out.println(i);
       apduRunner.sendAPDU(getSendKeyChunkAPDU(ins, i == 0 ? (byte) 0x00 : (byte) 0x01, keyChunk, sault));
     }
 
