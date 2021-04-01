@@ -217,7 +217,7 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_KEY_NOT_HEX = "Key is not a valid hex string.";
   public static final String ERROR_MSG_KEY_LEN_INCORRECT = "Key is a hex string of length > 0 and <= " + (2 * MAX_KEY_SIZE_IN_KEYCHAIN) + ".";
   public static final String ERROR_MSG_KEY_SIZE_INCORRECT = "Key size must be > 0 and <= " + MAX_KEY_SIZE_IN_KEYCHAIN + ".";
-  public static final String ERROR_MSG_NEW_KEY_LEN_INCORRECT = "Length of new key must be equal to length of old key ";
+  public static final String ERROR_MSG_NEW_KEY_LEN_INCORRECT = "Length of new key must be equal to length of old key = ";
   public static final String ERROR_MSG_KEY_INDEX_VALUE_INCORRECT =  "Key index is a numeric string representing integer >= 0 and <= " + (MAX_NUMBER_OF_KEYS_IN_KEYCHAIN - 1) + ".";
   public static final String ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC =  "Key index is not a valid numeric string.";
   public static final String ERROR_MSG_SERIAL_NUMBER_LEN_INCORRECT = "Serial number is a numeric string of length "  + SERIAL_NUMBER_SIZE + ".";

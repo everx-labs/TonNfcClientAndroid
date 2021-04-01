@@ -674,10 +674,7 @@ public final class CardKeyChainApi extends TonWalletApi {
     RAPDU rapdu = apduRunner.sendAPDU(getInitiateDeleteOfKeyAPDU(index, sault));
     if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != INITIATE_DELETE_KEY_LE)
       throw new Exception(ERROR_MSG_INITIATE_DELETE_KEY_RESPONSE_LEN_INCORRECT);
-    byte[] response = rapdu.getData();
-  /*  int len = BYTE_ARR_HELPER.makeShort(response, 0);
-    if (len <= 0 || len > MAX_KEY_SIZE_IN_KEYCHAIN)
-      throw new Exception(ERROR_MSG_KEY_LENGTH_INCORRECT);*/
+    rapdu.getData();
   }
 
   private int deleteKeyChunk() throws Exception {
@@ -864,8 +861,9 @@ public final class CardKeyChainApi extends TonWalletApi {
   private Map<String, Short> getAllHmacsOfKeysFromCard() throws Exception {
     Map<String, Short> hmacs = new LinkedHashMap<>();
     keyMacs.clear();
+    System.out.println("hh");
     int numOfKeys = getNumberOfKeys();
-    System.out.println("67");
+    System.out.println("ff");
     byte[] ind = new byte[2];
     for (short i = 0; i < numOfKeys; i++) {
       BYTE_ARR_HELPER.setShort(ind, 0, i);
