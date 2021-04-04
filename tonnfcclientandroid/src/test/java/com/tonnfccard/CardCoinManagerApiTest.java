@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+import static com.tonnfccard.NfcMockHelper.SW_SUCCESS;
 import static com.tonnfccard.NfcMockHelper.prepareNfcApduRunnerMock;
 import static com.tonnfccard.NfcMockHelper.prepareTagMock;
 import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN;
@@ -72,10 +73,20 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_FORMAT_INC
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_TRANSCEIVE;
 import static com.tonnfccard.nfc.NfcApduRunner.TIME_OUT;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_APPLET_LIST_APDU;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_APPLET_LIST_DATA;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_AVAILABLE_MEMORY_APDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_CSN_APDU;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_DEVICE_LABEL_APDU;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_PIN_RTL_APDU;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_PIN_TLT_APDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_ROOT_KEY_STATUS_APDU;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_SE_VERSION_APDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.LABEL_LENGTH;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.RESET_WALLET_APDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.SELECT_COIN_MANAGER_APDU;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.getChangePinAPDU;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.getGenerateSeedAPDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.getSetDeviceLabelAPDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.SELECT_TON_WALLET_APPLET_APDU;
 import static org.junit.Assert.*;
@@ -91,12 +102,9 @@ public class CardCoinManagerApiTest {
     private static final StringHelper STRING_HELPER = StringHelper.getInstance();
     private static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
     private static final JsonHelper JSON_HELPER = JsonHelper.getInstance();
-    private static final HmacHelper HMAC_HELPER = HmacHelper.getInstance();
     private CardCoinManagerApi cardCoinManagerApi;
     private NfcApduRunner nfcApduRunner;
-    private Context context;
-    private Random random = new Random();
-    private final RAPDU SUCCESS_RAPDU = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
+    private final Random random = new Random();
 
     private final CardApiInterface<List<String>> setDeviceLabel = list ->  cardCoinManagerApi.setDeviceLabelAndGetJson(list.get(0));
     private final CardApiInterface<List<String>> generateSeed = list ->  cardCoinManagerApi.generateSeedAndGetJson(list.get(0));
@@ -111,12 +119,13 @@ public class CardCoinManagerApiTest {
     private final CardApiInterface<List<String>> getRemainingPinTries = list ->  cardCoinManagerApi.getRemainingPinTriesAndGetJson();
     private final CardApiInterface<List<String>> resetWallet = list ->  cardCoinManagerApi.resetWalletAndGetJson();
 
-    List<CardApiInterface<List<String>>> cardOperationsList = Arrays.asList(setDeviceLabel, generateSeed, changePin, getDeviceLabel,
-            getAppsList, getAvailableMemory, getCsn, getMaxPinTries, getRootKeyStatus, getSeVersion, getRemainingPinTries, resetWallet);
+    List<CardApiInterface<List<String>>> cardOperationsList = Arrays.asList(setDeviceLabel, generateSeed, changePin, resetWallet, getDeviceLabel,
+            getAppsList, getAvailableMemory, getCsn, getMaxPinTries, getRemainingPinTries, getRootKeyStatus, getSeVersion);
+
 
     @Before
     public  void init() throws Exception {
-        context = ApplicationProvider.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
         nfcApduRunner = NfcApduRunner.getInstance(context);
         cardCoinManagerApi = new CardCoinManagerApi(context, nfcApduRunner);
     }
@@ -126,39 +135,45 @@ public class CardCoinManagerApiTest {
     @Test
     public void testAppletSuccessfullOperations() throws Exception {
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        Mockito.doReturn(SUCCESS_RAPDU).when(nfcApduRunnerMock).sendAPDU(SELECT_COIN_MANAGER_APDU);
-        Map<CardApiInterface<List<String>>, String> map = new LinkedHashMap<>();
-        map.put(setDeviceLabel, BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-        map.put(generateSeed, BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-        map.put(changePin, BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-        map.put(getDeviceLabel, STRING_HELPER.randomHexString(2 * LABEL_LENGTH) + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-        map.put(getAppsList, STRING_HELPER.randomHexString(60) + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-        map.put(getAvailableMemory, STRING_HELPER.randomHexString(10) + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-        map.put(getCsn, STRING_HELPER.randomHexString(20) + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-        map.put(getMaxPinTries, "0A" + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-        map.put(getRootKeyStatus, "5A" + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-        map.put(getSeVersion, "1008" + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-        map.put(getRemainingPinTries,"09" + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-        map.put(resetWallet, BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
+        IsoDep tag = prepareTagMock();
+        when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(SW_SUCCESS);
+        byte[] label = new byte[LABEL_LENGTH];
+        random.nextBytes(label);
+        when(tag.transceive(GET_DEVICE_LABEL_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(label, SW_SUCCESS));
+        when(tag.transceive(getSetDeviceLabelAPDU(label).getBytes())).thenReturn(SW_SUCCESS);
+        when(tag.transceive(getGenerateSeedAPDU(DEFAULT_PIN).getBytes())).thenReturn(SW_SUCCESS);
+        when(tag.transceive(getChangePinAPDU(DEFAULT_PIN, DEFAULT_PIN).getBytes())).thenReturn(SW_SUCCESS);
+        when(tag.transceive(RESET_WALLET_APDU.getBytes())).thenReturn(SW_SUCCESS);
+        byte[] csn = new byte[20];
+        random.nextBytes(csn);
+        when(tag.transceive(GET_CSN_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(csn, SW_SUCCESS));
+        byte[] pinTries = new byte[]{0x0A};
+        when(tag.transceive(GET_PIN_RTL_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(pinTries, SW_SUCCESS));
+        when(tag.transceive(GET_PIN_TLT_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(pinTries, SW_SUCCESS));
+        byte[] rootKeyStatus = new byte[]{0x5A};
+        when(tag.transceive(GET_ROOT_KEY_STATUS_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(rootKeyStatus, SW_SUCCESS));
+        byte[] seVersion = new byte[]{0x10, 0x08};
+        when(tag.transceive(GET_SE_VERSION_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(seVersion, SW_SUCCESS));
+        byte[] appsList = new byte[60];
+        random.nextBytes(appsList);
+        when(tag.transceive(GET_APPLET_LIST_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(appsList, SW_SUCCESS));
+        byte[] availableMemory = new byte[10];
+        random.nextBytes(availableMemory);
+        when(tag.transceive(GET_AVAILABLE_MEMORY_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(availableMemory, SW_SUCCESS));
+        nfcApduRunnerMock.setCardTag(tag);
+        cardCoinManagerApi.setApduRunner(nfcApduRunnerMock);
         for(int i = 0 ; i < cardOperationsList.size(); i++) {
-            List<String> args = i == 0 ? Collections.singletonList(STRING_HELPER.randomHexString(2 * LABEL_LENGTH))
+            String msg = i <= 3 ? DONE_MSG :
+                    i == 4 ? BYTE_ARRAY_HELPER.hex(label) :
+                    i == 5 ? BYTE_ARRAY_HELPER.hex(appsList) :
+                    i == 6 ? BYTE_ARRAY_HELPER.hex(availableMemory) :
+                    i == 7 ? BYTE_ARRAY_HELPER.hex(csn) :
+                    i == 8 || i == 9 ? Byte.toString(pinTries[0]) :
+                    i == 10 ? GENERATED_MSG : BYTE_ARRAY_HELPER.hex(seVersion);
+            String response = cardOperationsList.get(i).accept(i == 0 ? Collections.singletonList(BYTE_ARRAY_HELPER.hex(label))
                     : i == 1 ? Collections.singletonList(DEFAULT_PIN_STR)
                     : i == 2 ? Arrays.asList(DEFAULT_PIN_STR, DEFAULT_PIN_STR)
-                    : Collections.emptyList();
-            CardApiInterface<List<String>> op = cardOperationsList.get(i);
-            IsoDep tag = prepareTagMock();
-            when(tag.transceive(any())).thenReturn(BYTE_ARRAY_HELPER.bytes(map.get(op)));
-            nfcApduRunnerMock.setCardTag(tag);
-            cardCoinManagerApi.setApduRunner(nfcApduRunnerMock);
-            String response = op.accept(args);
-            String res = map.get(op).substring(0, map.get(op).length() - 4);
-            if (op == getMaxPinTries || op == getRemainingPinTries) {
-                res = Byte.toString(BYTE_ARRAY_HELPER.bytes(res)[0]);
-            }
-            else if (op == getRootKeyStatus) {
-                res = GENERATED_MSG;
-            }
-            String msg = map.get(op).equals(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS)) ? DONE_MSG : res;
+                    : Collections.emptyList());
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(msg).toLowerCase());
         }
     }
@@ -169,18 +184,30 @@ public class CardCoinManagerApiTest {
     public void testAppletFailedOperation() throws Exception{
         RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_INS_NOT_SUPPORTED));
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        Mockito.doReturn(SUCCESS_RAPDU).when(nfcApduRunnerMock).sendAPDU(SELECT_COIN_MANAGER_APDU);
         IsoDep tag = prepareTagMock();
-        when(tag.transceive(any())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(SW_SUCCESS);
+        when(tag.transceive(GET_AVAILABLE_MEMORY_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        when(tag.transceive(GET_CSN_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        when(tag.transceive(GET_SE_VERSION_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        when(tag.transceive(GET_APPLET_LIST_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        when(tag.transceive(GET_ROOT_KEY_STATUS_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        when(tag.transceive(GET_PIN_RTL_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        when(tag.transceive(GET_PIN_TLT_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        when(tag.transceive(GET_DEVICE_LABEL_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        when(tag.transceive(RESET_WALLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        byte[] label = new byte[LABEL_LENGTH];
+        random.nextBytes(label);
+        when(tag.transceive(getSetDeviceLabelAPDU(label).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        when(tag.transceive(getGenerateSeedAPDU(DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        when(tag.transceive(getChangePinAPDU(DEFAULT_PIN, DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
         nfcApduRunnerMock.setCardTag(tag);
         cardCoinManagerApi.setApduRunner(nfcApduRunnerMock);
         for(int i = 0 ; i < cardOperationsList.size(); i++) {
-            List<String> args = i == 0 ? Collections.singletonList(STRING_HELPER.randomHexString(2 * LABEL_LENGTH))
+            List<String> args = i == 0 ? Collections.singletonList(BYTE_ARRAY_HELPER.hex(label))
                     : i == 1 ? Collections.singletonList(DEFAULT_PIN_STR)
                     : i == 2 ? Arrays.asList(DEFAULT_PIN_STR, DEFAULT_PIN_STR)
                     : Collections.emptyList();
             CardApiInterface<List<String>> op = cardOperationsList.get(i);
-
             try {
                 op.accept(args);
                 fail();
@@ -200,8 +227,7 @@ public class CardCoinManagerApiTest {
     /** setDeviceLabel **/
     @Test
     public void setDeviceLabelAndGetJsonTestBadInputDeviceLabel() {
-        List<String> incorrectLabels = Arrays.asList(null, "ABC", "12345", "ssAA", "1234k7");
-        incorrectLabels.forEach(label -> {
+        Arrays.asList(null, "", "ABC", "12345", "ssAA", "1234k7").forEach(label -> {
             try {
                 cardCoinManagerApi.setDeviceLabelAndGetJson(label);
                 fail();
@@ -287,18 +313,18 @@ public class CardCoinManagerApiTest {
         });
     }
 
-    /** Tests for incorrect card responses **/
+    /** Tests for incorrect card responses values **/
 
     @Test
     public void getPinTriesTestWrongValResponse() throws Exception {
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        Mockito.doReturn(SUCCESS_RAPDU).when(nfcApduRunnerMock).sendAPDU(SELECT_COIN_MANAGER_APDU);
+        IsoDep tag = prepareTagMock();
+        when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(SW_SUCCESS);
         List<CardApiInterface<List<String>>> ops = Arrays.asList(getMaxPinTries, getRemainingPinTries);
-        List<Byte> wrongTriesNum = Arrays.asList((byte)-120, (byte)-1, (byte)(MAX_PIN_TRIES+1), (byte)100);
+        List<Byte> wrongTriesNum = Arrays.asList((byte) -120, (byte) -1, (byte)(MAX_PIN_TRIES + 1), (byte) 100);
         for(CardApiInterface<List<String>> op : ops) {
-            for (Byte n : wrongTriesNum) {
-                IsoDep tag = prepareTagMock();
-                when(tag.transceive(any())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{n}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
+            for (Byte val : wrongTriesNum) {
+                when(tag.transceive(any())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{val}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
                 nfcApduRunnerMock.setCardTag(tag);
                 cardCoinManagerApi.setApduRunner(nfcApduRunnerMock);
                 try {
@@ -308,7 +334,6 @@ public class CardCoinManagerApiTest {
                 catch (Exception e){
                     assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_GET_PIN_TLT_OR_RTL_RESPONSE_VAL_INCORRECT)));
                 }
-
             }
         }
     }
@@ -325,8 +350,12 @@ public class CardCoinManagerApiTest {
         opsErrors.put(getRootKeyStatus, ERROR_MSG_GET_ROOT_KEY_STATUS_RESPONSE_LEN_INCORRECT);
         opsErrors.put(getCsn, ERROR_MSG_GET_CSN_RESPONSE_LEN_INCORRECT);
         opsErrors.put(getSeVersion, ERROR_MSG_GET_SE_VERSION_RESPONSE_LEN_INCORRECT);
+        opsErrors.put(getDeviceLabel, ERROR_MSG_GET_DEVICE_LABEL_RESPONSE_LEN_INCORRECT);
         NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
-        Mockito.doReturn(null).when(nfcApduRunnerMock).sendCoinManagerAppletAPDU(any());
+        IsoDep tag = prepareTagMock();
+        when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(SW_SUCCESS);
+        nfcApduRunnerMock.setCardTag(tag);
+        Mockito.doReturn(null).when(nfcApduRunnerMock).sendAPDU(any());
         cardCoinManagerApi.setApduRunner(nfcApduRunnerMock);
         for(CardApiInterface<List<String>> op : opsErrors.keySet()) {
             try {
@@ -337,16 +366,9 @@ public class CardCoinManagerApiTest {
                 assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(opsErrors.get(op))));
             }
         }
-    }
-
-    @Test
-    public void getDeviceLabelCheckWrongResponseLength() throws Exception {
-        NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
-        List<Integer> badLens = Arrays.asList(LABEL_LENGTH + 1, LABEL_LENGTH + 3);
-        badLens.forEach(len -> {
-            System.out.println(len);
+        Arrays.asList(LABEL_LENGTH + 1, LABEL_LENGTH + 3).forEach(len -> {
             try {
-                Mockito.doReturn(new RAPDU(new byte[len])).when(nfcApduRunnerMock).sendCoinManagerAppletAPDU(any());
+                Mockito.doReturn(new RAPDU(new byte[len])).when(nfcApduRunnerMock).sendAPDU(any());
                 cardCoinManagerApi.setApduRunner(nfcApduRunnerMock);
                 cardCoinManagerApi.getDeviceLabelAndGetJson();
                 fail();
@@ -355,6 +377,5 @@ public class CardCoinManagerApiTest {
                 assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_GET_DEVICE_LABEL_RESPONSE_LEN_INCORRECT)));
             }
         });
-
     }
 }

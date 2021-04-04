@@ -298,7 +298,7 @@ public class CardKeyChainApiTest {
             JSONObject obj = new JSONObject(response);
             assertEquals(obj.get(TonWalletConstants.STATUS_FIELD), SUCCESS_STATUS);
             JSONObject obj1 =  new JSONObject(obj.getString(MESSAGE_FIELD));
-            assertEquals(obj1.get(KEY_INDEX_FIELD ), 1);
+            assertEquals(obj1.get(KEY_INDEX_FIELD), 1);
             assertEquals(obj1.get(KEY_LENGTH_FIELD), 32);
         }
         catch (Exception e){
