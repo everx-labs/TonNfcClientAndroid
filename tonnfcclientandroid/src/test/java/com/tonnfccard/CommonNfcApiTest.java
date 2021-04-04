@@ -4,6 +4,7 @@ import android.content.Context;
 import android.nfc.tech.IsoDep;
 import android.os.Build;
 
+import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.tonnfccard.helpers.ExceptionHelper;
@@ -12,8 +13,12 @@ import com.tonnfccard.helpers.JsonHelper;
 import com.tonnfccard.helpers.StringHelper;
 import com.tonnfccard.nfc.NfcApduRunner;
 import com.tonnfccard.smartcard.ApduRunner;
+import com.tonnfccard.smartcard.ErrorCodes;
+import com.tonnfccard.smartcard.RAPDU;
+import com.tonnfccard.smartcard.TonWalletAppletApduCommands;
 import com.tonnfccard.utils.ByteArrayUtil;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,18 +30,27 @@ import org.robolectric.annotation.internal.DoNotInstrument;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
+import static com.tonnfccard.NfcMockHelper.SW_SUCCESS;
+import static com.tonnfccard.NfcMockHelper.createSault;
+import static com.tonnfccard.NfcMockHelper.mockAndroidKeyStore;
 import static com.tonnfccard.NfcMockHelper.mockNfcAdapter;
 import static com.tonnfccard.NfcMockHelper.mockNfcAdapterToBeNull;
+import static com.tonnfccard.NfcMockHelper.prepareHmacHelperMock;
+import static com.tonnfccard.NfcMockHelper.prepareNfcApduRunnerMock;
 import static com.tonnfccard.NfcMockHelper.prepareTagMock;
+import static com.tonnfccard.TonWalletApiTest.HMAC_HELPER;
 import static com.tonnfccard.TonWalletConstants.COMMON_SECRET_SIZE;
 import static com.tonnfccard.TonWalletConstants.DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH;
 import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN_STR;
 import static com.tonnfccard.TonWalletConstants.IV_SIZE;
 import static com.tonnfccard.TonWalletConstants.MAX_KEY_SIZE_IN_KEYCHAIN;
 import static com.tonnfccard.TonWalletConstants.PASSWORD_SIZE;
+import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE;
 import static com.tonnfccard.TonWalletConstants.RECOVERY_DATA_MAX_SIZE;
 import static com.tonnfccard.TonWalletConstants.SHA_HASH_SIZE;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_BAD_RESPONSE;
@@ -46,6 +60,16 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_NFC;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_TAG;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_TRANSCEIVE;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.LABEL_LENGTH;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.SELECT_COIN_MANAGER_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_APP_INFO_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SAULT_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SERIAL_NUMBER_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.SELECT_TON_WALLET_APPLET_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getDeleteKeyChunkAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getDeleteKeyRecordAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getGetIndexAndLenOfKeyInKeyChainAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getInitiateDeleteOfKeyAPDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getNumberOfKeysAPDU;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -55,10 +79,11 @@ import static org.mockito.Mockito.when;
 @Config(sdk = Build.VERSION_CODES.P)
 @DoNotInstrument
 public class CommonNfcApiTest {
-    protected final ExceptionHelper EXCEPTION_HELPER = ExceptionHelper.getInstance();
-    protected final StringHelper STRING_HELPER = StringHelper.getInstance();
-    protected final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
-    protected Random random = new Random();
+    public  static final String SN = "050004030904080002040303090001010206080103020306";
+    private final JsonHelper JSON_HELPER = JsonHelper.getInstance();
+    private final ExceptionHelper EXCEPTION_HELPER = ExceptionHelper.getInstance();
+    private final StringHelper STRING_HELPER = StringHelper.getInstance();
+    private final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
     private NfcApduRunner nfcApduRunner;
     private RecoveryDataApi recoveryDataApi;
     private CardCoinManagerApi cardCoinManagerApi;
@@ -120,18 +145,77 @@ public class CommonNfcApiTest {
     private final CardApiInterface<List<String>> resetKeyChain = list -> cardKeyChainApi.resetKeyChainAndGetJson();
     private final CardApiInterface<List<String>> checkAvailableVolForNewKey = list -> cardKeyChainApi.checkAvailableVolForNewKeyAndGetJson(Short.parseShort(list.get(0)));
 
-    List<CardApiInterface<List<String>>> cardOperationsList = Arrays.asList(
+    Map<CardApiInterface<List<String>>, List<String>> cardOpsMap = new LinkedHashMap<CardApiInterface<List<String>>, List<String>>(){
+        {
+            put(addRecoveryData, Collections.singletonList(STRING_HELPER.randomHexString(2 * RECOVERY_DATA_MAX_SIZE)));
+            put(setDeviceLabel, Collections.singletonList(STRING_HELPER.randomHexString(2 * LABEL_LENGTH)));
+            put(generateSeed, Collections.singletonList(DEFAULT_PIN_STR));
+            put(changePin, Arrays.asList(DEFAULT_PIN_STR, DEFAULT_PIN_STR));
+            put(turnOnWallet, Arrays.asList(DEFAULT_PIN_STR, STRING_HELPER.randomHexString(2 * PASSWORD_SIZE), STRING_HELPER.randomHexString(2 * COMMON_SECRET_SIZE), STRING_HELPER.randomHexString(2 * IV_SIZE)));
+            put(sign, Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), "1"));
+            put(verifyPinAndSign, Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), "2", DEFAULT_PIN_STR));
+            put(signForDefaultHdPath, Collections.singletonList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH)));
+            put(verifyPinAndSignForDefaultHdPath, Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), DEFAULT_PIN_STR));
+            put(verifyPin, Collections.singletonList(DEFAULT_PIN_STR));
+            put(getPublicKey, Collections.singletonList("3"));
+            put(changeKeyInKeyChain, Arrays.asList(STRING_HELPER.randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN), STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE)));
+            put(addKeyIntoKeyChain, Collections.singletonList(STRING_HELPER.randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN)));
+            put(checkKeyHmacConsistency, Collections.singletonList(STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE)));
+            put(deleteKeyFromKeyChain, Collections.singletonList(STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE)));
+            put(getIndexAndLenOfKeyInKeyChain, Collections.singletonList(STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE)));
+            put(getKeyFromKeyChain, Collections.singletonList(STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE)));
+            put(getHmac, Collections.singletonList("100"));
+            put(checkAvailableVolForNewKey, Collections.singletonList("100"));
+            put(getFreeStorageSize, Collections.emptyList());
+            put(getOccupiedStorageSize, Collections.emptyList());
+            put(getNumberOfKeys, Collections.emptyList());
+            put(finishDeleteKeyFromKeyChainAfterInterruption, Collections.emptyList());
+            put(getDeleteKeyChunkNumOfPackets, Collections.emptyList());
+            put(getDeleteKeyRecordNumOfPackets, Collections.emptyList());
+            put(getKeyChainDataAboutAllKeys, Collections.emptyList());
+            put(getKeyChainInfo, Collections.emptyList());
+            put(resetKeyChain, Collections.emptyList());
+            put(getPublicKeyForDefaultPath, Collections.emptyList());
+            put(getDeviceLabel, Collections.emptyList());
+            put(getAppsList, Collections.emptyList());
+            put(getAvailableMemory, Collections.emptyList());
+            put(getSeVersion, Collections.emptyList());
+            put(getCsn, Collections.emptyList());
+            put(getMaxPinTries, Collections.emptyList());
+            put(getRemainingPinTries, Collections.emptyList());
+            put(getRootKeyStatus, Collections.emptyList());
+            put(resetWallet, Collections.emptyList());
+            put(getRecoveryData, Collections.emptyList());
+            put(getRecoveryDataHash, Collections.emptyList());
+            put(getRecoveryDataLen, Collections.emptyList());
+            put(isRecoveryDataSet, Collections.emptyList());
+            put(resetRecovery, Collections.emptyList());
+            put(getHashOfEncryptedCommonSecret, Collections.emptyList());
+            put(getHashOfEncryptedPassword, Collections.emptyList());
+            put(getSault, Collections.emptyList());
+            put(getSerialNumber, Collections.emptyList());
+            put(getTonAppletState, Collections.emptyList());
+        }};
+
+    List<CardApiInterface<List<String>>> cardTonWalletOperationsListNotSaulty = Arrays.asList(
+            getHashOfEncryptedCommonSecret,
+            getHashOfEncryptedPassword,
             addRecoveryData,
-            setDeviceLabel,
-            generateSeed,
-            changePin,
-            turnOnWallet,
+            getRecoveryData,
+            getRecoveryDataLen,
+            getRecoveryDataHash,
+            resetRecovery,
+            isRecoveryDataSet,
+            getPublicKey,
+            getPublicKeyForDefaultPath
+    );
+
+    List<CardApiInterface<List<String>>> cardTonWalletOperationsList = Arrays.asList(
             sign,
             verifyPinAndSign,
             signForDefaultHdPath,
             verifyPinAndSignForDefaultHdPath,
             verifyPin,
-            getPublicKey,
             changeKeyInKeyChain,
             addKeyIntoKeyChain,
             checkKeyHmacConsistency,
@@ -149,7 +233,15 @@ public class CommonNfcApiTest {
             getKeyChainDataAboutAllKeys,
             getKeyChainInfo,
             resetKeyChain,
-            getPublicKeyForDefaultPath,
+            getSault,
+            getSerialNumber,
+            getTonAppletState
+    );
+
+    List<CardApiInterface<List<String>>> cardCoinManagerOperationsList = Arrays.asList(
+            setDeviceLabel,
+            generateSeed,
+            changePin,
             getDeviceLabel,
             getAppsList,
             getAvailableMemory,
@@ -158,18 +250,8 @@ public class CommonNfcApiTest {
             getMaxPinTries,
             getRemainingPinTries,
             getRootKeyStatus,
-            resetWallet,
-            getRecoveryData,
-            getRecoveryDataHash,
-            getRecoveryDataLen,
-            isRecoveryDataSet,
-            resetRecovery,
-            getHashOfEncryptedCommonSecret,
-            getHashOfEncryptedPassword,
-            getSault,
-            getSerialNumber,
-            getTonAppletState
-            );
+            resetWallet
+    );
 
     @Before
     public  void init() throws Exception {
@@ -190,31 +272,10 @@ public class CommonNfcApiTest {
         cardCoinManagerApi.setApduRunner(runner);
     }
 
-    private List<String> prepareArgs(int i) {
-        return i == 0 ? Collections.singletonList(STRING_HELPER.randomHexString(2 * RECOVERY_DATA_MAX_SIZE))
-                : i == 1 ? Collections.singletonList(STRING_HELPER.randomHexString(2 * LABEL_LENGTH))
-                : i == 2 ? Collections.singletonList(DEFAULT_PIN_STR)
-                : i == 3 ? Arrays.asList(DEFAULT_PIN_STR, DEFAULT_PIN_STR)
-                : i == 4 ? Arrays.asList(DEFAULT_PIN_STR, STRING_HELPER.randomHexString(2 * PASSWORD_SIZE), STRING_HELPER.randomHexString(2 * COMMON_SECRET_SIZE), STRING_HELPER.randomHexString(2 * IV_SIZE))
-                : i == 5 ? Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), "1")
-                : i == 6 ? Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), "2", DEFAULT_PIN_STR)
-                : i == 7 ? Collections.singletonList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH))
-                : i == 8 ? Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), DEFAULT_PIN_STR)
-                : i == 9 ? Collections.singletonList(DEFAULT_PIN_STR)
-                : i == 10 ? Collections.singletonList("3")
-                : i == 11 ? Arrays.asList(STRING_HELPER.randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN), STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE))
-                : i == 12 ? Collections.singletonList(STRING_HELPER.randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN))
-                : i == 13 || i == 14 || i == 15 || i == 16? Collections.singletonList(STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE))
-                : i == 17 || i == 18 ? Collections.singletonList("100")
-                : Collections.emptyList();
-    }
-
     private void prepareNfcTest(String errMsg) {
-        for(int i = 0 ; i < cardOperationsList.size(); i++) {
-            List<String> args = prepareArgs(i);
-            CardApiInterface<List<String>> op = cardOperationsList.get(i);
+        for(CardApiInterface<List<String>> op : cardOpsMap.keySet()) {
             try {
-                op.accept(args);
+                op.accept(cardOpsMap.get(op));
                 fail();
             }
             catch (Exception e){
@@ -288,4 +349,96 @@ public class CommonNfcApiTest {
             prepareNfcTest(ERROR_BAD_RESPONSE);
         }
     }
+
+    @Test
+    public void testTonWalletAppletBasicOperationsFailsWithSault() throws Exception {
+        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        byte[] sault = createSault();
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
+        HmacHelper hmacHelperMock = prepareHmacHelperMock(HMAC_HELPER);
+        TonWalletAppletApduCommands.setHmacHelper(hmacHelperMock);
+        TonWalletApi.setHmacHelper(hmacHelperMock);
+        IsoDep tag = prepareTagMock();
+        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED))
+                .thenReturn(SW_SUCCESS);
+        when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), SW_SUCCESS));
+        when(tag.transceive(GET_SAULT_APDU.getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(sault, SW_SUCCESS));
+        when(tag.transceive(GET_APP_INFO_APDU.getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        nfcApduRunnerMock.setCardTag(tag);
+        setNfcApduRunner(nfcApduRunnerMock);
+        mockAndroidKeyStore();
+        for(int i = 0 ; i < cardTonWalletOperationsList.size(); i++) {
+            CardApiInterface<List<String>> op = cardTonWalletOperationsList.get(i);
+            List<String> args = cardOpsMap.get(op);
+            try {
+                op.accept(args);
+                fail();
+            }
+            catch (Exception e){
+                System.out.println(e.getMessage());
+                String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
+                Assert.assertEquals(e.getMessage(), errMsg);
+            }
+        }
+    }
+
+    @Test
+    public void testTonWalletAppletBasicOperationsFailsWithoutSault() throws Exception {
+        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
+        IsoDep tag = prepareTagMock();
+        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED))
+                .thenReturn(SW_SUCCESS);
+        when(tag.transceive(GET_APP_INFO_APDU.getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        nfcApduRunnerMock.setCardTag(tag);
+        setNfcApduRunner(nfcApduRunnerMock);
+        for(int i = 0 ; i < cardTonWalletOperationsListNotSaulty.size(); i++) {
+            CardApiInterface<List<String>> op = cardTonWalletOperationsListNotSaulty.get(i);
+            List<String> args = cardOpsMap.get(op);
+            System.out.println();
+            try {
+                op.accept(args);
+                fail();
+            }
+            catch (Exception e){
+                System.out.println(e.getMessage());
+                String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
+                Assert.assertEquals(e.getMessage(), errMsg);
+            }
+        }
+    }
+
+    @Test
+    public void testCoinManagerAppletOperationsFails() throws Exception {
+        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
+        IsoDep tag = prepareTagMock();
+        when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
+        nfcApduRunnerMock.setCardTag(tag);
+        setNfcApduRunner(nfcApduRunnerMock);
+        for(int i = 0 ; i < cardCoinManagerOperationsList.size(); i++) {
+            CardApiInterface<List<String>> op = cardCoinManagerOperationsList.get(i);
+            List<String> args = cardOpsMap.get(op);
+            try {
+                op.accept(args);
+                fail();
+            }
+            catch (Exception e){
+                System.out.println(e.getMessage());
+                String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
+                Assert.assertEquals(e.getMessage(), errMsg);
+            }
+        }
+    }
+
+
 }

@@ -14,7 +14,9 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import java.security.KeyStore;
+import java.util.Random;
 
+import static com.tonnfccard.TonWalletConstants.SAULT_LENGTH;
 import static com.tonnfccard.TonWalletConstants.SHA_HASH_SIZE;
 import static com.tonnfccard.nfc.NfcApduRunner.TIME_OUT;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,6 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class NfcMockHelper {
+    public static final Random random = new Random();
     public static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
     public static final StringHelper STRING_HELPER = StringHelper.getInstance();
     public static boolean androidKeyStoreIsMocked = false;
@@ -29,6 +32,8 @@ public class NfcMockHelper {
     public static final byte[] SW_SUCCESS = BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS);
 
     public static final RAPDU SUCCESS_RAPDU = new RAPDU(SW_SUCCESS);
+
+    public  static final String SN = "050004030904080002040303090001010206080103020306";
 
     public static IsoDep prepareTagMock() throws Exception {
         IsoDep tag = mock(IsoDep.class);
@@ -81,5 +86,11 @@ public class NfcMockHelper {
         Mockito.doNothing().when(keyStoreMock).setEntry(any(), any(), any());
         Mockito.doReturn(true).when(keyStoreMock).containsAlias(any());
         androidKeyStoreIsMocked = true;
+    }
+
+    public static byte[] createSault() {
+        byte[] sault = new byte[SAULT_LENGTH];
+        random.nextBytes(sault);
+        return sault;
     }
 }

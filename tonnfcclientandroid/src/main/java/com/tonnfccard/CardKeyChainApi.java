@@ -815,7 +815,6 @@ public final class CardKeyChainApi extends TonWalletApi {
     for (int i = 0; i < numberOfPackets; i++) {
       sault = getSaultBytes();
       keyChunk = BYTE_ARR_HELPER.bSub(keyBytes, i * DATA_PORTION_MAX_SIZE, DATA_PORTION_MAX_SIZE);
-      System.out.println(i);
       apduRunner.sendAPDU(getSendKeyChunkAPDU(ins, i == 0 ? (byte) 0x00 : (byte) 0x01, keyChunk, sault));
     }
 
