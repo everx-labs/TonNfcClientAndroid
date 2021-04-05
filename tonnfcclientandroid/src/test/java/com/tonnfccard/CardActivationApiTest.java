@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static com.tonnfccard.NfcMockHelper.SW_SUCCESS;
 import static com.tonnfccard.NfcMockHelper.mockAndroidKeyStore;
 import static com.tonnfccard.NfcMockHelper.prepareNfcApduRunnerMock;
 import static com.tonnfccard.NfcMockHelper.prepareTagMock;
@@ -370,52 +371,42 @@ public class CardActivationApiTest {
     @Test
     public void testAppletSuccessfullOperations() throws Exception {
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x27}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
-                .when(nfcApduRunnerMock).sendAPDUList(GET_APPLET_STATE_APDU_LIST);
-        String hash1 = STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE);
-        String hash2 = STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE);
-        Map<CardApiInterface<List<String>>, String> map = new LinkedHashMap<>();
-        map.put(getHashOfEncryptedPassword, hash1 + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-        map.put(getHashOfEncryptedCommonSecret, hash2 + BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-        for(int i = 0 ; i < cardOperationsListShort.size(); i++) {
+        IsoDep tag =  prepareTagMock();
+        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(SW_SUCCESS);
+        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, SW_SUCCESS));
+        String hash = STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE);
+        when(tag.transceive(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(hash), SW_SUCCESS));
+        when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(hash), SW_SUCCESS));
+        nfcApduRunnerMock.setCardTag(tag);
+        cardActivationApi.setApduRunner(nfcApduRunnerMock);
+        for(int i = 0 ; i < Arrays.asList(getHashOfEncryptedPassword, getHashOfEncryptedCommonSecret).size(); i++) {
             CardApiInterface<List<String>> op = cardOperationsListShort.get(i);
-            IsoDep tag =  prepareTagMock();
-            when(tag.transceive(any())).thenReturn(BYTE_ARRAY_HELPER.bytes(map.get(op)));
-            nfcApduRunnerMock.setCardTag(tag);
-            cardActivationApi.setApduRunner(nfcApduRunnerMock);
             String response = op.accept(Collections.emptyList());
-            String msg = map.get(op).substring(0, map.get(op).length() - 4);
-            System.out.println(response.toLowerCase());
-            assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(msg).toLowerCase());
+            assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(hash).toLowerCase());
         }
     }
 
     @Test
     public void testTurnOnWalletAppletSuccessfullOperations() throws Exception {
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        try {
-            IsoDep tag = prepareTagMock();
-            when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(RESET_WALLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(getGenerateSeedAPDU(DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(GET_APP_INFO_APDU.getBytes()))
-                    .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)))
-                    .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-            when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-            when(tag.transceive(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H2), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-            when(tag.transceive(getVerifyPasswordAPDU(BYTE_ARRAY_HELPER.bytes(PASSWORD), BYTE_ARRAY_HELPER.bytes(IV)).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(getChangePinAPDU(DEFAULT_PIN, DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-            nfcApduRunnerMock.setCardTag(tag);
-            cardActivationApi.setApduRunner(nfcApduRunnerMock);
-            mockAndroidKeyStore();
-            String response = cardActivationApi.turnOnWalletAndGetJson(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV);
-            assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(PERSONALIZED_STATE_MSG).toLowerCase());
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+        IsoDep tag = prepareTagMock();
+        when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(SW_SUCCESS);
+        when(tag.transceive(RESET_WALLET_APDU.getBytes())).thenReturn(SW_SUCCESS);
+        when(tag.transceive(getGenerateSeedAPDU(DEFAULT_PIN).getBytes())).thenReturn(SW_SUCCESS);
+        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(SW_SUCCESS);
+        when(tag.transceive(GET_APP_INFO_APDU.getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, SW_SUCCESS))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, SW_SUCCESS));
+        when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), SW_SUCCESS));;
+        when(tag.transceive(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H2), SW_SUCCESS));;
+        when(tag.transceive(getVerifyPasswordAPDU(BYTE_ARRAY_HELPER.bytes(PASSWORD), BYTE_ARRAY_HELPER.bytes(IV)).getBytes())).thenReturn(SW_SUCCESS);
+        when(tag.transceive(getChangePinAPDU(DEFAULT_PIN, DEFAULT_PIN).getBytes())).thenReturn(SW_SUCCESS);
+        when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), SW_SUCCESS));
+        nfcApduRunnerMock.setCardTag(tag);
+        cardActivationApi.setApduRunner(nfcApduRunnerMock);
+        mockAndroidKeyStore();
+        String response = cardActivationApi.turnOnWalletAndGetJson(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV);
+        assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(PERSONALIZED_STATE_MSG).toLowerCase());
     }
 
 
@@ -425,10 +416,12 @@ public class CardActivationApiTest {
     public void testAppletFailedOperation() throws Exception{
         RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_COMMAND_ABORTED));
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x27}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
-                .when(nfcApduRunnerMock).sendAPDUList(GET_APPLET_STATE_APDU_LIST);
         IsoDep tag =  prepareTagMock();
-        when(tag.transceive(any())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED));
+        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(SW_SUCCESS);
+        when(tag.transceive(GET_APP_INFO_APDU.getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, SW_SUCCESS));
+        when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED));
+        when(tag.transceive(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED));
         nfcApduRunnerMock.setCardTag(tag);
         cardActivationApi.setApduRunner(nfcApduRunnerMock);
         for(int i = 0 ; i < cardOperationsListShort.size(); i++) { ;
@@ -447,237 +440,46 @@ public class CardActivationApiTest {
 
     @Test
     public void testTurnOnWalletAppletFailedOperation() throws Exception{
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_COMMAND_NOT_ALLOWED));
-        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);;
-        IsoDep tag =  prepareTagMock();
-        when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_NOT_ALLOWED));
-        nfcApduRunnerMock.setCardTag(tag);
-        cardActivationApi.setApduRunner(nfcApduRunnerMock);
-        try {
-            cardActivationApi.turnOnWalletAndGetJson(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV);
-            fail();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
-            System.out.println(errMsg);
-            System.out.println(e.getMessage());
-            assertEquals(e.getMessage(), errMsg);
-        }
-    }
-
-
-    @Test
-    public void testTurnOnWalletAppletFailedOperation1() throws Exception{
         RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_WRONG_LENGTH));
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);;
         IsoDep tag =  prepareTagMock();
-        when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-        when(tag.transceive(RESET_WALLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH));
+        when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
+                .thenReturn(SW_SUCCESS);
+        when(tag.transceive(RESET_WALLET_APDU.getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
+                .thenReturn(SW_SUCCESS);
+        when(tag.transceive(getGenerateSeedAPDU(DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
+                .thenReturn(SW_SUCCESS);
+        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
+                .thenReturn(SW_SUCCESS);
+        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn( BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, SW_SUCCESS));
+        when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn( BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), SW_SUCCESS));
+        when(tag.transceive(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H2), SW_SUCCESS));
+        when(tag.transceive(getVerifyPasswordAPDU(BYTE_ARRAY_HELPER.bytes(PASSWORD), BYTE_ARRAY_HELPER.bytes(IV)).getBytes()))
+                .thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
+                .thenReturn(SW_SUCCESS);
+        when(tag.transceive(getChangePinAPDU(DEFAULT_PIN, DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
+                .thenReturn(SW_SUCCESS);
+        when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH));
         nfcApduRunnerMock.setCardTag(tag);
         cardActivationApi.setApduRunner(nfcApduRunnerMock);
-        try {
-            cardActivationApi.turnOnWalletAndGetJson(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV);
-            fail();
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
-            System.out.println(errMsg);
-            System.out.println(e.getMessage());
-            assertEquals(e.getMessage(), errMsg);
-        }
-    }
-
-    @Test
-    public void testTurnOnWalletAppletFailedOperation2() throws Exception{
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_WRONG_LENGTH));
-        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        IsoDep tag = prepareTagMock();
-        when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-        when(tag.transceive(RESET_WALLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-        when(tag.transceive(getGenerateSeedAPDU(DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH));
-        nfcApduRunnerMock.setCardTag(tag);
-        cardActivationApi.setApduRunner(nfcApduRunnerMock);
-        try {
-            cardActivationApi.turnOnWalletAndGetJson(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV);
-            fail();
-        }
-        catch (Exception e){
-            String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
-            assertEquals(e.getMessage(), errMsg);
+        for(int i = 0 ; i < 10 ; i++) {
+            try {
+                cardActivationApi.turnOnWalletAndGetJson(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV);
+                fail();
+            } catch (Exception e) {
+                e.printStackTrace();
+                String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
+                System.out.println(errMsg);
+                System.out.println(e.getMessage());
+                assertEquals(e.getMessage(), errMsg);
+            }
         }
     }
-
-    @Test
-    public void testTurnOnWalletAppletFailedOperation3() throws Exception {
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_APPLET_SELECT_FAILED));
-        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        try {
-            IsoDep tag = prepareTagMock();
-            when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(RESET_WALLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(getGenerateSeedAPDU(DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_APPLET_SELECT_FAILED));
-            nfcApduRunnerMock.setCardTag(tag);
-            cardActivationApi.setApduRunner(nfcApduRunnerMock);
-            cardActivationApi.turnOnWalletAndGetJson(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV);
-            fail();
-        }
-        catch (Exception e){
-            String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
-            assertEquals(e.getMessage(), errMsg);
-        }
-    }
-
-    @Test
-    public void testTurnOnWalletAppletFailedOperation4() throws Exception {
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_INS_NOT_SUPPORTED));
-        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        try {
-            IsoDep tag = prepareTagMock();
-            when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(RESET_WALLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(getGenerateSeedAPDU(DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn( BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));;
-            nfcApduRunnerMock.setCardTag(tag);
-            cardActivationApi.setApduRunner(nfcApduRunnerMock);
-            cardActivationApi.turnOnWalletAndGetJson(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV);
-            fail();
-        }
-        catch (Exception e){
-            String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
-            assertEquals(e.getMessage(), errMsg);
-        }
-    }
-
-    @Test
-    public void testTurnOnWalletAppletFailedOperation5() throws Exception {
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_INS_NOT_SUPPORTED));
-        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        try {
-            IsoDep tag = prepareTagMock();
-            when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(RESET_WALLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(getGenerateSeedAPDU(DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-            when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn( BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
-            nfcApduRunnerMock.setCardTag(tag);
-            cardActivationApi.setApduRunner(nfcApduRunnerMock);
-            cardActivationApi.turnOnWalletAndGetJson(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV);
-            fail();
-        }
-        catch (Exception e){
-            String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
-            assertEquals(e.getMessage(), errMsg);
-        }
-    }
-
-    @Test
-    public void testTurnOnWalletAppletFailedOperation6() throws Exception {
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_INS_NOT_SUPPORTED));
-        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        try {
-            IsoDep tag = prepareTagMock();
-            when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(RESET_WALLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(getGenerateSeedAPDU(DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-            when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-            when(tag.transceive(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
-            nfcApduRunnerMock.setCardTag(tag);
-            cardActivationApi.setApduRunner(nfcApduRunnerMock);
-            cardActivationApi.turnOnWalletAndGetJson(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV);
-            fail();
-        }
-        catch (Exception e){
-            String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
-            assertEquals(e.getMessage(), errMsg);
-        }
-    }
-
-    @Test
-    public void testTurnOnWalletAppletFailedOperation7() throws Exception {
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_INS_NOT_SUPPORTED));
-        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        try {
-            IsoDep tag = prepareTagMock();
-            when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(RESET_WALLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(getGenerateSeedAPDU(DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-            when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-            when(tag.transceive(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H2), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-            when(tag.transceive(getVerifyPasswordAPDU(BYTE_ARRAY_HELPER.bytes(PASSWORD), BYTE_ARRAY_HELPER.bytes(IV)).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
-            nfcApduRunnerMock.setCardTag(tag);
-            cardActivationApi.setApduRunner(nfcApduRunnerMock);
-            cardActivationApi.turnOnWalletAndGetJson(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV);
-            fail();
-        }
-        catch (Exception e){
-            String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
-            assertEquals(e.getMessage(), errMsg);
-        }
-    }
-
-    @Test
-    public void testTurnOnWalletAppletFailedOperation8() throws Exception {
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_INS_NOT_SUPPORTED));
-        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        try {
-            IsoDep tag = prepareTagMock();
-            when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(RESET_WALLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(getGenerateSeedAPDU(DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-            when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-            when(tag.transceive(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H2), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-            when(tag.transceive(getVerifyPasswordAPDU(BYTE_ARRAY_HELPER.bytes(PASSWORD), BYTE_ARRAY_HELPER.bytes(IV)).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(getChangePinAPDU(DEFAULT_PIN, DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
-            nfcApduRunnerMock.setCardTag(tag);
-            cardActivationApi.setApduRunner(nfcApduRunnerMock);
-            cardActivationApi.turnOnWalletAndGetJson(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV);
-            fail();
-        }
-        catch (Exception e){
-            String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
-            assertEquals(e.getMessage(), errMsg);
-        }
-    }
-
-    @Test
-    public void testTurnOnWalletAppletFailedOperation9() throws Exception {
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_INS_NOT_SUPPORTED));
-        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        try {
-            IsoDep tag = prepareTagMock();
-            when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(RESET_WALLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(getGenerateSeedAPDU(DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-            when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-            when(tag.transceive(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H2), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-            when(tag.transceive(getVerifyPasswordAPDU(BYTE_ARRAY_HELPER.bytes(PASSWORD), BYTE_ARRAY_HELPER.bytes(IV)).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(getChangePinAPDU(DEFAULT_PIN, DEFAULT_PIN).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-            when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INS_NOT_SUPPORTED));
-            nfcApduRunnerMock.setCardTag(tag);
-            cardActivationApi.setApduRunner(nfcApduRunnerMock);
-            cardActivationApi.turnOnWalletAndGetJson(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV);
-            fail();
-        }
-        catch (Exception e){
-            String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
-            assertEquals(e.getMessage(), errMsg);
-        }
-    }
-
-
 
     /** Test bad applet state **/
 
