@@ -19,6 +19,10 @@ import java.util.Random;
 import static com.tonnfccard.TonWalletConstants.SAULT_LENGTH;
 import static com.tonnfccard.TonWalletConstants.SHA_HASH_SIZE;
 import static com.tonnfccard.nfc.NfcApduRunner.TIME_OUT;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_APP_INFO_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SAULT_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SERIAL_NUMBER_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.SELECT_TON_WALLET_APPLET_APDU;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -42,6 +46,31 @@ public class NfcMockHelper {
         Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
         return tag;
     }
+
+    public static IsoDep prepareAdvancedTagMock(byte[] sault, byte state) throws Exception {
+        IsoDep tag = prepareTagMock();
+        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
+        when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
+        when(tag.transceive(GET_SAULT_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(sault, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
+        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{state}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
+        return tag;
+    }
+
+    public static IsoDep prepareAdvancedTagMock(byte[] sault) throws Exception {
+        IsoDep tag = prepareTagMock();
+        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
+        when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
+        when(tag.transceive(GET_SAULT_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(sault, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
+        return tag;
+    }
+
+    public static IsoDep prepareSimpleTagMock(byte state) throws Exception {
+        IsoDep tag = prepareTagMock();
+        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
+        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{state}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
+        return tag;
+    }
+
 
     public static NfcApduRunner prepareNfcApduRunnerMock(NfcApduRunner nfcApduRunner) {
         NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);

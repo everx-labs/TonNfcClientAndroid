@@ -34,9 +34,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static com.tonnfccard.NfcMockHelper.SW_SUCCESS;
 import static com.tonnfccard.NfcMockHelper.mockAndroidKeyStore;
+import static com.tonnfccard.NfcMockHelper.prepareAdvancedTagMock;
 import static com.tonnfccard.NfcMockHelper.prepareHmacHelperMock;
 import static com.tonnfccard.NfcMockHelper.prepareNfcApduRunnerMock;
+import static com.tonnfccard.NfcMockHelper.prepareSimpleTagMock;
 import static com.tonnfccard.NfcMockHelper.prepareTagMock;
 import static com.tonnfccard.TonWalletApi.BYTE_ARR_HELPER;
 import static com.tonnfccard.TonWalletApi.STR_HELPER;
@@ -93,11 +96,8 @@ public class CardCryptoApiTest  {
     private static final JsonHelper JSON_HELPER = JsonHelper.getInstance();
     private static final HmacHelper HMAC_HELPER = HmacHelper.getInstance();
     private CardCryptoApi cardCryptoApi;
-    private Random random = new Random();
+    private final Random random = new Random();
     private NfcApduRunner nfcApduRunner;
-    private Context context;
-    private final RAPDU SUCCESS_RAPDU = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
-
     private final CardApiInterface<List<String>> sign = list -> cardCryptoApi.signAndGetJson(list.get(0), list.get(1));
     private final CardApiInterface<List<String>> verifyPinAndSign = list -> cardCryptoApi.verifyPinAndSignAndGetJson(list.get(0), list.get(1), list.get(2));
     private final CardApiInterface<List<String>> signForDefaultHdPath = list -> cardCryptoApi.signForDefaultHdPathAndGetJson(list.get(0));
@@ -106,14 +106,9 @@ public class CardCryptoApiTest  {
     private final CardApiInterface<List<String>> getPublicKey = list -> cardCryptoApi.getPublicKeyAndGetJson(list.get(0));
     private final CardApiInterface<List<String>> getPublicKeyForDefaultPath = list -> cardCryptoApi.getPublicKeyForDefaultPathAndGetJson();
 
-    List<CardApiInterface<List<String>>> cardOperationsList = Arrays.asList(sign, verifyPinAndSign, signForDefaultHdPath, verifyPinAndSignForDefaultHdPath,
-           verifyPin, getPublicKey, getPublicKeyForDefaultPath);
-
-    private static final String SN = "050004030904080002040303090001010206080103020306";
-
     @Before
     public  void init() throws Exception {
-        context = ApplicationProvider.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
         nfcApduRunner = NfcApduRunner.getInstance(context);
         cardCryptoApi = new CardCryptoApi(context, nfcApduRunner);
     }
@@ -126,13 +121,11 @@ public class CardCryptoApiTest  {
         random.nextBytes(pk);
         String hdInd = "111";
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);;
-        IsoDep tag =  prepareTagMock();
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
+        IsoDep tag =  prepareSimpleTagMock(PERSONALIZED_STATE);
         when(tag.transceive(GET_PUB_KEY_WITH_DEFAULT_PATH_APDU.getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(pk, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(pk, SW_SUCCESS));
         when(tag.transceive(getPublicKeyAPDU(BYTE_ARR_HELPER.bytes(STR_HELPER.asciiToHex(hdInd))).getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(pk, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(pk, SW_SUCCESS));
         nfcApduRunnerMock.setCardTag(tag);
         cardCryptoApi.setApduRunner(nfcApduRunnerMock);
         List<CardApiInterface<List<String>>> cardOperationsListShort = Arrays.asList(getPublicKeyForDefaultPath, getPublicKey);
@@ -155,12 +148,8 @@ public class CardCryptoApiTest  {
         random.nextBytes(sault);
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
-        IsoDep tag =  prepareTagMock();
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-        when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_SAULT_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(sault, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-        when(tag.transceive(getVerifyPinAPDU(DEFAULT_PIN, sault).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
+        IsoDep tag =  prepareAdvancedTagMock(sault, PERSONALIZED_STATE);
+        when(tag.transceive(getVerifyPinAPDU(DEFAULT_PIN, sault).getBytes())).thenReturn(SW_SUCCESS);
         nfcApduRunnerMock.setCardTag(tag);
         cardCryptoApi.setApduRunner(nfcApduRunnerMock);
         mockAndroidKeyStore();
@@ -183,19 +172,14 @@ public class CardCryptoApiTest  {
         random.nextBytes(sault);
         String hdInd = "123";
         String data = "1234567800";
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_WRONG_LENGTH));
         TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        IsoDep tag =  prepareTagMock();
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-        when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_SAULT_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(sault, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-        when(tag.transceive(getVerifyPinAPDU(DEFAULT_PIN, sault).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
+        IsoDep tag =  prepareAdvancedTagMock(sault, PERSONALIZED_STATE);
+        when(tag.transceive(getVerifyPinAPDU(DEFAULT_PIN, sault).getBytes())).thenReturn(SW_SUCCESS);
         when(tag.transceive(getSignShortMessageWithDefaultPathAPDU(BYTE_ARRAY_HELPER.bytes(data), sault).getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(sig, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(sig, SW_SUCCESS));
         when(tag.transceive(getSignShortMessageAPDU(BYTE_ARRAY_HELPER.bytes(data), BYTE_ARR_HELPER.bytes(STR_HELPER.asciiToHex(hdInd)), sault).getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(sig, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(sig, SW_SUCCESS));
         nfcApduRunnerMock.setCardTag(tag);
         cardCryptoApi.setApduRunner(nfcApduRunnerMock);
         mockAndroidKeyStore();
@@ -226,7 +210,7 @@ public class CardCryptoApiTest  {
         String hdInd = "1";
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         List<CardApiInterface<List<String>>> cardOperationsListShort = Arrays.asList(getPublicKeyForDefaultPath, getPublicKey);
-        List<RAPDU> badRapdus = Arrays.asList(null, new RAPDU(STRING_HELPER.randomHexString(2 * PUBLIC_KEY_LEN + 2) + "9000"),
+        List<RAPDU> badRapdus = Arrays.asList(null, new RAPDU("9000"),  new RAPDU(STRING_HELPER.randomHexString(2 * PUBLIC_KEY_LEN + 2) + "9000"),
                 new RAPDU(STRING_HELPER.randomHexString(2 * PUBLIC_KEY_LEN - 2) + "9000"));
         badRapdus.forEach(rapdu -> {
             try {
@@ -258,17 +242,13 @@ public class CardCryptoApiTest  {
         String hdInd = "1";
         TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        IsoDep tag =  prepareTagMock();
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-        when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_SAULT_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(sault, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
+        IsoDep tag =  prepareAdvancedTagMock(sault, PERSONALIZED_STATE);
         when(tag.transceive(getVerifyPinAPDU(DEFAULT_PIN, sault).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
         nfcApduRunnerMock.setCardTag(tag);
         cardCryptoApi.setApduRunner(nfcApduRunnerMock);
         mockAndroidKeyStore();
         List<CardApiInterface<List<String>>> cardOperationsListShort = Arrays.asList(signForDefaultHdPath, verifyPinAndSignForDefaultHdPath, sign, verifyPinAndSign);
-        List<RAPDU> badRapdus = Arrays.asList(null, new RAPDU(STRING_HELPER.randomHexString(2 * SIG_LEN + 2) + "9000"),
+        List<RAPDU> badRapdus = Arrays.asList(null, new RAPDU("9000"), new RAPDU(STRING_HELPER.randomHexString(2 * SIG_LEN + 2) + "9000"),
                 new RAPDU(STRING_HELPER.randomHexString(2 * SIG_LEN - 2) + "9000"));
         CAPDU capdu1 = getSignShortMessageAPDU(BYTE_ARRAY_HELPER.bytes(data), BYTE_ARR_HELPER.bytes(STR_HELPER.asciiToHex(hdInd)), sault);
         CAPDU capdu2 = getSignShortMessageWithDefaultPathAPDU(BYTE_ARRAY_HELPER.bytes(data), sault);
@@ -302,55 +282,29 @@ public class CardCryptoApiTest  {
     /** Test for applet fail with some SW**/
 
     @Test
-    public void testGetPublicKeyAppletFailedOperation() throws Exception {
-        String hdInd = "1";
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_WRONG_DATA));
-        TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
-        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        IsoDep tag =  prepareTagMock();
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-        when(tag.transceive(GET_PUB_KEY_WITH_DEFAULT_PATH_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_DATA));
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-        when(tag.transceive(getPublicKeyAPDU(BYTE_ARR_HELPER.bytes(STR_HELPER.asciiToHex(hdInd))).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_DATA));
-        nfcApduRunnerMock.setCardTag(tag);
-        cardCryptoApi.setApduRunner(nfcApduRunnerMock);
-        List<CardApiInterface<List<String>>> cardOperationsListShort = Arrays.asList(getPublicKeyForDefaultPath, getPublicKey);
-        for(int i = 0 ; i < cardOperationsListShort.size(); i++) {
-            try {
-                cardOperationsListShort.get(i).accept(i == 0 ? Collections.emptyList() : Collections.singletonList(hdInd));
-                fail();
-            }
-            catch (Exception e){
-                System.out.println(e.getMessage());
-                String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
-                assertEquals(e.getMessage(), errMsg);
-            }
-        }
-    }
-
-    @Test
-    public void testVerifyPinAppletFailedOperation() throws Exception {
+    public void testAppletFailedOperations() throws Exception {
         byte[] sault = new byte[SAULT_LENGTH];
         random.nextBytes(sault);
         String hdInd = "1";
         String data = "123456";
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_INCORRECT_PIN));
+        TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
+        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_WRONG_DATA));
         TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        IsoDep tag =  prepareTagMock();
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-        when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_SAULT_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(sault, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-        when(tag.transceive(getVerifyPinAPDU(DEFAULT_PIN, sault).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_INCORRECT_PIN));
+        IsoDep tag = prepareAdvancedTagMock(sault, PERSONALIZED_STATE);
+        when(tag.transceive(GET_PUB_KEY_WITH_DEFAULT_PATH_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_DATA));
+        when(tag.transceive(getPublicKeyAPDU(BYTE_ARR_HELPER.bytes(STR_HELPER.asciiToHex(hdInd))).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_DATA));
+        when(tag.transceive(getVerifyPinAPDU(DEFAULT_PIN, sault).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_DATA));
         nfcApduRunnerMock.setCardTag(tag);
         cardCryptoApi.setApduRunner(nfcApduRunnerMock);
         mockAndroidKeyStore();
-        List<CardApiInterface<List<String>>> cardOperationsListShort = Arrays.asList(verifyPin, verifyPinAndSignForDefaultHdPath, verifyPinAndSign);
+        List<CardApiInterface<List<String>>> cardOperationsListShort = Arrays.asList(getPublicKeyForDefaultPath, getPublicKey, verifyPin, verifyPinAndSignForDefaultHdPath, verifyPinAndSign);
         for(int i = 0 ; i < cardOperationsListShort.size(); i++) {
             try {
-                cardOperationsListShort.get(i).accept(i == 0 ? Collections.singletonList(DEFAULT_PIN_STR) :
-                        i == 1 ? Arrays.asList(data, DEFAULT_PIN_STR) : Arrays.asList(data, hdInd, DEFAULT_PIN_STR));
+                cardOperationsListShort.get(i).accept(i == 0 ? Collections.emptyList() :
+                        i == 1 ? Collections.singletonList(hdInd) :
+                        i == 2 ? Collections.singletonList(DEFAULT_PIN_STR) :
+                        i == 3 ? Arrays.asList(data, DEFAULT_PIN_STR) : Arrays.asList(data, hdInd, DEFAULT_PIN_STR));
                 fail();
             }
             catch (Exception e){
@@ -361,41 +315,9 @@ public class CardCryptoApiTest  {
         }
     }
 
-    @Test
-    public void testSignForDefaultHdPathAppletFailedOperation() throws Exception {
-        byte[] sault = new byte[SAULT_LENGTH];
-        random.nextBytes(sault);
-        String data = "1234567800";
-        RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_WRONG_LENGTH));
-        TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
-        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        IsoDep tag =  prepareTagMock();
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-        when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_SAULT_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(sault, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-        when(tag.transceive(getVerifyPinAPDU(DEFAULT_PIN, sault).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-        when(tag.transceive(getSignShortMessageWithDefaultPathAPDU(BYTE_ARRAY_HELPER.bytes(data), sault).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH));
-        nfcApduRunnerMock.setCardTag(tag);
-        cardCryptoApi.setApduRunner(nfcApduRunnerMock);
-        mockAndroidKeyStore();
-        List<CardApiInterface<List<String>>> cardOperationsListShort = Arrays.asList(signForDefaultHdPath, verifyPinAndSignForDefaultHdPath);
-        for(int i = 0 ; i < cardOperationsListShort.size(); i++) {
-            System.out.println(i);
-            try {
-                cardOperationsListShort.get(i).accept(i == 0 ? Collections.singletonList(data) : Arrays.asList(data, DEFAULT_PIN_STR));
-                fail();
-            }
-            catch (Exception e){
-                System.out.println(e.getMessage());
-                String errMsg = JSON_HELPER.createErrorJsonForCardException(rapdu.prepareSwFormatted(), nfcApduRunnerMock.getLastSentAPDU());
-                assertEquals(e.getMessage(), errMsg);
-            }
-        }
-    }
 
     @Test
-    public void testSignAppletFailedOperation() throws Exception {
+    public void testAppletFailedOperation2() throws Exception {
         byte[] sault = new byte[SAULT_LENGTH];
         random.nextBytes(sault);
         String hdInd = "1";
@@ -403,21 +325,20 @@ public class CardCryptoApiTest  {
         RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_WRONG_LENGTH));
         TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        IsoDep tag =  prepareTagMock();
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-        when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_SAULT_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(sault, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
-        when(tag.transceive(getVerifyPinAPDU(DEFAULT_PIN, sault).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
+        IsoDep tag = prepareAdvancedTagMock(sault, PERSONALIZED_STATE);
+        when(tag.transceive(getVerifyPinAPDU(DEFAULT_PIN, sault).getBytes())).thenReturn(SW_SUCCESS);
+        when(tag.transceive(getSignShortMessageWithDefaultPathAPDU(BYTE_ARRAY_HELPER.bytes(data), sault).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH));
         when(tag.transceive(getSignShortMessageAPDU(BYTE_ARRAY_HELPER.bytes(data), BYTE_ARR_HELPER.bytes(STR_HELPER.asciiToHex(hdInd)), sault).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH));
         nfcApduRunnerMock.setCardTag(tag);
         cardCryptoApi.setApduRunner(nfcApduRunnerMock);
         mockAndroidKeyStore();
-        List<CardApiInterface<List<String>>> cardOperationsListShort = Arrays.asList(sign, verifyPinAndSign);
+        List<CardApiInterface<List<String>>> cardOperationsListShort = Arrays.asList(signForDefaultHdPath, verifyPinAndSignForDefaultHdPath, sign, verifyPinAndSign);
         for(int i = 0 ; i < cardOperationsListShort.size(); i++) {
             System.out.println(i);
             try {
-                cardOperationsListShort.get(i).accept(i == 0 ? Arrays.asList(data, hdInd) : Arrays.asList(data, hdInd, DEFAULT_PIN_STR));
+                cardOperationsListShort.get(i).accept(i == 0 ? Collections.singletonList(data) :
+                        i == 1 ? Arrays.asList(data, DEFAULT_PIN_STR) :
+                        i == 2 ? Arrays.asList(data, hdInd) : Arrays.asList(data, hdInd, DEFAULT_PIN_STR));
                 fail();
             }
             catch (Exception e){
@@ -427,7 +348,6 @@ public class CardCryptoApiTest  {
             }
         }
     }
-
 
     /** Tests for incorrect input arguments **/
 
@@ -448,7 +368,8 @@ public class CardCryptoApiTest  {
         badDataToErrMsg.keySet().forEach(data -> {
             for(int i = 0 ; i < cardOperationsListToCheckBadData.size(); i++) {
                 try {
-                    cardOperationsListToCheckBadData.get(i).accept(getArgForDataTest(data, i));
+                    cardOperationsListToCheckBadData.get(i).accept(i == 0 ? Collections.singletonList(data)
+                            : Arrays.asList(data,  DEFAULT_PIN_STR));
                     fail();
                 }
                 catch (Exception e){
@@ -457,12 +378,6 @@ public class CardCryptoApiTest  {
             }
         });
     }
-
-    private List<String> getArgForDataTest(String data, int i) {
-        return  i == 0 ? Arrays.asList(data)
-                : Arrays.asList(data,  DEFAULT_PIN_STR);
-    }
-
 
     @Test
     public void testBadDataWithHd() {
@@ -481,7 +396,8 @@ public class CardCryptoApiTest  {
         badDataToErrMsg.keySet().forEach(data -> {
             for(int i = 0 ; i < cardOperationsListToCheckBadDataWithoutHd.size(); i++) {
                 try {
-                    cardOperationsListToCheckBadDataWithoutHd.get(i).accept(getArgForDataWithHdTest(data, i));
+                    cardOperationsListToCheckBadDataWithoutHd.get(i).accept(i == 0 ? Arrays.asList(data, "1")
+                            : Arrays.asList(data, "1", DEFAULT_PIN_STR));
                     fail();
                 }
                 catch (Exception e){
@@ -489,11 +405,6 @@ public class CardCryptoApiTest  {
                 }
             }
         });
-    }
-
-    private List<String> getArgForDataWithHdTest(String data, int i) {
-        return  i == 0 ? Arrays.asList(data, "1")
-                : Arrays.asList(data, "1", DEFAULT_PIN_STR);
     }
 
     @Test
@@ -512,7 +423,9 @@ public class CardCryptoApiTest  {
         badHdIndexToErrMsg.keySet().forEach(hdIndex -> {
             for(int i = 0 ; i < cardOperationsListToCheckHdIndex.size(); i++) {
                 try {
-                    cardOperationsListToCheckHdIndex.get(i).accept(getArgForHdIndexTest(hdIndex, i));
+                    cardOperationsListToCheckHdIndex.get(i).accept(i == 0 ? Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), hdIndex)
+                            : i == 1 ? Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), hdIndex, DEFAULT_PIN_STR)
+                            : Collections.singletonList(hdIndex));
                     fail();
                 }
                 catch (Exception e){
@@ -520,12 +433,6 @@ public class CardCryptoApiTest  {
                 }
             }
         });
-    }
-
-    private List<String> getArgForHdIndexTest(String hdIndex, int i) {
-        return  i == 0 ? Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), hdIndex)
-                : i == 1 ? Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), hdIndex, DEFAULT_PIN_STR)
-                : Collections.singletonList(hdIndex);
     }
 
     @Test
@@ -542,22 +449,18 @@ public class CardCryptoApiTest  {
             put("56733", ERROR_MSG_PIN_LEN_INCORRECT);
             put("233333344441", ERROR_MSG_PIN_LEN_INCORRECT);
         }};
-        badPinToErrMsg.keySet().forEach(hdIndex -> {
+        badPinToErrMsg.keySet().forEach(pin -> {
             for(int i = 0 ; i < cardOperationsListToCheckPin .size(); i++) {
                 try {
-                    cardOperationsListToCheckPin.get(i).accept(getArgForPinTest(hdIndex, i));
+                    cardOperationsListToCheckPin.get(i).accept(i == 0 ? Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), "1", pin)
+                            : i == 1 ? Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), pin)
+                            : Collections.singletonList(pin));
                     fail();
                 }
                 catch (Exception e){
-                    assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(badPinToErrMsg.get(hdIndex))));
+                    assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(badPinToErrMsg.get(pin))));
                 }
             }
         });
-    }
-
-    private List<String> getArgForPinTest(String pin, int i) {
-        return  i == 0 ? Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), "1", pin)
-                : i == 1 ? Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), pin)
-                : Collections.singletonList(pin);
     }
 }

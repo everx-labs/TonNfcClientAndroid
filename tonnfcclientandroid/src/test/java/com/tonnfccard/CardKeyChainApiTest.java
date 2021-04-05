@@ -44,6 +44,7 @@ import static com.tonnfccard.CardKeyChainApi.KEY_LENGTH_FIELD;
 import static com.tonnfccard.CardKeyChainApi.NUMBER_OF_KEYS_FIELD;
 import static com.tonnfccard.CardKeyChainApi.OCCUPIED_SIZE_FIELD;
 import static com.tonnfccard.NfcMockHelper.mockAndroidKeyStore;
+import static com.tonnfccard.NfcMockHelper.prepareAdvancedTagMock;
 import static com.tonnfccard.NfcMockHelper.prepareHmacHelperMock;
 import static com.tonnfccard.NfcMockHelper.prepareNfcApduRunnerMock;
 import static com.tonnfccard.NfcMockHelper.prepareTagMock;
@@ -1370,21 +1371,8 @@ public class CardKeyChainApiTest {
         return sault;
     }
 
-    private IsoDep prepareAdvancedTagMock(byte[] sault) throws Exception {
-        IsoDep tag = prepareTagMock();
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-        when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_SAULT_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(sault, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        return tag;
-    }
 
-    private IsoDep prepareAdvancedTagMock(byte[] sault, byte state) throws Exception {
-        IsoDep tag = prepareTagMock();
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
-        when(tag.transceive(GET_SERIAL_NUMBER_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_SAULT_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(sault, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{state}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
-        return tag;
-    }
+
+
 
 }
