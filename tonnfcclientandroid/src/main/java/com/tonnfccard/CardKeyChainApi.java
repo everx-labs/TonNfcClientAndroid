@@ -711,6 +711,9 @@ public final class CardKeyChainApi extends TonWalletApi {
   }
 
   private int getDeleteKeyChunkNumOfPackets() throws Exception {
+    TonWalletAppletStates appletState = getTonAppletState();
+    if (appletState != TonWalletAppletStates.DELETE_KEY_FROM_KEYCHAIN_MODE)
+      throw new Exception(ERROR_MSG_APPLET_DOES_NOT_WAIT_TO_DELETE_KEY + appletState.getDescription() + ".");
     reselectKeyForHmac();
     byte[] sault = getSaultBytes();
     RAPDU rapdu = apduRunner.sendAPDU(getDeleteKeyChunkNumOfPacketsAPDU(sault));
@@ -724,6 +727,9 @@ public final class CardKeyChainApi extends TonWalletApi {
   }
 
   private int getDeleteKeyRecordNumOfPackets() throws Exception {
+    TonWalletAppletStates appletState = getTonAppletState();
+    if (appletState != TonWalletAppletStates.DELETE_KEY_FROM_KEYCHAIN_MODE)
+      throw new Exception(ERROR_MSG_APPLET_DOES_NOT_WAIT_TO_DELETE_KEY + appletState.getDescription() + ".");
     reselectKeyForHmac();
     byte[] sault = getSaultBytes();
     RAPDU rapdu = apduRunner.sendAPDU(getDeleteKeyRecordNumOfPacketsAPDU(sault));
