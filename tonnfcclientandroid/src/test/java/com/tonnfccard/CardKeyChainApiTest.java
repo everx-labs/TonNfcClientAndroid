@@ -111,6 +111,7 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SIG_RESPONSE_L
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.DELETE_KEY_CHUNK_LE;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.DELETE_KEY_RECORD_LE;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_APP_INFO_APDU;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_LE;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_FREE_SIZE_LE;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_KEY_INDEX_IN_STORAGE_AND_LEN_LE;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_PUB_KEY_WITH_DEFAULT_PATH_APDU;
@@ -1030,7 +1031,6 @@ public class CardKeyChainApiTest {
                 Assert.assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(map.get(op))));
             }
         }
-
         List<CardApiInterface<List<String>>> ops = Arrays.asList(getNumberOfKeys, getKeyChainInfo);
         rapdu = new RAPDU("04009000");
         Mockito.doReturn(rapdu).when(nfcApduRunnerMock).sendAPDU(capduList.get(capduList.size() - 1));
@@ -1046,42 +1046,79 @@ public class CardKeyChainApiTest {
         }
     }
 
-
-
-    /*
-       // map.put(deleteKeyFromKeyChain, ERROR_MSG_GET_NUMBER_OF_KEYS_RESPONSE_LEN_INCORRECT);
-    map.put(getDeleteKeyChunkNumOfPackets, ERROR_MSG_GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_RESPONSE_LEN_INCORRECT);
+    @Test
+    public void testGetDeleteKeyChunksAndRecordsInvalidResponseLength() throws Exception {
+        TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
+        byte[] sault = createSault();
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
+        Map<CardApiInterface<List<String>>, String> map = new LinkedHashMap<>();
+        map.put(getDeleteKeyChunkNumOfPackets, ERROR_MSG_GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_RESPONSE_LEN_INCORRECT);
         map.put(getDeleteKeyRecordNumOfPackets, ERROR_MSG_GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_RESPONSE_LEN_INCORRECT);
-                CAPDU capdu4 = getDeleteKeyChunkNumOfPacketsAPDU(sault);
-        CAPDU capdu5 = getDeleteKeyRecordNumOfPacketsAPDU(sault);
-
-
-     */
+        List<RAPDU> badRapdus = Arrays.asList(null, new RAPDU("9000"),
+                new RAPDU(STRING_HELPER.randomHexString(2 * GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_LE + 2) + "9000"),
+                new RAPDU(STRING_HELPER.randomHexString(2 * GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_LE - 2) + "9000"));
+        mockAndroidKeyStore();
+        List<CAPDU> capduList = Arrays.asList(getDeleteKeyChunkNumOfPacketsAPDU(sault), getDeleteKeyRecordNumOfPacketsAPDU(sault));
+        IsoDep tag = prepareAdvancedTagMock(sault);
+        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{DELETE_KEY_FROM_KEYCHAIN_STATE}, SW_SUCCESS));
+        nfcApduRunnerMock.setCardTag(tag);
+        badRapdus.forEach(rapdu -> {
+            try {
+                for(CAPDU capdu : capduList) {
+                    Mockito.doReturn(rapdu).when(nfcApduRunnerMock).sendAPDU(capdu);
+                }
+                cardKeyChainApi.setApduRunner(nfcApduRunnerMock);
+                for (CardApiInterface<List<String>> op : map.keySet()) {
+                    try {
+                        op.accept(Collections.emptyList());
+                        fail();
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        Assert.assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(map.get(op))));
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                fail();
+            }
+        });
+    }
 
     @Test
-    public void testGetFreeOccupiedNumberOfKeysAndDeleteStuffInvalidResponseValues() throws Exception {
+    public void testGetDeleteKeyChunksAndRecordsInvalidResponseValues() throws Exception {
         TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
         byte[] sault = createSault();
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         Map<CardApiInterface<List<String>>, String> map = new LinkedHashMap<>();
         map.put(getDeleteKeyChunkNumOfPackets, ERROR_MSG_GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_RESPONSE_INCORRECT);
         map.put(getDeleteKeyRecordNumOfPackets, ERROR_MSG_GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_RESPONSE_INCORRECT);
-        map.put(getFreeStorageSize, ERROR_MSG_FREE_SIZE_RESPONSE_INCORRECT);
-        map.put(getOccupiedStorageSize, ERROR_MSG_OCCUPIED_SIZE_RESPONSE_INCORRECT);
-        map.put(getNumberOfKeys, ERROR_MSG_NUMBER_OF_KEYS_RESPONSE_INCORRECT);
-        map.put(getKeyChainInfo, ERROR_MSG_NUMBER_OF_KEYS_RESPONSE_INCORRECT);
         RAPDU rapdu = new RAPDU("FFFF9000");
         mockAndroidKeyStore();
-        CAPDU capdu1 = getGetOccupiedSizeAPDU(sault);
-        CAPDU capdu2 = getGetFreeSizeAPDU(sault);
-        CAPDU capdu3 = getNumberOfKeysAPDU(sault);
-        CAPDU capdu4 = getDeleteKeyChunkNumOfPacketsAPDU(sault);
-        CAPDU capdu5 = getDeleteKeyRecordNumOfPacketsAPDU(sault);
+        List<CAPDU> capduList = Arrays.asList(getDeleteKeyChunkNumOfPacketsAPDU(sault), getDeleteKeyRecordNumOfPacketsAPDU(sault));
         IsoDep tag = prepareAdvancedTagMock(sault);
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{DELETE_KEY_FROM_KEYCHAIN_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{DELETE_KEY_FROM_KEYCHAIN_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
+        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{DELETE_KEY_FROM_KEYCHAIN_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));
+        nfcApduRunnerMock.setCardTag(tag);
+        for (CAPDU capdu : capduList) {
+            Mockito.doReturn(rapdu).when(nfcApduRunnerMock).sendAPDU(capdu);
+        }
+        cardKeyChainApi.setApduRunner(nfcApduRunnerMock);
+        for (CardApiInterface<List<String>> op : map.keySet()) {
+            try {
+                op.accept(Collections.emptyList());
+                fail();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                Assert.assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(map.get(op))));
+            }
+        }
+    }
+
+    @Test
+    public void testDeleteAndFinishDeleteInvalidResponseValueForGetNumberOfKeys() throws Exception {
+        TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
+        byte[] sault = createSault();
+        NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
+        IsoDep tag = prepareAdvancedTagMock(sault);
         String mac = STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE);
         byte[] ind = new byte[]{(byte) 0x00, (byte) 0x01};
         when(tag.transceive(getGetIndexAndLenOfKeyInKeyChainAPDU(BYTE_ARRAY_HELPER.bytes(mac), sault).getBytes()))
@@ -1095,28 +1132,17 @@ public class CardKeyChainApiTest {
                 .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x00}, SW_SUCCESS))
                 .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{(byte) 0x01}, SW_SUCCESS));
         nfcApduRunnerMock.setCardTag(tag);
-        Mockito.doReturn(rapdu).when(nfcApduRunnerMock).sendAPDU(capdu1);
-        Mockito.doReturn(rapdu).when(nfcApduRunnerMock).sendAPDU(capdu2);
-        Mockito.doReturn(rapdu).when(nfcApduRunnerMock).sendAPDU(capdu3);
-        Mockito.doReturn(rapdu).when(nfcApduRunnerMock).sendAPDU(capdu4);
-        Mockito.doReturn(rapdu).when(nfcApduRunnerMock).sendAPDU(capdu5);
+        List<CardApiInterface<List<String>>> ops = Arrays.asList(deleteKeyFromKeyChain, finishDeleteKeyFromKeyChainAfterInterruption);
+        RAPDU rapdu = new RAPDU("04009000");
+        mockAndroidKeyStore();
+        CAPDU capdu = getNumberOfKeysAPDU(sault);
+        Mockito.doReturn(rapdu).when(nfcApduRunnerMock).sendAPDU(capdu);
         cardKeyChainApi.setApduRunner(nfcApduRunnerMock);
-        for (CardApiInterface<List<String>> op : map.keySet()) {
+        for (int i = 0 ; i < ops.size(); i++) {
             try {
-                op.accept(Collections.emptyList());
-                fail();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                Assert.assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(map.get(op))));
-            }
-        }
-        List<CardApiInterface<List<String>>> ops = Arrays.asList(getNumberOfKeys, getKeyChainInfo, deleteKeyFromKeyChain);
-        rapdu = new RAPDU("04009000");
-        for (CardApiInterface<List<String>> op : ops) {
-            Mockito.doReturn(rapdu).when(nfcApduRunnerMock).sendAPDU(capdu3);
-            cardKeyChainApi.setApduRunner(nfcApduRunnerMock);
-            try {
-                op.accept(Collections.emptyList());
+                byte state = i == 0 ? PERSONALIZED_STATE : DELETE_KEY_FROM_KEYCHAIN_STATE;
+                when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{state}, SW_SUCCESS));
+                ops.get(i).accept(i == 0 ? Collections.singletonList(mac) : Collections.emptyList());
                 fail();
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -1132,7 +1158,7 @@ public class CardKeyChainApiTest {
         byte[] sault = createSault();
         short len = 10;
         List<CardApiInterface<List<String>>> ops = Arrays.asList(changeKeyInKeyChain, addKeyIntoKeyChain);
-        List<RAPDU> badRapdus1 = Arrays.asList(null, new RAPDU(STRING_HELPER.randomHexString(2 * SEND_CHUNK_LE + 2) + "9000"),
+        List<RAPDU> badRapdus1 = Arrays.asList(null, new RAPDU("9000"), new RAPDU(STRING_HELPER.randomHexString(2 * SEND_CHUNK_LE + 2) + "9000"),
                 new RAPDU(STRING_HELPER.randomHexString(2 * SEND_CHUNK_LE - 2) + "9000"));
         List<RAPDU> badRapdus2 = Arrays.asList(new RAPDU("00009000"),
                 new RAPDU("FFFF9000"), new RAPDU("04009000"));
@@ -1154,12 +1180,11 @@ public class CardKeyChainApiTest {
         when(tag.transceive(getSendKeyChunkAPDU(INS_ADD_KEY_CHUNK, (byte) 0x00, key, sault).getBytes()))
                 .thenReturn(SW_SUCCESS);
         byte[] mac = hmacHelperMock.computeMac(key);
-        CAPDU capdu1 = getSendKeyChunkAPDU(INS_CHANGE_KEY_CHUNK, (byte) 0x02, mac, sault);
-        CAPDU capdu2 = getSendKeyChunkAPDU(INS_ADD_KEY_CHUNK, (byte) 0x02, mac, sault);
+        List<CAPDU> capduList = Arrays.asList(getSendKeyChunkAPDU(INS_CHANGE_KEY_CHUNK, (byte) 0x02, mac, sault), getSendKeyChunkAPDU(INS_ADD_KEY_CHUNK, (byte) 0x02, mac, sault));
         nfcApduRunnerMock.setCardTag(tag);
         mockAndroidKeyStore();
-        runTestForSpecificErrMsg(key, oldHmac, nfcApduRunnerMock, badRapdus1, Arrays.asList(capdu1, capdu2), ops, ERROR_MSG_SEND_CHUNK_RESPONSE_LEN_INCORRECT);
-        runTestForSpecificErrMsg(key, oldHmac, nfcApduRunnerMock, badRapdus2, Arrays.asList(capdu1, capdu2), ops, ERROR_MSG_NUMBER_OF_KEYS_RESPONSE_INCORRECT);
+        runTestForSpecificErrMsg(key, oldHmac, nfcApduRunnerMock, badRapdus1, capduList, ops, ERROR_MSG_SEND_CHUNK_RESPONSE_LEN_INCORRECT);
+        runTestForSpecificErrMsg(key, oldHmac, nfcApduRunnerMock, badRapdus2, capduList, ops, ERROR_MSG_NUMBER_OF_KEYS_RESPONSE_INCORRECT);
     }
 
     private void runTestForSpecificErrMsg(byte[] key, String oldHmac, NfcApduRunner nfcApduRunnerMock, List<RAPDU> badRapdus, List<CAPDU> capduList, List<CardApiInterface<List<String>>> ops, String errMsg) {
