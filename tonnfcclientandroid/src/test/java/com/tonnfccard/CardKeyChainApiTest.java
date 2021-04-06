@@ -18,6 +18,7 @@ import com.tonnfccard.smartcard.TonWalletAppletApduCommands;
 import com.tonnfccard.smartcard.TonWalletAppletStates;
 import com.tonnfccard.utils.ByteArrayUtil;
 
+import org.checkerframework.checker.units.qual.A;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -29,6 +30,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.internal.DoNotInstrument;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -52,10 +54,16 @@ import static com.tonnfccard.NfcMockHelper.prepareTagMock;
 import static com.tonnfccard.NfcMockHelper.SW_SUCCESS;
 import static com.tonnfccard.TonWalletApi.BYTE_ARR_HELPER;
 import static com.tonnfccard.TonWalletApi.STR_HELPER;
+import static com.tonnfccard.TonWalletConstants.DATA_FOR_SIGNING_MAX_SIZE;
 import static com.tonnfccard.TonWalletConstants.DATA_PORTION_MAX_SIZE;
+import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN_STR;
 import static com.tonnfccard.TonWalletConstants.DELETE_KEY_FROM_KEYCHAIN_STATE;
 import static com.tonnfccard.TonWalletConstants.DONE_MSG;
+import static com.tonnfccard.TonWalletConstants.HMAC_SHA_SIG_SIZE;
+import static com.tonnfccard.TonWalletConstants.MAX_KEY_SIZE_IN_KEYCHAIN;
+import static com.tonnfccard.TonWalletConstants.MAX_NUMBER_OF_KEYS_IN_KEYCHAIN;
 import static com.tonnfccard.TonWalletConstants.MESSAGE_FIELD;
+import static com.tonnfccard.TonWalletConstants.PASSWORD_SIZE;
 import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE;
 import static com.tonnfccard.TonWalletConstants.PUBLIC_KEY_LEN;
 import static com.tonnfccard.TonWalletConstants.SAULT_LENGTH;
@@ -65,6 +73,8 @@ import static com.tonnfccard.TonWalletConstants.STATUS_FIELD;
 import static com.tonnfccard.TonWalletConstants.SUCCESS_STATUS;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APPLET_DOES_NOT_WAIT_TO_DELETE_KEY;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APPLET_IS_NOT_PERSONALIZED;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DATA_FOR_SIGNING_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DATA_FOR_SIGNING_NOT_HEX;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DELETE_KEY_CHUNK_RESPONSE_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DELETE_KEY_CHUNK_RESPONSE_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DELETE_KEY_RECORD_RESPONSE_INCORRECT;
@@ -79,14 +89,22 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_HMAC_RESPO
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_KEY_INDEX_IN_STORAGE_AND_LEN_RESPONSE_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_NUMBER_OF_KEYS_RESPONSE_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_OCCUPIED_SIZE_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_HMAC_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_HMAC_NOT_HEX;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_INDEX_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_INDEX_VALUE_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_LENGTH_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_NOT_HEX;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_SIZE_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NEW_KEY_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NUMBER_OF_KEYS_RESPONSE_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NUM_OF_KEYS_INCORRECT_AFTER_ADD;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NUM_OF_KEYS_INCORRECT_AFTER_CHANGE;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_OCCUPIED_SIZE_RESPONSE_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PASSWORD_LEN_INCORRECT;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PASSWORD_NOT_HEX;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PUBLIC_KEY_RESPONSE_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SEND_CHUNK_RESPONSE_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SIG_RESPONSE_LEN_INCORRECT;
@@ -134,10 +152,7 @@ public class CardKeyChainApiTest {
     private static final HmacHelper HMAC_HELPER = HmacHelper.getInstance();
     private CardKeyChainApi cardKeyChainApi;
     private NfcApduRunner nfcApduRunner;
-    private Context context;
-    private Random random = new Random();
-    public static final String SERIAL_NUMBER = "504394802433901126813236";
-    public static final String SN = "050004030904080002040303090001010206080103020306";
+    private final Random random = new Random();
 
     private final CardApiInterface<List<String>> getFreeStorageSize = list -> cardKeyChainApi.getFreeStorageSizeAndGetJson();
     private final CardApiInterface<List<String>> getOccupiedStorageSize = list -> cardKeyChainApi.getOccupiedStorageSizeAndGetJson();
@@ -160,7 +175,7 @@ public class CardKeyChainApiTest {
 
     @Before
     public void init() throws Exception {
-        context = ApplicationProvider.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
         nfcApduRunner = NfcApduRunner.getInstance(context);
         cardKeyChainApi = new CardKeyChainApi(context, nfcApduRunner);
     }
@@ -1352,5 +1367,101 @@ public class CardKeyChainApiTest {
 
     /** Tests for incorrect input arguments **/
 
+    @Test
+    public void testBadHmac() {
+        List<CardApiInterface<List<String>>> cardOperationsListToCheckBadData = Arrays.asList(
+                changeKeyInKeyChain, getIndexAndLenOfKeyInKeyChain, getKeyFromKeyChain, deleteKeyFromKeyChain,
+                checkKeyHmacConsistency);
+        Map<String, String> badHmacToErrMsg  = new LinkedHashMap<String, String>() {{
+            put(null, ERROR_MSG_KEY_HMAC_NOT_HEX);
+            put("", ERROR_MSG_KEY_HMAC_NOT_HEX);
+            put("ABC", ERROR_MSG_KEY_HMAC_NOT_HEX);
+            put("98777ff", ERROR_MSG_KEY_HMAC_NOT_HEX);
+            put("ssAA", ERROR_MSG_KEY_HMAC_NOT_HEX);
+            put("12n", ERROR_MSG_KEY_HMAC_NOT_HEX);
+            put("1234k7", ERROR_MSG_KEY_HMAC_NOT_HEX);
+            put(STRING_HELPER.randomHexString(2 * HMAC_SHA_SIG_SIZE - 2), ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
+            put(STRING_HELPER.randomHexString(2 * HMAC_SHA_SIG_SIZE + 2), ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
+        }};
+        badHmacToErrMsg.keySet().forEach(hmac -> {
+            for(int i = 0 ; i < cardOperationsListToCheckBadData.size(); i++) {
+                try {
+                    cardOperationsListToCheckBadData.get(i).accept(i == 0 ? Arrays.asList("44",  hmac)
+                            : Collections.singletonList(hmac));
+                    fail();
+                }
+                catch (Exception e){
+                    Assert.assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(badHmacToErrMsg.get(hmac))));
+                }
+            }
+        });
+    }
 
+    @Test
+    public void testBadKey() {
+        List<CardApiInterface<List<String>>> cardOperationsListToCheckBadData = Arrays.asList(
+                changeKeyInKeyChain, addKeyIntoKeyChain);
+        Map<String, String> badKeyToErrMsg  = new LinkedHashMap<String, String>() {{
+            put(null, ERROR_MSG_KEY_NOT_HEX);
+            put("", ERROR_MSG_KEY_NOT_HEX);
+            put("ABC", ERROR_MSG_KEY_NOT_HEX);
+            put("98777ff", ERROR_MSG_KEY_NOT_HEX);
+            put("ssAA", ERROR_MSG_KEY_NOT_HEX);
+            put("12n", ERROR_MSG_KEY_NOT_HEX);
+            put("1234k7", ERROR_MSG_KEY_NOT_HEX);
+            put(STRING_HELPER.randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN + 2), ERROR_MSG_KEY_LEN_INCORRECT);
+            put(STRING_HELPER.randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN + 100), ERROR_MSG_KEY_LEN_INCORRECT);
+        }};
+        badKeyToErrMsg.keySet().forEach(key -> {
+            for(int i = 0 ; i < cardOperationsListToCheckBadData.size(); i++) {
+                try {
+                    cardOperationsListToCheckBadData.get(i).accept(i == 0 ? Arrays.asList(key,  STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE))
+                            : Collections.singletonList(key));
+                    fail();
+                }
+                catch (Exception e){
+                    Assert.assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(badKeyToErrMsg.get(key))));
+                }
+            }
+        });
+    }
+
+    @Test
+    public void testBadIndex() {
+        Map<String, String> badIndexToErrMsg = new LinkedHashMap<String, String>() {{
+            put(null, ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC);
+            put("", ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC);
+            put("ABC", ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC);
+            put("98777ff", ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC);
+            put("ssAA", ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC);
+            put("12n", ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC);
+            put("1234k7", ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC);
+            put("-9", ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC);
+            put(String.valueOf(MAX_NUMBER_OF_KEYS_IN_KEYCHAIN), ERROR_MSG_KEY_INDEX_VALUE_INCORRECT);
+            put("34000", ERROR_MSG_KEY_INDEX_VALUE_INCORRECT);
+        }};
+        badIndexToErrMsg.keySet().forEach(index -> {
+            try {
+                cardKeyChainApi.getHmacAndGetJson(index);
+                fail();
+            }
+            catch (Exception e){
+                Assert.assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(badIndexToErrMsg.get(index))));
+            }
+        });
+    }
+
+    @Test
+    public void testBadKeySize() {
+        List<Short> badKeySize = Arrays.asList((short) -1, (short) (MAX_KEY_SIZE_IN_KEYCHAIN + 1));
+        badKeySize.forEach(size -> {
+            try {
+                cardKeyChainApi.checkAvailableVolForNewKeyAndGetJson(size);
+                fail();
+            }
+            catch (Exception e){
+                Assert.assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_KEY_SIZE_INCORRECT)));
+            }
+        });
+    }
 }

@@ -547,7 +547,7 @@ public final class CardKeyChainApi extends TonWalletApi {
     try {
       if (!STR_HELPER.isNumericString(index))
         throw new Exception(ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC);
-      short ind = Short.parseShort(index);
+      short ind = parseIndex(index);
       if (ind < 0 || ind > MAX_NUMBER_OF_KEYS_IN_KEYCHAIN - 1)
         throw new Exception(ERROR_MSG_KEY_INDEX_VALUE_INCORRECT);
       byte[] indBytes = new byte[2];
@@ -563,6 +563,15 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
+    }
+  }
+
+  private short parseIndex(String index) throws Exception{
+    try {
+      return Short.parseShort(index);
+    }
+    catch (NumberFormatException e) {
+      throw new Exception(ERROR_MSG_KEY_INDEX_VALUE_INCORRECT);
     }
   }
 
