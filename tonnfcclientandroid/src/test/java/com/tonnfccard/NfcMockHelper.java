@@ -32,11 +32,7 @@ public class NfcMockHelper {
     public static final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
     public static final StringHelper STRING_HELPER = StringHelper.getInstance();
     public static boolean androidKeyStoreIsMocked = false;
-
     public static final byte[] SW_SUCCESS = BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS);
-
-    public static final RAPDU SUCCESS_RAPDU = new RAPDU(SW_SUCCESS);
-
     public  static final String SN = "050004030904080002040303090001010206080103020306";
 
     public static IsoDep prepareTagMock() throws Exception {
@@ -71,7 +67,6 @@ public class NfcMockHelper {
         return tag;
     }
 
-
     public static NfcApduRunner prepareNfcApduRunnerMock(NfcApduRunner nfcApduRunner) {
         NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
         when(nfcAdapterMock.isEnabled()).thenReturn(true);
@@ -86,7 +81,6 @@ public class NfcMockHelper {
                 .thenReturn(adapterEnabled);
         nfcApduRunner.setNfcAdapter(nfcAdapterMock);
     }
-
 
     public static void mockNfcAdapterToBeNull(NfcApduRunner nfcApduRunner) {
         MockedStatic<NfcAdapter> nfcAdapterMockedStatic = Mockito.mockStatic(NfcAdapter.class);

@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Random;
 
 import static com.tonnfccard.NfcMockHelper.SW_SUCCESS;
+import static com.tonnfccard.NfcMockHelper.createSault;
 import static com.tonnfccard.NfcMockHelper.mockAndroidKeyStore;
 import static com.tonnfccard.NfcMockHelper.prepareAdvancedTagMock;
 import static com.tonnfccard.NfcMockHelper.prepareHmacHelperMock;
@@ -144,8 +145,7 @@ public class CardCryptoApiTest  {
 
     @Test
     public void testVerifyPinAppletSuccessfullOperation() throws Exception {
-        byte[] sault = new byte[SAULT_LENGTH];
-        random.nextBytes(sault);
+        byte[] sault = createSault();
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
         IsoDep tag =  prepareAdvancedTagMock(sault, PERSONALIZED_STATE);
@@ -168,8 +168,7 @@ public class CardCryptoApiTest  {
     public void testSignAppletSuccessfullOperations() throws Exception {
         byte[] sig = new byte[SIG_LEN];
         random.nextBytes(sig);
-        byte[] sault = new byte[SAULT_LENGTH];
-        random.nextBytes(sault);
+        byte[] sault = createSault();
         String hdInd = "123";
         String data = "1234567800";
         TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
@@ -236,8 +235,7 @@ public class CardCryptoApiTest  {
 
     @Test
     public void testSignInvalidRAPDUAndInvalidResponseLength() throws Exception {
-        byte[] sault = new byte[SAULT_LENGTH];
-        random.nextBytes(sault);
+        byte[] sault = createSault();
         String data = "1234567800";
         String hdInd = "1";
         TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
@@ -283,8 +281,7 @@ public class CardCryptoApiTest  {
 
     @Test
     public void testAppletFailedOperations() throws Exception {
-        byte[] sault = new byte[SAULT_LENGTH];
-        random.nextBytes(sault);
+        byte[] sault = createSault();
         String hdInd = "1";
         String data = "123456";
         TonWalletAppletApduCommands.setHmacHelper(prepareHmacHelperMock(HMAC_HELPER));
@@ -318,8 +315,7 @@ public class CardCryptoApiTest  {
 
     @Test
     public void testAppletFailedOperation2() throws Exception {
-        byte[] sault = new byte[SAULT_LENGTH];
-        random.nextBytes(sault);
+        byte[] sault = createSault();
         String hdInd = "1";
         String data = "1234567800";
         RAPDU rapdu = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_WRONG_LENGTH));

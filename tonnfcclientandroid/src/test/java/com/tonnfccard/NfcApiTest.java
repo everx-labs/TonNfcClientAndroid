@@ -48,12 +48,11 @@ public class NfcApiTest {
     protected final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
     protected final JsonHelper JSON_HELPER = JsonHelper.getInstance();
     protected Random random = new Random();
-    private Context context;
     private NfcApi nfcApi;
 
     @Before
     public  void init() {
-        context = ApplicationProvider.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
         nfcApi = new NfcApi(context);
     }
 
