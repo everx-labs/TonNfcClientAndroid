@@ -6,6 +6,7 @@ import com.tonnfccard.helpers.HmacHelper;
 import com.tonnfccard.utils.ByteArrayUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -183,7 +184,7 @@ public class TonWalletAppletApduCommands {
    */
   public final static CAPDU GET_SERIAL_NUMBER_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_SERIAL_NUMBER, P1, P2, GET_SERIAL_NUMBER_LE);
 
-  public static final List<CAPDU> GET_APPLET_STATE_APDU_LIST = new ArrayList<>();
+  public static final List<CAPDU> GET_APPLET_STATE_APDU_LIST = Arrays.asList(SELECT_TON_WALLET_APPLET_APDU, GET_APP_INFO_APDU);
 
   public final static String FINISH_PERS_APDU_NAME = "FINISH_PERS";
   public final static String SET_ENCRYPTED_PASSWORD_FOR_CARD_AUTHENTICATION_APDU_NAME = "SET_ENCRYPTED_PASSWORD_FOR_CARD_AUTHENTICATION";
@@ -225,9 +226,6 @@ public class TonWalletAppletApduCommands {
   public final static String ADD_RECOVERY_DATA_PART_APDU_NAME = "ADD_RECOVERY_DATA_PART";
 
   static {
-    GET_APPLET_STATE_APDU_LIST.add(SELECT_TON_WALLET_APPLET_APDU);
-    GET_APPLET_STATE_APDU_LIST.add(GET_APP_INFO_APDU);
-
     addCommand(INS_FINISH_PERS, FINISH_PERS_APDU_NAME);
     addCommand(INS_SET_ENCRYPTED_PASSWORD_FOR_CARD_AUTHENTICATION, SET_ENCRYPTED_PASSWORD_FOR_CARD_AUTHENTICATION_APDU_NAME);
     addCommand(INS_SET_ENCRYPTED_COMMON_SECRET, SET_ENCRYPTED_COMMON_SECRET_APDU_NAME);

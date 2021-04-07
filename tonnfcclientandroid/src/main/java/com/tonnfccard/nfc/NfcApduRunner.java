@@ -132,7 +132,6 @@ public class NfcApduRunner extends ApduRunner {
     } catch (Exception e) {
         throw new Exception(ERROR_TRANSCEIVE + ", More details: " + e.getMessage());
     }
-   // System.out.println("!! = " + ByteArrayUtil.getInstance().hex(response));
     if (response == null || response.length <= 1) {
       throw new Exception(ERROR_BAD_RESPONSE);
     }

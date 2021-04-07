@@ -13,10 +13,13 @@ import java.util.List;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_EMPTY;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_NOT_SUPPORTED;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_STATE_RESPONSE_LEN_INCORRECT;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_CLA;
+import static com.tonnfccard.smartcard.CommonConstants.SELECT_INS;
 import static com.tonnfccard.smartcard.ErrorCodes.getMsg;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.SELECT_COIN_MANAGER_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_APPLET_STATE_APDU_LIST;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.INS_GET_APP_INFO;
+import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.SELECT_TON_WALLET_APPLET_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getTonWalletAppletApduCommandName;
 
 
@@ -57,9 +60,12 @@ public abstract class ApduRunner {
 
   public RAPDU sendTonWalletAppletAPDU(CAPDU commandAPDU) throws Exception {
     if (commandAPDU == null) throw new Exception(ERROR_MSG_APDU_EMPTY);
+    if (commandAPDU.getCla() == SELECT_CLA && commandAPDU.getIns() == SELECT_INS) {
+      return sendAPDU(SELECT_TON_WALLET_APPLET_APDU);
+    }
     RAPDU response = sendAPDUList(GET_APPLET_STATE_APDU_LIST);
     if (response == null || response.getData() == null || response.getData().length != 0x01) throw new Exception(ERROR_MSG_STATE_RESPONSE_LEN_INCORRECT);
-    if (commandAPDU.getIns() == INS_GET_APP_INFO) return response;
+    if (commandAPDU.getIns() == INS_GET_APP_INFO ) return response;
     TonWalletAppletStates appletState = TonWalletAppletStates.findByStateValue(response.getData()[0]);
     byte ins = commandAPDU.getIns();
     if (!TonWalletAppletStates.getStateByIns(ins).contains(appletState)) {

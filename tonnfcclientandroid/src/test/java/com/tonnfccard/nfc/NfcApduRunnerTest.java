@@ -30,6 +30,9 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.tonnfccard.TonWalletConstants.BLOCKED_STATE;
+import static com.tonnfccard.TonWalletConstants.INSTALLED_STATE;
+import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE;
 import static com.tonnfccard.nfc.NfcApduRunner.TIME_OUT;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_ROOT_KEY_STATUS_APDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.SELECT_COIN_MANAGER_APDU;
@@ -68,6 +71,8 @@ public class NfcApduRunnerTest {
 
     private final List<NfcApduRunnerFunction<CAPDU>> nfcRunnerFunctions = Arrays.asList(disconnect, connect, transmitCommand, sendAPDU, sendTonWalletAppletAPDU, sendCoinManagerAppletAPDU);
     private final List<NfcApduRunnerFunction<CAPDU>> nfcRunnerFunctionsShort = Arrays.asList(connect, transmitCommand, sendAPDU, sendTonWalletAppletAPDU, sendCoinManagerAppletAPDU);
+    private final List<NfcApduRunnerFunction<CAPDU>> nfcRunnerFunctionsShort2 = Arrays.asList(transmitCommand, sendAPDU, sendTonWalletAppletAPDU, sendCoinManagerAppletAPDU);
+    private final List<NfcApduRunnerFunction<CAPDU>> nfcRunnerFunctionsShort3 = Arrays.asList(sendAPDU, sendTonWalletAppletAPDU, sendCoinManagerAppletAPDU);
 
 
     @Before
@@ -207,50 +212,51 @@ public class NfcApduRunnerTest {
         }
     }
 
-
-    /** Test transmitCommand **/
+    /** Test null command **/
 
     @Test
-    public void transmitCommandTestNull()  {
+    public void testNullApdu()  {
         IsoDep tag = mock(IsoDep.class);
         nfcApduRunner.setCardTag(tag);
-        try {
-            nfcApduRunner.transmitCommand(null);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_APDU_EMPTY);
+        for(NfcApduRunnerFunction<CAPDU> nfcFunc : nfcRunnerFunctionsShort2) {
+            try {
+                nfcFunc.accept(null);
+                fail();
+            } catch (Exception e) {
+                assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_APDU_EMPTY);
+            }
         }
     }
 
-
+    /** Test transceive error **/
 
     @Test
-    public void transmitCommandTransceiveError() throws Exception {
-        IsoDep isoDep = mock(IsoDep.class);
-        when(isoDep.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(isoDep).connect();
-        Mockito.doNothing().when(isoDep).setTimeout(TIME_OUT);
-        Mockito.doThrow(new IOException()).when(isoDep).transceive(any());
+    public void testTransceiveError() throws IOException {
         NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
         when(nfcAdapterMock.isEnabled())
                 .thenReturn(true);
-        nfcApduRunner.setCardTag(isoDep);
         nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        try {
-            nfcApduRunner.transmitCommand(GET_SAULT_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertTrue(e.getMessage().contains(ResponsesConstants.ERROR_TRANSCEIVE));
+        IsoDep tag = mock(IsoDep.class);
+        when(tag.isConnected()).thenReturn(false);
+        Mockito.doNothing().when(tag).connect();
+        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
+        Mockito.doThrow(new IOException()).when(tag).transceive(any());
+        nfcApduRunner.setCardTag(tag);
+        for(NfcApduRunnerFunction<CAPDU> nfcFunc : nfcRunnerFunctionsShort2) {
+            try {
+                nfcFunc.accept(SELECT_TON_WALLET_APPLET_APDU);
+                fail();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                assertTrue(e.getMessage().contains(ResponsesConstants.ERROR_TRANSCEIVE));
+            }
         }
     }
 
-
-
+    /** Test too short response  **/
 
     @Test
-    public void transmitCommandTestTooShortResponseError() throws IOException {
+    public void testTooShortResponseError() throws IOException {
         NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
         when(nfcAdapterMock.isEnabled())
                 .thenReturn(true);
@@ -268,429 +274,93 @@ public class NfcApduRunnerTest {
                 when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(null);
             }
             nfcApduRunner.setCardTag(tag);
-            try {
-                nfcApduRunner.transmitCommand(SELECT_TON_WALLET_APPLET_APDU);
-                fail();
-            } catch (Exception e) {
-                assertEquals(e.getMessage(), ResponsesConstants.ERROR_BAD_RESPONSE);
+            for(NfcApduRunnerFunction<CAPDU> nfcFunc : nfcRunnerFunctionsShort2) {
+                try {
+                    nfcFunc.accept(SELECT_TON_WALLET_APPLET_APDU);
+                    fail();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    assertEquals(e.getMessage(), ResponsesConstants.ERROR_BAD_RESPONSE);
+                }
             }
         }
     }
 
+    /** Test successfull transmit/send APDU **/
+
     @Test
-    public void transmitCommandTest() throws Exception {
+    public void transmitAndSendTest() throws Exception {
         NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
         when(nfcAdapterMock.isEnabled())
                 .thenReturn(true);
         nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(new byte[]{(byte)0x90, (byte)0x00});
-        nfcApduRunner.setCardTag(tag);
-
-        RAPDU rapdu = nfcApduRunner.transmitCommand(SELECT_TON_WALLET_APPLET_APDU);
-        assertEquals(rapdu.getBytes().length, 2);
-        assertEquals(rapdu.getData().length, 0);
-        assertEquals(rapdu.getSW1(), (byte)0x90);
-        assertEquals(rapdu.getSW2(), (byte)0x00);
-
-
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(new byte[]{(byte)0x17, (byte)0x90, (byte)0x00});
-        nfcApduRunner.setCardTag(tag);
-
-        rapdu = nfcApduRunner.transmitCommand(GET_APP_INFO_APDU);
-        assertEquals(rapdu.getBytes().length, 3);
-        assertEquals(rapdu.getData().length, 1);
-        assertEquals(rapdu.getData()[0], (byte)0x17);
-        assertEquals(rapdu.getSW1(), (byte)0x90);
-        assertEquals(rapdu.getSW2(), (byte)0x00);
-
-        when(tag.transceive(GET_RECOVERY_DATA_HASH_APDU.getBytes())).thenReturn(ByteArrayUtil.getInstance().bConcat(ByteArrayUtil.getInstance().bytes("aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333"),
-                new byte[]{(byte)0x6F, (byte)0x00}));
-        nfcApduRunner.setCardTag(tag);
-        rapdu = nfcApduRunner.transmitCommand(GET_RECOVERY_DATA_HASH_APDU);
-        assertEquals(rapdu.getBytes().length, 34);
-        assertEquals(rapdu.getData().length, 32);
-        assertArrayEquals(rapdu.getData(), ByteArrayUtil.getInstance().bytes("aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333"));
-        assertEquals(rapdu.getSW1(), (byte)0x6F);
-        assertEquals(rapdu.getSW2(), (byte)0x00);
-    }
-
-    /**Test sendAPDU**/
-
-    @Test
-    public void sendAPDUTestNull() {
-        try {
-            nfcApduRunner.sendAPDU(null);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_APDU_EMPTY);
-        }
-    }
-
-
-    @Test
-    public void sendAPDUTestTagTransceiveError() throws IOException {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
-        Mockito.doThrow(new IOException()).when(tag).transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes());
-        nfcApduRunner.setCardTag(tag);
-        try {
-            nfcApduRunner.sendAPDU(SELECT_TON_WALLET_APPLET_APDU);
-            fail();
-        }
-        catch (Exception e) {
-            assertTrue(e.getMessage().contains(ResponsesConstants.ERROR_TRANSCEIVE));
-        }
-    }
-
-    @Test
-    public void sendAPDUTestTooShortResponseError() throws IOException {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        for (int i = 0; i < 3 ; i++) {
+        for(NfcApduRunnerFunction<CAPDU> nfcFunc : nfcRunnerFunctionsShort2) {
             IsoDep tag = mock(IsoDep.class);
             when(tag.isConnected()).thenReturn(false);
             Mockito.doNothing().when(tag).connect();
             Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
-            if (i <  2) {
-                when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(new byte[i]);
-            }
-            else {
-                when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(null);
-            }
+            when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(new byte[]{(byte) 0x90, (byte) 0x00});
+            when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(new byte[]{(byte) 0x90, (byte) 0x00});
+            when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(new byte[]{PERSONALIZED_STATE, (byte) 0x90, (byte) 0x00});
+
             nfcApduRunner.setCardTag(tag);
+
+            RAPDU rapdu = nfcFunc.accept(SELECT_TON_WALLET_APPLET_APDU);
+            assertEquals(rapdu.getBytes().length, 2);
+            assertEquals(rapdu.getData().length, 0);
+            assertEquals(rapdu.getSW1(), (byte) 0x90);
+            assertEquals(rapdu.getSW2(), (byte) 0x00);
+
+
+            rapdu = nfcFunc.accept(GET_APP_INFO_APDU);
+            assertEquals(rapdu.getBytes().length, 3);
+            assertEquals(rapdu.getData().length, 1);
+            assertEquals(rapdu.getData()[0], (byte) 0x17);
+            assertEquals(rapdu.getSW1(), (byte) 0x90);
+            assertEquals(rapdu.getSW2(), (byte) 0x00);
+
+            when(tag.transceive(GET_RECOVERY_DATA_HASH_APDU.getBytes())).thenReturn(ByteArrayUtil.getInstance().bConcat(ByteArrayUtil.getInstance().bytes("aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333"),
+                    new byte[]{(byte) 0x90, (byte) 0x00}));
+            nfcApduRunner.setCardTag(tag);
+            rapdu = nfcFunc.accept(GET_RECOVERY_DATA_HASH_APDU);
+            assertEquals(rapdu.getBytes().length, 34);
+            assertEquals(rapdu.getData().length, 32);
+            assertArrayEquals(rapdu.getData(), ByteArrayUtil.getInstance().bytes("aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333"));
+            assertEquals(rapdu.getSW1(), (byte) 0x90);
+            assertEquals(rapdu.getSW2(), (byte) 0x00);
+        }
+    }
+
+    /**Test bad SW**/
+
+    @Test
+    public void testForBadSw() throws Exception {
+        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
+        when(nfcAdapterMock.isEnabled())
+                .thenReturn(true);
+        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
+        IsoDep tag = mock(IsoDep.class);
+        when(tag.isConnected()).thenReturn(false);
+        Mockito.doNothing().when(tag).connect();
+        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
+        when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(new byte[]{(byte) 0x90, (byte) 0x00});
+        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(new byte[]{(byte) 0x90, (byte) 0x00});
+        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(new byte[]{PERSONALIZED_STATE, (byte) 0x90, (byte) 0x00});
+        when(tag.transceive(GET_SAULT_APDU.getBytes())).thenReturn(new byte[]{(byte)0x6F, (byte)0x00}); // not 9000 sw
+        nfcApduRunner.setCardTag(tag);
+        for(NfcApduRunnerFunction<CAPDU> nfcFunc : nfcRunnerFunctionsShort3) {
             try {
-                nfcApduRunner.sendAPDU(SELECT_TON_WALLET_APPLET_APDU);
+                nfcFunc.accept(GET_SAULT_APDU);
                 fail();
             } catch (Exception e) {
-                assertEquals(e.getMessage(), ResponsesConstants.ERROR_BAD_RESPONSE);
+                System.out.println(e.getMessage());
+                assertTrue(e.getMessage().contains("6F00"));
             }
         }
     }
 
-    @Test
-    public void sendAPDUTest() throws Exception {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
 
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(new byte[]{(byte)0x90, (byte)0x00});
-        nfcApduRunner.setCardTag(tag);
-
-        RAPDU rapdu = nfcApduRunner.sendAPDU(SELECT_TON_WALLET_APPLET_APDU);
-        assertEquals(rapdu.getBytes().length, 2);
-        assertEquals(rapdu.getData().length, 0);
-        assertEquals(rapdu.getSW1(), (byte)0x90);
-        assertEquals(rapdu.getSW2(), (byte)0x00);
-
-
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(new byte[]{(byte)0x17, (byte)0x90, (byte)0x00});
-        nfcApduRunner.setCardTag(tag);
-
-        rapdu = nfcApduRunner.sendAPDU(GET_APP_INFO_APDU);
-        assertEquals(rapdu.getBytes().length, 3);
-        assertEquals(rapdu.getData().length, 1);
-        assertEquals(rapdu.getData()[0], (byte)0x17);
-        assertEquals(rapdu.getSW1(), (byte)0x90);
-        assertEquals(rapdu.getSW2(), (byte)0x00);
-
-        when(tag.transceive(GET_RECOVERY_DATA_HASH_APDU.getBytes())).thenReturn(ByteArrayUtil.getInstance().bConcat(ByteArrayUtil.getInstance().bytes("aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333"),
-                new byte[]{(byte)0x90, (byte)0x00}));
-        nfcApduRunner.setCardTag(tag);
-
-        rapdu = nfcApduRunner.sendAPDU(GET_RECOVERY_DATA_HASH_APDU);
-        assertEquals(rapdu.getBytes().length, 66);
-        assertEquals(rapdu.getData().length, 64);
-        assertArrayEquals(rapdu.getData(), ByteArrayUtil.getInstance().bytes("aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333"));
-        assertEquals(rapdu.getSW1(), (byte)0x90);
-        assertEquals(rapdu.getSW2(), (byte)0x00);
-    }
-
-    @Test
-    public void sendAPDUTestForBadSw() throws Exception {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(new byte[]{(byte)0x6F, (byte)0x00}); // not 9000 sw
-        nfcApduRunner.setCardTag(tag);
-        try {
-            RAPDU rapdu = nfcApduRunner.sendAPDU(SELECT_TON_WALLET_APPLET_APDU);
-            fail();
-        }
-        catch (Exception e) {
-            assertTrue(e.getMessage().contains("6F00"));
-        }
-    }
-
-    /**Test sendCoinManagerAppletAPDU**/
-
-    @Test
-    public void sendCoinManagerAppletAPDUTestNull() {
-        try {
-            nfcApduRunner.sendCoinManagerAppletAPDU(null);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_APDU_EMPTY);
-        }
-    }
-
-
-    @Test
-    public void sendCoinManagerAppletAPDUTestTagTransceiveError() throws IOException {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
-        Mockito.doThrow(new IOException()).when(tag).transceive(SELECT_COIN_MANAGER_APDU.getBytes());
-        nfcApduRunner.setCardTag(tag);
-        try {
-            nfcApduRunner.sendCoinManagerAppletAPDU(SELECT_COIN_MANAGER_APDU);
-            fail();
-        }
-        catch (Exception e) {
-            assertTrue(e.getMessage().contains(ResponsesConstants.ERROR_TRANSCEIVE));
-        }
-    }
-
-    @Test
-    public void sendCoinManagerAppletAPDUTestTooShortResponseError() throws IOException {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        for (int i = 0; i < 3 ; i++) {
-            IsoDep tag = mock(IsoDep.class);
-            when(tag.isConnected()).thenReturn(false);
-            Mockito.doNothing().when(tag).connect();
-            Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
-            if (i <  2) {
-                when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(new byte[i]);
-            }
-            else {
-                when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(null);
-            }
-            nfcApduRunner.setCardTag(tag);
-            try {
-                nfcApduRunner.sendCoinManagerAppletAPDU(SELECT_COIN_MANAGER_APDU);
-                fail();
-            } catch (Exception e) {
-                assertEquals(e.getMessage(), ResponsesConstants.ERROR_BAD_RESPONSE);
-            }
-        }
-    }
-
-    @Test
-    public void sendCoinManagerAppletAPDUTest() throws Exception {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
-        when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(new byte[]{(byte)0x90, (byte)0x00});
-        nfcApduRunner.setCardTag(tag);
-
-        RAPDU rapdu = nfcApduRunner.sendCoinManagerAppletAPDU(SELECT_COIN_MANAGER_APDU);
-        assertEquals(rapdu.getBytes().length, 2);
-        assertEquals(rapdu.getData().length, 0);
-        assertEquals(rapdu.getSW1(), (byte)0x90);
-        assertEquals(rapdu.getSW2(), (byte)0x00);
-
-
-        when(tag.transceive(GET_ROOT_KEY_STATUS_APDU.getBytes())).thenReturn(new byte[]{(byte)0x5A, (byte)0x90, (byte)0x00});
-        nfcApduRunner.setCardTag(tag);
-
-        rapdu = nfcApduRunner.sendCoinManagerAppletAPDU(GET_ROOT_KEY_STATUS_APDU);
-        assertEquals(rapdu.getBytes().length, 3);
-        assertEquals(rapdu.getData().length, 1);
-        assertEquals(rapdu.getData()[0], (byte)0x5A);
-        assertEquals(rapdu.getSW1(), (byte)0x90);
-        assertEquals(rapdu.getSW2(), (byte)0x00);
-    }
-
-    @Test
-    public void sendCoinManagerAppletAPDUTestForBadSw() throws Exception {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
-        when(tag.transceive(SELECT_COIN_MANAGER_APDU.getBytes())).thenReturn(new byte[]{(byte)0x6D, (byte)0x00}); // not 9000 sw
-        nfcApduRunner.setCardTag(tag);
-        try {
-            RAPDU rapdu = nfcApduRunner.sendCoinManagerAppletAPDU(SELECT_TON_WALLET_APPLET_APDU);
-            fail();
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-            assertTrue(e.getMessage().contains("6D00"));
-        }
-    }
-
-    /**Test sendTonWalletAppletAPDU**/
-
-    @Test
-    public void sendTonWalletAppletAPDUTestNull() {
-        try {
-            nfcApduRunner.sendTonWalletAppletAPDU(null);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_APDU_EMPTY);
-        }
-    }
-
-
-
-    @Test
-    public void sendTonWalletAppletAPDUTestTagTransceiveError() throws IOException {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
-        Mockito.doThrow(new IOException()).when(tag).transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes());
-        nfcApduRunner.setCardTag(tag);
-        try {
-            nfcApduRunner.sendTonWalletAppletAPDU(SELECT_TON_WALLET_APPLET_APDU);
-            fail();
-        }
-        catch (Exception e) {
-            assertTrue(e.getMessage().contains(ResponsesConstants.ERROR_TRANSCEIVE));
-        }
-    }
-
-    @Test
-    public void sendTonWalletAppletAPDUTestTooShortResponseError() throws IOException {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        for (int i = 0; i < 3 ; i++) {
-            IsoDep tag = mock(IsoDep.class);
-            when(tag.isConnected()).thenReturn(false);
-            Mockito.doNothing().when(tag).connect();
-            Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
-            if (i <  2) {
-                when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(new byte[i]);
-            }
-            else {
-                when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(null);
-            }
-            nfcApduRunner.setCardTag(tag);
-            try {
-                nfcApduRunner.sendTonWalletAppletAPDU(SELECT_TON_WALLET_APPLET_APDU);
-                fail();
-            } catch (Exception e) {
-                assertEquals(e.getMessage(), ResponsesConstants.ERROR_BAD_RESPONSE);
-            }
-        }
-    }
-
-    @Test
-    public void sendTonWalletAppletAPDUTest() throws Exception {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(new byte[]{(byte)0x90, (byte)0x00});
-        nfcApduRunner.setCardTag(tag);
-
-        RAPDU rapdu = nfcApduRunner.sendAPDU(SELECT_TON_WALLET_APPLET_APDU);
-        assertEquals(rapdu.getBytes().length, 2);
-        assertEquals(rapdu.getData().length, 0);
-        assertEquals(rapdu.getSW1(), (byte)0x90);
-        assertEquals(rapdu.getSW2(), (byte)0x00);
-
-
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(new byte[]{(byte)0x17, (byte)0x90, (byte)0x00});
-        nfcApduRunner.setCardTag(tag);
-
-        rapdu = nfcApduRunner.sendAPDU(GET_APP_INFO_APDU);
-        assertEquals(rapdu.getBytes().length, 3);
-        assertEquals(rapdu.getData().length, 1);
-        assertEquals(rapdu.getData()[0], (byte)0x17);
-        assertEquals(rapdu.getSW1(), (byte)0x90);
-        assertEquals(rapdu.getSW2(), (byte)0x00);
-
-        when(tag.transceive(GET_RECOVERY_DATA_HASH_APDU.getBytes())).thenReturn(ByteArrayUtil.getInstance().bConcat(ByteArrayUtil.getInstance().bytes("aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333"),
-                new byte[]{(byte)0x90, (byte)0x00}));
-        nfcApduRunner.setCardTag(tag);
-
-        rapdu = nfcApduRunner.sendTonWalletAppletAPDU(GET_RECOVERY_DATA_HASH_APDU);
-        assertEquals(rapdu.getBytes().length, 66);
-        assertEquals(rapdu.getData().length, 64);
-        assertArrayEquals(rapdu.getData(), ByteArrayUtil.getInstance().bytes("aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333aaaa1111aaaa11112222333322223333"));
-        assertEquals(rapdu.getSW1(), (byte)0x90);
-        assertEquals(rapdu.getSW2(), (byte)0x00);
-    }
-
-    @Test
-    public void sendTonWalletAppletAPDUTestForBadSw() throws Exception {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doNothing().when(tag).connect();
-        Mockito.doNothing().when(tag).setTimeout(TIME_OUT);
-        when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(new byte[]{(byte)0x6F, (byte)0x00}); // not 9000 sw
-        nfcApduRunner.setCardTag(tag);
-        try {
-            RAPDU rapdu = nfcApduRunner.sendTonWalletAppletAPDU(SELECT_TON_WALLET_APPLET_APDU);
-            fail();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            assertTrue(e.getMessage().contains("6F00"));
-        }
-    }
+    /**Test bad states**/
 
     @Test
     public void sendTonWalletAppletAPDUTestStates() throws Exception {
@@ -699,7 +369,7 @@ public class NfcApduRunnerTest {
                 .thenReturn(true);
         NfcApduRunner nfcApduRunner =  mock(NfcApduRunner.class);
 
-        when(nfcApduRunner.sendAPDUList(GET_APPLET_STATE_APDU_LIST)).thenReturn(new RAPDU(new  byte[]{(byte) 0x17, (byte)0x90, (byte)0x00}));
+        when(nfcApduRunner.sendAPDUList(GET_APPLET_STATE_APDU_LIST)).thenReturn(new RAPDU(new  byte[]{PERSONALIZED_STATE, (byte)0x90, (byte)0x00}));
         when(nfcApduRunner.sendTonWalletAppletAPDU(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU)).thenCallRealMethod();
         try {
             RAPDU rapdu = nfcApduRunner.sendTonWalletAppletAPDU(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU);
@@ -711,7 +381,7 @@ public class NfcApduRunnerTest {
             assertTrue(e.getMessage().contains(ResponsesConstants.ERROR_MSG_APDU_NOT_SUPPORTED));
         }
 
-        when(nfcApduRunner.sendAPDUList(GET_APPLET_STATE_APDU_LIST)).thenReturn(new RAPDU(new  byte[]{(byte) 0x47, (byte)0x90, (byte)0x00}));
+        when(nfcApduRunner.sendAPDUList(GET_APPLET_STATE_APDU_LIST)).thenReturn(new RAPDU(new  byte[]{BLOCKED_STATE, (byte)0x90, (byte)0x00}));
         when(nfcApduRunner.sendTonWalletAppletAPDU(GET_PUB_KEY_WITH_DEFAULT_PATH_APDU)).thenCallRealMethod();
         try {
             RAPDU rapdu = nfcApduRunner.sendTonWalletAppletAPDU(GET_PUB_KEY_WITH_DEFAULT_PATH_APDU);
@@ -723,7 +393,7 @@ public class NfcApduRunnerTest {
             assertTrue(e.getMessage().contains(ResponsesConstants.ERROR_MSG_APDU_NOT_SUPPORTED));
         }
 
-        when(nfcApduRunner.sendAPDUList(GET_APPLET_STATE_APDU_LIST)).thenReturn(new RAPDU(new  byte[]{(byte) 0x07, (byte)0x90, (byte)0x00}));
+        when(nfcApduRunner.sendAPDUList(GET_APPLET_STATE_APDU_LIST)).thenReturn(new RAPDU(new  byte[]{INSTALLED_STATE, (byte)0x90, (byte)0x00}));
         when(nfcApduRunner.sendTonWalletAppletAPDU(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU)).thenCallRealMethod();
         try {
             RAPDU rapdu = nfcApduRunner.sendTonWalletAppletAPDU(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU);
