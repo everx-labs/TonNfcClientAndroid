@@ -167,7 +167,7 @@ public class ApduHelperTest {
             assertEquals(APDU_HELPER.getApduCommandName(getNumberOfKeysAPDU(sault)), GET_NUMBER_OF_KEYS_APDU_NAME);
             assertEquals(APDU_HELPER.getApduCommandName(getGetOccupiedSizeAPDU(sault)), GET_OCCUPIED_STORAGE_APDU_NAME);
             assertEquals(APDU_HELPER.getApduCommandName(getGetFreeSizeAPDU(sault)), GET_FREE_STORAGE_APDU_NAME);
-            assertEquals(APDU_HELPER.getApduCommandName(getCheckAvailableVolForNewKeyAPDU((short) 0, sault)), CHECK_AVAILABLE_VOL_FOR_NEW_KEY_APDU_NAME);
+            assertEquals(APDU_HELPER.getApduCommandName(getCheckAvailableVolForNewKeyAPDU((short) 1, sault)), CHECK_AVAILABLE_VOL_FOR_NEW_KEY_APDU_NAME);
             assertEquals(APDU_HELPER.getApduCommandName(getCheckKeyHmacConsistencyAPDU(mac, sault)), CHECK_KEY_HMAC_CONSISTENCY_APDU_NAME);
             assertEquals(APDU_HELPER.getApduCommandName(getInitiateChangeOfKeyAPDU(keyInd, sault)), INITIATE_CHANGE_OF_KEY_APDU_NAME);
             assertEquals(APDU_HELPER.getApduCommandName(getGetIndexAndLenOfKeyInKeyChainAPDU(mac, sault)), GET_KEY_INDEX_IN_STORAGE_AND_LEN_APDU_NAME);
@@ -182,6 +182,7 @@ public class ApduHelperTest {
             assertEquals(APDU_HELPER.getApduCommandName(getGetKeyChunkAPDU(keyInd, (short) 0, sault, (byte) DATA_RECOVERY_PORTION_MAX_SIZE)), GET_KEY_CHUNK_APDU_NAME);
         }
         catch (Exception e) {
+            System.out.println(e.getMessage());
             e.printStackTrace();
             fail();
         }
