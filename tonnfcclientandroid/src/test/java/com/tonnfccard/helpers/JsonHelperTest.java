@@ -9,6 +9,10 @@ import com.tonnfccard.utils.ByteArrayUtil;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
+
 import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN;
 import static com.tonnfccard.TonWalletConstants.DONE_MSG;
 import static com.tonnfccard.TonWalletConstants.SAULT_LENGTH;
@@ -26,6 +30,7 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_MALFORMED_SW_F
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_CONNECT;
 import static com.tonnfccard.smartcard.ErrorCodes.SW_INCORRECT_PIN;
 import static com.tonnfccard.smartcard.ErrorCodes.SW_SET_CURVE_FAILED;
+import static com.tonnfccard.smartcard.ErrorCodes.SW_SUCCESS;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_PUB_KEY_WITH_DEFAULT_PATH_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getVerifyPinAPDU;
 import static junit.framework.TestCase.assertEquals;
@@ -35,11 +40,10 @@ import static org.junit.Assert.*;
 public class JsonHelperTest {
     public static final JsonHelper JSON_HELPER = JsonHelper.getInstance();
 
-
     @Test
     public void testCreateResponseJsonForNullMsg()   {
         try {
-            String s = JSON_HELPER.createResponseJson(null);
+            JSON_HELPER.createResponseJson(null);
             fail();
         }
         catch (IllegalArgumentException e) {
@@ -66,56 +70,26 @@ public class JsonHelperTest {
     }
 
     @Test
-    public void testCreateErrorJsonForCardExceptionForBadSw()   {
-        try {
-            String s = JSON_HELPER.createErrorJsonForCardException("123456", null);
-            fail();
-        }
-        catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), ERROR_MSG_MALFORMED_SW_FOR_JSON);
-        }
-        catch (Exception e) {
-            fail();
-        }
-
-        try {
-            String s = JSON_HELPER.createErrorJsonForCardException("", null);
-            fail();
-        }
-        catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), ERROR_MSG_MALFORMED_SW_FOR_JSON);
-        }
-        catch (Exception e) {
-            fail();
-        }
-
-        try {
-            String s = JSON_HELPER.createErrorJsonForCardException("345", null);
-            fail();
-        }
-        catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), ERROR_MSG_MALFORMED_SW_FOR_JSON);
-        }
-        catch (Exception e) {
-            fail();
-        }
-
-        try {
-            String s = JSON_HELPER.createErrorJsonForCardException("s123", null);
-            fail();
-        }
-        catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), ERROR_MSG_MALFORMED_SW_FOR_JSON);
-        }
-        catch (Exception e) {
-            fail();
-        }
+    public void testCreateErrorJsonForCardExceptionForBadSw()  {
+        List<String> badSws = Arrays.asList(null, "123456", "", "345", "s123");
+        badSws.forEach(sw -> {
+            try {
+                JSON_HELPER.createErrorJsonForCardException(sw, null);
+                fail();
+            }
+            catch (IllegalArgumentException e) {
+                assertEquals(e.getMessage(), ERROR_MSG_MALFORMED_SW_FOR_JSON);
+            }
+            catch (Exception e) {
+                fail();
+            }
+        });
     }
 
     @Test
     public void testCreateErrorJsonForCardExceptionForNullCapdu()   {
         try {
-            String s = JSON_HELPER.createErrorJsonForCardException("9000", null);
+            JSON_HELPER.createErrorJsonForCardException(ByteArrayUtil.getInstance().hex(SW_SUCCESS), null);
             fail();
         }
         catch (IllegalArgumentException e) {
@@ -190,7 +164,7 @@ public class JsonHelperTest {
     @Test
     public void testCreateErrorJsonNullMsg()   {
         try {
-            String s = JSON_HELPER.createErrorJson(null);
+            JSON_HELPER.createErrorJson(null);
             fail();
         }
         catch (IllegalArgumentException e) {

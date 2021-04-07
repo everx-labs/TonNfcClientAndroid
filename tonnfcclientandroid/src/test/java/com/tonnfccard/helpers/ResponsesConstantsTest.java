@@ -26,9 +26,9 @@ public class ResponsesConstantsTest {
         for (int i = 0; i < ALL_NATIVE_ERROR_MESSAGES.size(); i++) {
             for (int j = 0; j < ALL_NATIVE_ERROR_MESSAGES.get(i).size(); j++) {
                 String msg = ResponsesConstants.getErrorCode(ALL_NATIVE_ERROR_MESSAGES.get(i).get(j));
-                Assert.assertTrue(msg.startsWith(String.valueOf(i + 1)));
-                Assert.assertTrue(msg.endsWith(String.valueOf(j)));
-                Assert.assertTrue(msg.length() == 5);
+                assertTrue(msg.startsWith(String.valueOf(i + 1)));
+                assertTrue(msg.endsWith(String.valueOf(j)));
+                assertEquals(msg.length(), 5);
             }
         }
 
