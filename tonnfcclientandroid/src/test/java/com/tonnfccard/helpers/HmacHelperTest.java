@@ -8,6 +8,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import static com.tonnfccard.TonWalletConstants.EMPTY_SERIAL_NUMBER;
 import static com.tonnfccard.TonWalletConstants.SHA_HASH_SIZE;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET;
@@ -17,41 +20,22 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ERR_KEY_BYTES_
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_TOO_SHORT;
 import static org.junit.Assert.*;
 
-@RunWith(RobolectricTestRunner.class)
 public class HmacHelperTest {
     public static final HmacHelper HMAC_HELPER = HmacHelper.getInstance();
 
     @Test
-    public void testNullKeyForComputeMac()   {
-        ApplicationProvider.getApplicationContext();
-        try {
-            HMAC_HELPER.computeMac(null, null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_NULL);
-        }
-    }
-
-    @Test
-    public void testTooShortKeyForComputeMac()   {
-        try {
-            HMAC_HELPER.computeMac(new byte[SHA_HASH_SIZE - 1], null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_TOO_SHORT);
-        }
-    }
-
-    @Test
-    public void testNullDataForComputeMac()   {
-        try {
-            byte[] mac = HMAC_HELPER.computeMac(new byte[SHA_HASH_SIZE], null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_ERR_DATA_BYTES_FOR_HMAC_SHA256_IS_NULL);
+    public void testDifferentKeysForComputeMac()   {
+        Map<byte[], String> keyToErrMsg = new LinkedHashMap<>();
+        keyToErrMsg.put(null, ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_NULL);
+        keyToErrMsg.put(new byte[SHA_HASH_SIZE - 1], ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_TOO_SHORT);
+        keyToErrMsg.put(new byte[SHA_HASH_SIZE], ERROR_MSG_ERR_DATA_BYTES_FOR_HMAC_SHA256_IS_NULL);
+        for(byte[] key : keyToErrMsg.keySet()) {
+            try {
+                HMAC_HELPER.computeMac(key, null);
+                fail();
+            } catch (Exception e) {
+                assertEquals(e.getMessage(), keyToErrMsg.get(key));
+            }
         }
     }
 
@@ -69,9 +53,9 @@ public class HmacHelperTest {
     }
 
     @Test
-    public void testNullDataForComputeMac2()   {
+    public void testDifferentDataForComputeMac()   {
         try {
-            byte[] mac = HMAC_HELPER.computeMac(null);
+            HMAC_HELPER.computeMac(null);
             fail();
         }
         catch (Exception e) {
