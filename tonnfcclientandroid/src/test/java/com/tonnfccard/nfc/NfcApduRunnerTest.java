@@ -10,7 +10,9 @@ import android.os.Bundle;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import com.tonnfccard.CardApiInterface;
 import com.tonnfccard.helpers.ResponsesConstants;
+import com.tonnfccard.smartcard.CAPDU;
 import com.tonnfccard.smartcard.RAPDU;
 import com.tonnfccard.utils.ByteArrayUtil;
 
@@ -25,6 +27,8 @@ import org.robolectric.annotation.internal.DoNotInstrument;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.tonnfccard.nfc.NfcApduRunner.TIME_OUT;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_ROOT_KEY_STATUS_APDU;
@@ -47,19 +51,28 @@ import static org.mockito.Mockito.when;
 //Class tagClass = Tag.class;
 // Method createMockTagMethod = tagClass.getMethod("createMockTag", byte[].class, int[].class, Bundle[].class);
 // see https://stackoverflow.com/questions/30841803/how-to-mock-a-android-nfc-tag-object-for-unit-testing
-// TODO: For methods sendAPDU, sendTonWalletAppletAPDU, sendCoinManagerAppletAPDU there are a bunches of identical tests. Try to use lambdas to reduce the code
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.P)
 @DoNotInstrument
 public class NfcApduRunnerTest {
 
-    private Context context;
     private NfcApduRunner nfcApduRunner;
+
+    private final NfcApduRunnerFunction<CAPDU> disconnect = capdu -> {nfcApduRunner.disconnectCard(); return new RAPDU("9000");}; // just a fake RAPDU for unification with other functions
+    private final NfcApduRunnerFunction<CAPDU> connect = capdu -> {nfcApduRunner.connect(); return new RAPDU("9000");}; // just a fake RAPDU for unification with other functions
+    private final NfcApduRunnerFunction<CAPDU> transmitCommand = capdu -> {return nfcApduRunner.transmitCommand(capdu);};
+    private final NfcApduRunnerFunction<CAPDU> sendAPDU = capdu -> {return nfcApduRunner.sendAPDU(capdu);};
+    private final NfcApduRunnerFunction<CAPDU> sendTonWalletAppletAPDU = capdu -> {return nfcApduRunner.sendTonWalletAppletAPDU(capdu);};
+    private final NfcApduRunnerFunction<CAPDU> sendCoinManagerAppletAPDU = capdu -> {return nfcApduRunner.sendCoinManagerAppletAPDU(capdu);};
+
+    private final List<NfcApduRunnerFunction<CAPDU>> nfcRunnerFunctions = Arrays.asList(disconnect, connect, transmitCommand, sendAPDU, sendTonWalletAppletAPDU, sendCoinManagerAppletAPDU);
+    private final List<NfcApduRunnerFunction<CAPDU>> nfcRunnerFunctionsShort = Arrays.asList(connect, transmitCommand, sendAPDU, sendTonWalletAppletAPDU, sendCoinManagerAppletAPDU);
+
 
     @Before
     public  void init() throws Exception {
-        context = ApplicationProvider.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
         nfcApduRunner = NfcApduRunner.getInstance(context);
     }
 
@@ -94,89 +107,7 @@ public class NfcApduRunnerTest {
         assertFalse(nfcApduRunner.setCardTag(intent));
     }
 
-    /**Test connect**/
-
-    @Test
-    public void connectTestNoNfc() throws Exception {
-        try (MockedStatic<NfcAdapter> nfcAdapterMockedStatic = Mockito.mockStatic(NfcAdapter.class)) {
-            nfcAdapterMockedStatic
-                    .when(() -> NfcAdapter.getDefaultAdapter(any()))
-                    .thenReturn(null);
-            nfcApduRunner.setNfcAdapter(null);
-            nfcApduRunner.connect();
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_NFC);
-        }
-    }
-
-    @Test
-    public void connectTestNfcDisabled()  {
-        try {
-            NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-            when(nfcAdapterMock.isEnabled())
-                    .thenReturn(false);
-            nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-            nfcApduRunner.connect();
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NFC_DISABLED);
-        }
-    }
-
-    @Test
-    public void connectTestNoTag() throws Exception{
-        IsoDep isoDep = null;
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setCardTag(isoDep);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        try {
-            nfcApduRunner.connect();
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_TAG);
-        }
-    }
-
-    @Test
-    public void connectTestTagConnectError() throws Exception {
-        IsoDep isoDep = mock(IsoDep.class);
-        Mockito.doThrow(new IOException()).when(isoDep).connect();
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setCardTag(isoDep);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        try {
-            nfcApduRunner.transmitCommand(GET_SAULT_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertTrue(e.getMessage().contains(ResponsesConstants.ERROR_MSG_NFC_CONNECT));
-        }
-    }
-
-
-    /**Test disconnect**/
-
-    @Test
-    public void disconnectTestNoTag() {
-        IsoDep isoDep = null;
-        nfcApduRunner.setCardTag(isoDep);
-        try {
-            nfcApduRunner.disconnectCard();
-            fail();
-        }
-        catch (Exception e){
-            //System.out.println(e.getMessage());
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_TAG);
-        }
-    }
+    /** Test disconnect close error **/
 
     @Test
     public void disconnectTest()  {
@@ -192,7 +123,92 @@ public class NfcApduRunnerTest {
         }
     }
 
-    /**Test transmitCommand**/
+    /** Test null tag **/
+
+    @Test
+    public void testNoTag() {
+        IsoDep isoDep = null;
+        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
+        when(nfcAdapterMock.isEnabled())
+                .thenReturn(true);
+        nfcApduRunner.setCardTag(isoDep);
+        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
+        for(NfcApduRunnerFunction<CAPDU> nfcFunc : nfcRunnerFunctions) {
+            try {
+                nfcFunc.accept(SELECT_TON_WALLET_APPLET_APDU);
+                fail();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_TAG);
+            }
+        }
+    }
+
+    /** Test no NFC **/
+
+    @Test
+    public void testNoNfc() {
+        for(NfcApduRunnerFunction<CAPDU> nfcFunc : nfcRunnerFunctionsShort) {
+            try (MockedStatic<NfcAdapter> nfcAdapterMockedStatic = Mockito.mockStatic(NfcAdapter.class)) {
+                IsoDep isoDep = mock(IsoDep.class);
+                nfcAdapterMockedStatic
+                        .when(() -> NfcAdapter.getDefaultAdapter(any()))
+                        .thenReturn(null);
+                nfcApduRunner.setNfcAdapter(null);
+                nfcApduRunner.setCardTag(isoDep);
+                nfcFunc.accept(SELECT_TON_WALLET_APPLET_APDU);
+                fail();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_NFC);
+            }
+        }
+    }
+
+    /** Test NFC disabled **/
+
+    @Test
+    public void testNfcDisabled()  {
+        IsoDep isoDep = mock(IsoDep.class);
+        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
+        when(nfcAdapterMock.isEnabled())
+                .thenReturn(false);
+        nfcApduRunner.setCardTag(isoDep);
+        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
+        for(NfcApduRunnerFunction<CAPDU> nfcFunc : nfcRunnerFunctionsShort) {
+            try {
+               nfcFunc.accept(GET_SAULT_APDU);
+                fail();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                assertTrue(e.getMessage().contains(ResponsesConstants.ERROR_MSG_NFC_DISABLED));
+            }
+        }
+    }
+
+    /** Test NFC connect error **/
+
+    @Test
+    public void testNfcConnectError() throws Exception {
+        IsoDep isoDep = mock(IsoDep.class);
+        Mockito.doThrow(new IOException()).when(isoDep).connect();
+        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
+        when(nfcAdapterMock.isEnabled())
+                .thenReturn(true);
+        nfcApduRunner.setCardTag(isoDep);
+        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
+        for(NfcApduRunnerFunction<CAPDU> nfcFunc : nfcRunnerFunctionsShort) {
+            try {
+                nfcFunc.accept(GET_SAULT_APDU);
+                fail();
+            } catch (Exception e) {
+                assertTrue(e.getMessage().contains(ResponsesConstants.ERROR_MSG_NFC_CONNECT));
+            }
+        }
+    }
+
+
+    /** Test transmitCommand **/
 
     @Test
     public void transmitCommandTestNull()  {
@@ -207,18 +223,7 @@ public class NfcApduRunnerTest {
         }
     }
 
-    @Test
-    public void transmitCommandNoTag() {
-        IsoDep isoDep = null;
-        nfcApduRunner.setCardTag(isoDep);
-        try {
-            nfcApduRunner.transmitCommand(GET_SAULT_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_TAG);
-        }
-    }
+
 
     @Test
     public void transmitCommandTransceiveError() throws Exception {
@@ -241,57 +246,8 @@ public class NfcApduRunnerTest {
         }
     }
 
-    @Test
-    public void transmitCommandNoNfc() throws Exception {
-        try (MockedStatic<NfcAdapter> nfcAdapterMockedStatic = Mockito.mockStatic(NfcAdapter.class)) {
-            IsoDep isoDep = mock(IsoDep.class);
-            nfcAdapterMockedStatic
-                    .when(() -> NfcAdapter.getDefaultAdapter(any()))
-                    .thenReturn(null);
-            nfcApduRunner.setNfcAdapter(null);
-            nfcApduRunner.setCardTag(isoDep);
-            nfcApduRunner.transmitCommand(SELECT_TON_WALLET_APPLET_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_NFC);
-        }
-    }
 
-    @Test
-    public void transmitCommandNfcDisabled() throws Exception {
-        IsoDep isoDep = mock(IsoDep.class);
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(false);
-        nfcApduRunner.setCardTag(isoDep);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        try {
-            nfcApduRunner.transmitCommand(GET_SAULT_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertTrue(e.getMessage().contains(ResponsesConstants.ERROR_MSG_NFC_DISABLED));
-        }
-    }
 
-    @Test
-    public void transmitCommandConnectError() throws Exception {
-        IsoDep isoDep = mock(IsoDep.class);
-        Mockito.doThrow(new IOException()).when(isoDep).connect();
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setCardTag(isoDep);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        try {
-            nfcApduRunner.transmitCommand(GET_SAULT_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertTrue(e.getMessage().contains(ResponsesConstants.ERROR_MSG_NFC_CONNECT));
-        }
-    }
 
     @Test
     public void transmitCommandTestTooShortResponseError() throws IOException {
@@ -376,71 +332,6 @@ public class NfcApduRunnerTest {
         }
     }
 
-    @Test
-    public void sendAPDUTestNoNfc() {
-        try (MockedStatic<NfcAdapter> nfcAdapterMockedStatic = Mockito.mockStatic(NfcAdapter.class)) {
-            nfcAdapterMockedStatic
-                    .when(() -> NfcAdapter.getDefaultAdapter(any()))
-                    .thenReturn(null);
-            IsoDep tag = mock(IsoDep.class);
-            nfcApduRunner.setCardTag(tag);
-            nfcApduRunner.setNfcAdapter(null);
-            nfcApduRunner.sendAPDU(SELECT_TON_WALLET_APPLET_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_NFC);
-        }
-    }
-
-    @Test
-    public void sendAPDUTestNfcDisabled() {
-        IsoDep isoDep = mock(IsoDep.class);
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(false);
-        nfcApduRunner.setCardTag(isoDep);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        try {
-            nfcApduRunner.sendAPDU(SELECT_TON_WALLET_APPLET_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NFC_DISABLED);
-        }
-    }
-
-    @Test
-    public void sendAPDUTestNoTag() {
-        IsoDep tag = null;
-        nfcApduRunner.setCardTag(tag);
-        try {
-            nfcApduRunner.sendAPDU(SELECT_TON_WALLET_APPLET_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_TAG);
-        }
-    }
-
-    @Test
-    public void sendAPDUTestTagConnectError() throws IOException {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doThrow(new IOException()).when(tag).connect();
-        nfcApduRunner.setCardTag(tag);
-        try {
-            nfcApduRunner.sendAPDU(SELECT_TON_WALLET_APPLET_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NFC_CONNECT);
-        }
-    }
 
     @Test
     public void sendAPDUTestTagTransceiveError() throws IOException {
@@ -568,71 +459,6 @@ public class NfcApduRunnerTest {
         }
     }
 
-    @Test
-    public void sendCoinManagerAppletAPDUTestNoNfc() {
-        try (MockedStatic<NfcAdapter> nfcAdapterMockedStatic = Mockito.mockStatic(NfcAdapter.class)) {
-            nfcAdapterMockedStatic
-                    .when(() -> NfcAdapter.getDefaultAdapter(any()))
-                    .thenReturn(null);
-            IsoDep tag = mock(IsoDep.class);
-            nfcApduRunner.setCardTag(tag);
-            nfcApduRunner.setNfcAdapter(null);
-            nfcApduRunner.sendCoinManagerAppletAPDU(SELECT_COIN_MANAGER_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_NFC);
-        }
-    }
-
-    @Test
-    public void sendCoinManagerAppletAPDUTestNfcDisabled() {
-        IsoDep isoDep = mock(IsoDep.class);
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(false);
-        nfcApduRunner.setCardTag(isoDep);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        try {
-            nfcApduRunner.sendCoinManagerAppletAPDU(SELECT_COIN_MANAGER_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NFC_DISABLED);
-        }
-    }
-
-    @Test
-    public void sendCoinManagerAppletAPDUTestNoTag() {
-        IsoDep tag = null;
-        nfcApduRunner.setCardTag(tag);
-        try {
-            nfcApduRunner.sendCoinManagerAppletAPDU(SELECT_COIN_MANAGER_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_TAG);
-        }
-    }
-
-    @Test
-    public void sendCoinManagerAppletAPDUTestTagConnectError() throws IOException {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doThrow(new IOException()).when(tag).connect();
-        nfcApduRunner.setCardTag(tag);
-        try {
-            nfcApduRunner.sendCoinManagerAppletAPDU(SELECT_COIN_MANAGER_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NFC_CONNECT);
-        }
-    }
 
     @Test
     public void sendCoinManagerAppletAPDUTestTagTransceiveError() throws IOException {
@@ -750,71 +576,7 @@ public class NfcApduRunnerTest {
         }
     }
 
-    @Test
-    public void sendTonWalletAppletAPDUTestNoNfc() {
-        try (MockedStatic<NfcAdapter> nfcAdapterMockedStatic = Mockito.mockStatic(NfcAdapter.class)) {
-            nfcAdapterMockedStatic
-                    .when(() -> NfcAdapter.getDefaultAdapter(any()))
-                    .thenReturn(null);
-            IsoDep tag = mock(IsoDep.class);
-            nfcApduRunner.setCardTag(tag);
-            nfcApduRunner.setNfcAdapter(null);
-            nfcApduRunner.sendTonWalletAppletAPDU(SELECT_TON_WALLET_APPLET_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_NFC);
-        }
-    }
 
-    @Test
-    public void sendTonWalletAppletAPDUTestNfcDisabled() {
-        IsoDep isoDep = mock(IsoDep.class);
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(false);
-        nfcApduRunner.setCardTag(isoDep);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        try {
-            nfcApduRunner.sendTonWalletAppletAPDU(SELECT_TON_WALLET_APPLET_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NFC_DISABLED);
-        }
-    }
-
-    @Test
-    public void sendTonWalletAppletAPDUTestNoTag() {
-        IsoDep tag = null;
-        nfcApduRunner.setCardTag(tag);
-        try {
-            nfcApduRunner.sendTonWalletAppletAPDU(SELECT_TON_WALLET_APPLET_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_TAG);
-        }
-    }
-
-    @Test
-    public void sendTonWalletAppletAPDUTestTagConnectError() throws IOException {
-        NfcAdapter nfcAdapterMock = mock(NfcAdapter.class);
-        when(nfcAdapterMock.isEnabled())
-                .thenReturn(true);
-        nfcApduRunner.setNfcAdapter(nfcAdapterMock);
-        IsoDep tag = mock(IsoDep.class);
-        when(tag.isConnected()).thenReturn(false);
-        Mockito.doThrow(new IOException()).when(tag).connect();
-        nfcApduRunner.setCardTag(tag);
-        try {
-            nfcApduRunner.sendTonWalletAppletAPDU(SELECT_TON_WALLET_APPLET_APDU);
-            fail();
-        }
-        catch (Exception e){
-            assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NFC_CONNECT);
-        }
-    }
 
     @Test
     public void sendTonWalletAppletAPDUTestTagTransceiveError() throws IOException {
