@@ -12,8 +12,12 @@ import static com.tonnfccard.smartcard.CommonConstants.LE;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class CoinManagerApduCommandsTest {
     private final static ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
+    private final List<byte[]> badPins = Arrays.asList(null, new byte[PIN_SIZE - 2], new byte[PIN_SIZE - 1], new byte[PIN_SIZE + 1], new byte[PIN_SIZE + 2]);
     
     @Test
     public void getApduCommandNameTestNullData() {
@@ -68,37 +72,24 @@ public class CoinManagerApduCommandsTest {
 
     @Test
     public void testGetChangePinAPDUIncorrectPinFormat() {
-        try {
-            CAPDU capdu = CoinManagerApduCommands.getChangePinAPDU(null, DEFAULT_PIN);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_PIN_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            CAPDU capdu = CoinManagerApduCommands.getChangePinAPDU(new byte[PIN_SIZE - 2], DEFAULT_PIN);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_PIN_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            CAPDU capdu = CoinManagerApduCommands.getChangePinAPDU(DEFAULT_PIN, null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_PIN_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            CAPDU capdu = CoinManagerApduCommands.getChangePinAPDU(DEFAULT_PIN, new byte[PIN_SIZE + 2]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_PIN_BYTES_SIZE_INCORRECT);
-        }
+        badPins.forEach(badPin -> {
+            try {
+                CoinManagerApduCommands.getChangePinAPDU(badPin, DEFAULT_PIN);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_PIN_BYTES_SIZE_INCORRECT);
+            }
+        });
+        badPins.forEach(badPin -> {
+            try {
+                CoinManagerApduCommands.getChangePinAPDU(DEFAULT_PIN, badPin);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_PIN_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     @Test
@@ -120,29 +111,15 @@ public class CoinManagerApduCommandsTest {
 
     @Test
     public void testGetGenerateSeedIncorrectPinFormat() {
-        try {
-            CAPDU capdu = CoinManagerApduCommands.getGenerateSeedAPDU(null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_PIN_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            CAPDU capdu = CoinManagerApduCommands.getGenerateSeedAPDU(new byte[PIN_SIZE - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_PIN_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            CAPDU capdu = CoinManagerApduCommands.getGenerateSeedAPDU(new byte[PIN_SIZE + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_PIN_BYTES_SIZE_INCORRECT);
-        }
+        badPins.forEach(badPin -> {
+            try {
+                CAPDU capdu = CoinManagerApduCommands.getGenerateSeedAPDU(badPin);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_PIN_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     @Test
@@ -164,30 +141,14 @@ public class CoinManagerApduCommandsTest {
 
     @Test
     public void testGetSetDeviceLabelIncorrectLabelFormat() {
-        try {
-            CAPDU capdu = CoinManagerApduCommands.getSetDeviceLabelAPDU(null);
-            fail();
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_LABEL_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            CAPDU capdu = CoinManagerApduCommands.getSetDeviceLabelAPDU(new byte[LABEL_LENGTH - 1]);
-            fail();
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_LABEL_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            CAPDU capdu = CoinManagerApduCommands.getSetDeviceLabelAPDU(new byte[LABEL_LENGTH + 1]);
-            fail();
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_LABEL_BYTES_SIZE_INCORRECT);
-        }
-
+        List<byte[]> badLabels = Arrays.asList(null, new byte[LABEL_LENGTH - 2], new byte[LABEL_LENGTH - 1], new byte[LABEL_LENGTH + 1], new byte[LABEL_LENGTH + 2]);
+        badLabels.forEach(badLabel -> {
+            try {
+                CAPDU capdu = CoinManagerApduCommands.getSetDeviceLabelAPDU(badLabel);
+                fail();
+            } catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_LABEL_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
-
-
-
-
 }
