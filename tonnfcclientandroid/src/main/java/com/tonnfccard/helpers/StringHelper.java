@@ -38,7 +38,7 @@ public class StringHelper {
 
   // Generate random hex string
   public String randomHexString(int size) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for (int i = 0; i < size; i++) {
       sb.append(HEX_DIGITS[random.nextInt(HEX_DIGITS.length)]);
     }
@@ -46,7 +46,7 @@ public class StringHelper {
   }
 
   public String randomDigitalString(int size) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for (int i = 0; i < size; i++) {
       sb.append(DECIMAL_DIGITS[random.nextInt(DECIMAL_DIGITS.length)]);
     }
