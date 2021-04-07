@@ -103,7 +103,7 @@ public class TonWalletApiTest {
     protected final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
     protected final JsonHelper JSON_HELPER = JsonHelper.getInstance();
     protected static HmacHelper HMAC_HELPER = HmacHelper.getInstance();
-    protected Random random = new Random();
+    private Random random = new Random();
     private NfcApduRunner nfcApduRunner;
     private TonWalletApi tonWalletApi;
     private final CardApiInterface<List<String>> getSault = list -> tonWalletApi.getSaultAndGetJson();
