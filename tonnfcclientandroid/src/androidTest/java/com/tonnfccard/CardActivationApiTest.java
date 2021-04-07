@@ -5,6 +5,7 @@ import android.nfc.tech.IsoDep;
 import android.util.Log;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.tonnfccard.helpers.ExceptionHelper;
 import com.tonnfccard.helpers.HmacHelper;
@@ -17,6 +18,7 @@ import com.tonnfccard.utils.ByteArrayUtil;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -43,15 +45,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(AndroidJUnit4.class)
 public class CardActivationApiTest {
     private CardActivationApi cardActivationApi;
-    private final ExceptionHelper EXCEPTION_HELPER = ExceptionHelper.getInstance();
-    private final StringHelper STRING_HELPER = StringHelper.getInstance();
     private final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
     private final JsonHelper JSON_HELPER = JsonHelper.getInstance();
-    private Random random = new Random();
+    private final Random random = new Random();
     private NfcApduRunner nfcApduRunner;
-    private Context context;
     private final RAPDU SUCCESS_RAPDU = new RAPDU(BYTE_ARRAY_HELPER.hex(ErrorCodes.SW_SUCCESS));
     private static final String SERIAL_NUMBER = "504394802433901126813236";
     private static final String SN = "050004030904080002040303090001010206080103020306";
@@ -63,13 +63,13 @@ public class CardActivationApiTest {
 
     @Before
     public  void init() throws Exception {
-        context = ApplicationProvider.getApplicationContext();
+        Context context = ApplicationProvider.getApplicationContext();
         nfcApduRunner = NfcApduRunner.getInstance(context);
         cardActivationApi = new CardActivationApi(context, nfcApduRunner);
     }
 
     @Test
-    public void testTurnOnWalletAppletSuccessfullOperations()  throws Exception {
+    public void testTurnOnWalletAppletSuccessfullOperations()  {
         try {
             NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
             Mockito.doReturn(SUCCESS_RAPDU).when(nfcApduRunnerMock).sendCoinManagerAppletAPDU(RESET_WALLET_APDU);

@@ -3,6 +3,8 @@ package com.tonnfccard.smartcard;
 import android.security.keystore.KeyProperties;
 import android.security.keystore.KeyProtection;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.tonnfccard.helpers.HmacHelper;
 import com.tonnfccard.utils.ByteArrayUtil;
 
@@ -44,17 +46,22 @@ import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import java.lang.reflect.Array;
 import java.security.KeyStore;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+@RunWith(AndroidJUnit4.class)
 public class TonWalletAppletApduCommandsTest {
 
     private final static ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
-    private Random random = new Random();
+    private final Random random = new Random();
 
     @Before
     public void prepareKeystore(){
@@ -92,53 +99,24 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetVerifyPasswordAPDUIncorrectInputData() {
-        try {
-            getVerifyPasswordAPDU(null, new byte[IV_SIZE]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_ACTIVATION_PASSWORD_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getVerifyPasswordAPDU(new byte[PASSWORD_SIZE - 1], new byte[IV_SIZE]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_ACTIVATION_PASSWORD_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getVerifyPasswordAPDU(new byte[PASSWORD_SIZE + 1], new byte[IV_SIZE]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_ACTIVATION_PASSWORD_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getVerifyPasswordAPDU(new byte[PASSWORD_SIZE], null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_INITIAL_VECTOR_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getVerifyPasswordAPDU(new byte[PASSWORD_SIZE], new byte[IV_SIZE - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_INITIAL_VECTOR_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getVerifyPasswordAPDU(new byte[PASSWORD_SIZE], new byte[IV_SIZE + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_INITIAL_VECTOR_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[PASSWORD_SIZE - 1], new byte[PASSWORD_SIZE + 1]).forEach(badPassWord -> {
+            try {
+                getVerifyPasswordAPDU(badPassWord, new byte[IV_SIZE]);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_ACTIVATION_PASSWORD_BYTES_SIZE_INCORRECT);
+            }
+        });
+        Arrays.asList(null, new byte[IV_SIZE - 1], new byte[IV_SIZE + 1]).forEach(badIv -> {
+            try {
+                getVerifyPasswordAPDU(new byte[PASSWORD_SIZE], badIv);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_INITIAL_VECTOR_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     @Test
@@ -176,56 +154,26 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
-
     @Test
     public void testGetVerifyPinAPDUIncorrectInputData() {
-        try {
-            getVerifyPinAPDU(null, new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_PIN_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getVerifyPinAPDU(new byte[PIN_SIZE - 1], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_PIN_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getVerifyPinAPDU(new byte[PIN_SIZE + 1], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_PIN_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getVerifyPinAPDU(new byte[PIN_SIZE], null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getVerifyPinAPDU(new byte[PIN_SIZE], new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getVerifyPinAPDU(new byte[PIN_SIZE], new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[PIN_SIZE - 1], new byte[PIN_SIZE + 1]).forEach(badPin -> {
+            try {
+                getVerifyPinAPDU(badPin, new byte[SAULT_LENGTH]);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_PIN_BYTES_SIZE_INCORRECT);
+            }
+        });
+        Arrays.asList(null, new byte[SAULT_LENGTH - 1], new byte[SAULT_LENGTH + 1]).forEach(badSault -> {
+            try {
+                getVerifyPinAPDU(new byte[PIN_SIZE], badSault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /**
@@ -255,53 +203,24 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetSignShortMessageWithDefaultPathAPDUIncorrectInputData() {
-        try {
-            getSignShortMessageWithDefaultPathAPDU(null,  new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_DATA_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getSignShortMessageWithDefaultPathAPDU(new byte[0], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_DATA_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getSignShortMessageWithDefaultPathAPDU(new byte[DATA_FOR_SIGNING_MAX_SIZE + 1], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_DATA_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getSignShortMessageWithDefaultPathAPDU(new byte[DATA_FOR_SIGNING_MAX_SIZE], null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getSignShortMessageWithDefaultPathAPDU(new byte[DATA_FOR_SIGNING_MAX_SIZE], new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getSignShortMessageWithDefaultPathAPDU(new byte[DATA_FOR_SIGNING_MAX_SIZE], new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[0], new byte[DATA_FOR_SIGNING_MAX_SIZE + 1]).forEach(data -> {
+            try {
+                getSignShortMessageWithDefaultPathAPDU(data,  new byte[SAULT_LENGTH]);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_DATA_BYTES_SIZE_INCORRECT);
+            }
+        });
+        Arrays.asList(null, new byte[SAULT_LENGTH - 1], new byte[SAULT_LENGTH + 1]).forEach(sault -> {
+            try {
+                getSignShortMessageWithDefaultPathAPDU(new byte[DATA_FOR_SIGNING_MAX_SIZE], sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /**
@@ -332,77 +251,33 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetSignShortMessageAPDUIncorrectInputData() {
-        try {
-            getSignShortMessageAPDU(null,  new byte[2], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_DATA_WITH_HD_PATH_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getSignShortMessageAPDU(new byte[0], new byte[2], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_DATA_WITH_HD_PATH_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getSignShortMessageAPDU(new byte[DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH + 1], new byte[2], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_DATA_WITH_HD_PATH_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getSignShortMessageAPDU(new byte[DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH], new byte[2], null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getSignShortMessageAPDU(new byte[DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH], new byte[2], new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getSignShortMessageAPDU(new byte[DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH], new byte[2], new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getSignShortMessageAPDU(new byte[DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH], null, new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_HD_INDEX_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getSignShortMessageAPDU(new byte[DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH], new byte[0], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_HD_INDEX_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getSignShortMessageAPDU(new byte[DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH], new byte[MAX_HD_INDEX_SIZE + 1], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_HD_INDEX_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[0], new byte[DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH + 1]).forEach(data -> {
+            try {
+                getSignShortMessageAPDU(data, new byte[2], new byte[SAULT_LENGTH]);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_DATA_WITH_HD_PATH_BYTES_SIZE_INCORRECT);
+            }
+        });
+        Arrays.asList(null, new byte[SAULT_LENGTH - 1], new byte[SAULT_LENGTH + 1]).forEach(sault -> {
+            try {
+                getSignShortMessageAPDU(new byte[DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH], new byte[2], sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
+        Arrays.asList(null, new byte[0], new byte[MAX_HD_INDEX_SIZE + 1]).forEach(hdIndex -> {
+            try {
+                getSignShortMessageAPDU(new byte[DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH], hdIndex, new byte[SAULT_LENGTH]);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_HD_INDEX_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /**
@@ -430,29 +305,15 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetPublicKeyAPDUIncorrectInputData() {
-        try {
-            getPublicKeyAPDU(null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_HD_INDEX_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getPublicKeyAPDU(new byte[0]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_HD_INDEX_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getPublicKeyAPDU(new byte[MAX_HD_INDEX_SIZE + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_HD_INDEX_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[0], new byte[MAX_HD_INDEX_SIZE + 1]).forEach(hdIndex -> {
+            try {
+                getPublicKeyAPDU(hdIndex);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_HD_INDEX_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /**
@@ -485,62 +346,33 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetAddRecoveryDataPartAPDUIncorrectInputData() {
-        try {
-            getAddRecoveryDataPartAPDU((byte) -1, null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_APDU_P1_INCORRECT);
-        }
-
-        try {
-            getAddRecoveryDataPartAPDU((byte) 3, null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_APDU_P1_INCORRECT);
-        }
-
-
-        try {
-            getAddRecoveryDataPartAPDU(P1, null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_RECOVER_DATA_PORTION_SIZE_INCORRECT);
-        }
-
-        try {
-            getAddRecoveryDataPartAPDU(P1, new byte[0]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_RECOVER_DATA_PORTION_SIZE_INCORRECT);
-        }
-
-        try {
-            getAddRecoveryDataPartAPDU(P1, new byte[DATA_RECOVERY_PORTION_MAX_SIZE + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_RECOVER_DATA_PORTION_SIZE_INCORRECT);
-        }
-
-        try {
-            getAddRecoveryDataPartAPDU((byte) 0x02, null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_RECOVERY_DATA_MAC_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getAddRecoveryDataPartAPDU((byte) 0x02, new byte[HMAC_SHA_SIG_SIZE + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_RECOVERY_DATA_MAC_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList((byte) -1, (byte) 3).forEach(p1 -> {
+            try {
+                getAddRecoveryDataPartAPDU((byte) -1, null);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_APDU_P1_INCORRECT);
+            }
+        });
+        Arrays.asList(null, new byte[0], new byte[DATA_RECOVERY_PORTION_MAX_SIZE + 1]).forEach(portion -> {
+            try {
+                getAddRecoveryDataPartAPDU(P1, portion);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_RECOVER_DATA_PORTION_SIZE_INCORRECT);
+            }
+        });
+        Arrays.asList(null, new byte[HMAC_SHA_SIG_SIZE + 1], new byte[HMAC_SHA_SIG_SIZE - 1]).forEach(mac -> {
+            try {
+                getAddRecoveryDataPartAPDU((byte) 0x02, null);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_RECOVERY_DATA_MAC_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /**
@@ -568,29 +400,15 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetGetRecoveryDataAPDUIncorrectInputData() {
-        try {
-            getGetRecoveryDataPartAPDU(null, (byte) DATA_PORTION_MAX_SIZE);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_START_POSITION_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getGetRecoveryDataPartAPDU(new byte[1], (byte) DATA_PORTION_MAX_SIZE);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_START_POSITION_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getGetRecoveryDataPartAPDU(new byte[3], (byte) DATA_PORTION_MAX_SIZE);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_START_POSITION_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[1], new byte[3]).forEach(startPosBytes -> {
+            try {
+                getGetRecoveryDataPartAPDU(startPosBytes, (byte) DATA_PORTION_MAX_SIZE);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_START_POSITION_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /**
@@ -620,27 +438,15 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetResetKeyChainAPDUIncorrectInputData() {
-        try {
-            getResetKeyChainAPDU(null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getResetKeyChainAPDU(new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getResetKeyChainAPDU(new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1]).forEach(sault -> {
+            try {
+                getResetKeyChainAPDU(sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /**
@@ -670,27 +476,15 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetNumberOfKeysAPDUIncorrectInputData() {
-        try {
-            getNumberOfKeysAPDU(null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getNumberOfKeysAPDU(new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getNumberOfKeysAPDU(new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1]).forEach(sault -> {
+            try {
+                getNumberOfKeysAPDU(sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /***
@@ -721,27 +515,15 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetGetOccupiedSizeAPDUIncorrectInputData() {
-        try {
-            getGetOccupiedSizeAPDU(null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetOccupiedSizeAPDU(new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetOccupiedSizeAPDU(new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1]).forEach(sault -> {
+            try {
+                getGetOccupiedSizeAPDU(sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /***
@@ -771,27 +553,15 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetGetFreeSizeAPDUIncorrectInputData() {
-        try {
-            getGetFreeSizeAPDU(null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetFreeSizeAPDU(new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetFreeSizeAPDU(new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1]).forEach(sault -> {
+            try {
+                getGetFreeSizeAPDU(sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /***
@@ -823,49 +593,24 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetCheckKeyHmacConsistencyAPDUIncorrectInputData() {
-        try {
-            getCheckKeyHmacConsistencyAPDU(new byte[HMAC_SHA_SIG_SIZE], null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getCheckKeyHmacConsistencyAPDU(new byte[HMAC_SHA_SIG_SIZE], new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getCheckKeyHmacConsistencyAPDU(new byte[HMAC_SHA_SIG_SIZE], new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getCheckKeyHmacConsistencyAPDU( null, new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getCheckKeyHmacConsistencyAPDU(new byte[HMAC_SHA_SIG_SIZE - 1], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getCheckKeyHmacConsistencyAPDU(new byte[HMAC_SHA_SIG_SIZE + 1], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1]).forEach(sault -> {
+            try {
+                getCheckKeyHmacConsistencyAPDU(new byte[HMAC_SHA_SIG_SIZE], sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
+        Arrays.asList(null, new byte[HMAC_SHA_SIG_SIZE + 1], new byte[HMAC_SHA_SIG_SIZE - 1]).forEach(mac -> {
+            try {
+                getCheckKeyHmacConsistencyAPDU( mac, new byte[SAULT_LENGTH]);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /***
@@ -898,49 +643,24 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetGetIndexAndLenOfKeyInKeyChainAPDUIncorrectInputData() {
-        try {
-            getGetIndexAndLenOfKeyInKeyChainAPDU(new byte[HMAC_SHA_SIG_SIZE], null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetIndexAndLenOfKeyInKeyChainAPDU(new byte[HMAC_SHA_SIG_SIZE], new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetIndexAndLenOfKeyInKeyChainAPDU(new byte[HMAC_SHA_SIG_SIZE], new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-
-        try {
-            getGetIndexAndLenOfKeyInKeyChainAPDU( null, new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetIndexAndLenOfKeyInKeyChainAPDU(new byte[HMAC_SHA_SIG_SIZE - 1], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetIndexAndLenOfKeyInKeyChainAPDU(new byte[HMAC_SHA_SIG_SIZE + 1], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1]).forEach(sault -> {
+            try {
+                getGetIndexAndLenOfKeyInKeyChainAPDU(new byte[HMAC_SHA_SIG_SIZE], sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
+        Arrays.asList(null, new byte[HMAC_SHA_SIG_SIZE + 1], new byte[HMAC_SHA_SIG_SIZE - 1]).forEach(mac -> {
+            try {
+                getGetIndexAndLenOfKeyInKeyChainAPDU( mac, new byte[SAULT_LENGTH]);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /***
@@ -973,48 +693,24 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetInitiateChangeOfKeyAPDUIncorrectInputData() {
-        try {
-            getInitiateChangeOfKeyAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getInitiateChangeOfKeyAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getInitiateChangeOfKeyAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getInitiateChangeOfKeyAPDU( null, new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getInitiateChangeOfKeyAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN - 1], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getInitiateChangeOfKeyAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN+ 1], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1]).forEach(sault -> {
+            try {
+                getInitiateChangeOfKeyAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
+        Arrays.asList(null, new byte[KEYCHAIN_KEY_INDEX_LEN + 1], new byte[KEYCHAIN_KEY_INDEX_LEN - 1]).forEach(index -> {
+            try {
+                getInitiateChangeOfKeyAPDU( index, new byte[SAULT_LENGTH]);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /***
@@ -1047,48 +743,24 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetInitiateDeleteOfKeyAPDUIncorrectInputData() {
-        try {
-            getInitiateDeleteOfKeyAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getInitiateDeleteOfKeyAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getInitiateDeleteOfKeyAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getInitiateDeleteOfKeyAPDU( null, new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getInitiateDeleteOfKeyAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN - 1], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getInitiateDeleteOfKeyAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN+ 1], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1]).forEach(sault -> {
+            try {
+                getInitiateDeleteOfKeyAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
+        Arrays.asList(null, new byte[KEYCHAIN_KEY_INDEX_LEN + 1], new byte[KEYCHAIN_KEY_INDEX_LEN - 1]).forEach(index -> {
+            try {
+                getInitiateDeleteOfKeyAPDU( index, new byte[SAULT_LENGTH]);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /**
@@ -1118,27 +790,15 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetDeleteKeyChunkNumOfPacketsAPDUIncorrectInputData() {
-        try {
-            getDeleteKeyChunkNumOfPacketsAPDU(null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getDeleteKeyChunkNumOfPacketsAPDU(new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getDeleteKeyChunkNumOfPacketsAPDU(new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1]).forEach(sault -> {
+            try {
+                getDeleteKeyChunkNumOfPacketsAPDU(sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /**
@@ -1168,27 +828,15 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetDeleteKeyRecordNumOfPacketsAPDUIncorrectInputData() {
-        try {
-            getDeleteKeyRecordNumOfPacketsAPDU(null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getDeleteKeyRecordNumOfPacketsAPDU(new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getDeleteKeyRecordNumOfPacketsAPDU(new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1]).forEach(sault -> {
+            try {
+                getDeleteKeyRecordNumOfPacketsAPDU(sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /***
@@ -1218,27 +866,15 @@ public class TonWalletAppletApduCommandsTest {
 
     @Test
     public void testGetDeleteKeyRecordAPDUIncorrectInputData() {
-        try {
-            getDeleteKeyRecordAPDU(null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getDeleteKeyRecordAPDU(new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getDeleteKeyRecordAPDU(new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1]).forEach(sault -> {
+            try {
+                getDeleteKeyRecordAPDU(sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /***
@@ -1266,32 +902,18 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
-
     @Test
     public void testGetDeleteKeyChunkAPDUIncorrectInputData() {
-        try {
-            getDeleteKeyChunkAPDU(null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getDeleteKeyChunkAPDU(new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getDeleteKeyChunkAPDU(new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1]).forEach(sault -> {
+            try {
+                getDeleteKeyChunkAPDU(sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
-
 
     /***
      GET_HMAC
@@ -1321,51 +943,26 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
-
     @Test
     public void testGetGetHmacAPDUIncorrectInputData() {
-        try {
-            getGetHmacAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetHmacAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetHmacAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetHmacAPDU( null, new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetHmacAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN - 1], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetHmacAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN + 1], new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1]).forEach(sault -> {
+            try {
+                getGetHmacAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
+        Arrays.asList(null, new byte[KEYCHAIN_KEY_INDEX_LEN + 1], new byte[KEYCHAIN_KEY_INDEX_LEN - 1]).forEach(index -> {
+            try {
+                getGetHmacAPDU( index, new byte[SAULT_LENGTH]);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /***
@@ -1396,52 +993,27 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
-
     @Test
     public void testGetKeyChunkAPDUIncorrectInputData() {
         short startPos = 0;
-        try {
-            getGetKeyChunkAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], startPos,null, (byte) DATA_PORTION_MAX_SIZE);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetKeyChunkAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], startPos, new byte[SAULT_LENGTH - 1], (byte) DATA_PORTION_MAX_SIZE);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetKeyChunkAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], startPos, new byte[SAULT_LENGTH + 1], (byte) DATA_PORTION_MAX_SIZE);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetKeyChunkAPDU( null, startPos, new byte[SAULT_LENGTH], (byte) DATA_PORTION_MAX_SIZE);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetKeyChunkAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN - 1], startPos, new byte[SAULT_LENGTH], (byte) DATA_PORTION_MAX_SIZE);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getGetKeyChunkAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN + 1], startPos, new byte[SAULT_LENGTH], (byte) DATA_PORTION_MAX_SIZE);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1]).forEach(sault -> {
+            try {
+                getGetKeyChunkAPDU(new byte[KEYCHAIN_KEY_INDEX_LEN], startPos, sault, (byte) DATA_PORTION_MAX_SIZE);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
+        Arrays.asList(null, new byte[KEYCHAIN_KEY_INDEX_LEN + 1], new byte[KEYCHAIN_KEY_INDEX_LEN - 1]).forEach(index -> {
+            try {
+                getGetKeyChunkAPDU( index, startPos, new byte[SAULT_LENGTH], (byte) DATA_PORTION_MAX_SIZE);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_KEY_INDEX_BYTES_SIZE_INCORRECT);
+            }
+        });
     }
 
     /***
@@ -1515,82 +1087,41 @@ public class TonWalletAppletApduCommandsTest {
         byte[] sault = new byte[SAULT_LENGTH];
         byte[] instructions = new byte[]{INS_ADD_KEY_CHUNK, INS_CHANGE_KEY_CHUNK};
         for (int i = 0; i < instructions.length; i++) {
-            try {
-                getSendKeyChunkAPDU(instructions[i], (byte) -1, keyChunk, sault);
-                fail();
+            for( byte p1 : Arrays.asList((byte) -1, (byte) 3)){
+                try {
+                    getSendKeyChunkAPDU(instructions[i], p1, keyChunk, sault);
+                    fail();
+                }
+                catch (Exception e) {
+                    assertEquals(e.getMessage(), ERROR_MSG_APDU_P1_INCORRECT);
+                }
+            };
+            for( byte[] data : Arrays.asList(null, new byte[0], new byte[DATA_PORTION_MAX_SIZE + 1])) {
+                try {
+                    getSendKeyChunkAPDU(instructions[i], P1, data, sault);
+                    fail();
+                }
+                catch (Exception e) {
+                    assertEquals(e.getMessage(), ERROR_MSG_KEY_CHUNK_BYTES_SIZE_INCORRECT);
+                }
             }
-            catch (Exception e) {
-                assertEquals(e.getMessage(), ERROR_MSG_APDU_P1_INCORRECT);
+            for( byte[] mac : Arrays.asList(null, new byte[HMAC_SHA_SIG_SIZE + 1], new byte[HMAC_SHA_SIG_SIZE - 1])) {
+                try {
+                    getSendKeyChunkAPDU(instructions[i], (byte) 0x02, mac, sault);
+                    fail();
+                }
+                catch (Exception e) {
+                    assertEquals(e.getMessage(), ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT);
+                }
             }
-            try {
-                getSendKeyChunkAPDU(instructions[i], (byte) 3, keyChunk, sault);
-                fail();
-            }
-            catch (Exception e) {
-                assertEquals(e.getMessage(), ERROR_MSG_APDU_P1_INCORRECT);
-            }
-            try {
-                getSendKeyChunkAPDU(instructions[i], P1, null, sault);
-                fail();
-            }
-            catch (Exception e) {
-                assertEquals(e.getMessage(), ERROR_MSG_KEY_CHUNK_BYTES_SIZE_INCORRECT);
-            }
-            try {
-                getSendKeyChunkAPDU(instructions[i], P1, new byte[0], sault);
-                fail();
-            }
-            catch (Exception e) {
-                assertEquals(e.getMessage(), ERROR_MSG_KEY_CHUNK_BYTES_SIZE_INCORRECT);
-            }
-            try {
-                getSendKeyChunkAPDU(instructions[i], P1, new byte[DATA_PORTION_MAX_SIZE + 1], sault);
-                fail();
-            }
-            catch (Exception e) {
-                assertEquals(e.getMessage(), ERROR_MSG_KEY_CHUNK_BYTES_SIZE_INCORRECT);
-            }
-            try {
-                getSendKeyChunkAPDU(instructions[i], (byte) 0x02, null, sault);
-                fail();
-            }
-            catch (Exception e) {
-                assertEquals(e.getMessage(), ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT);
-            }
-            try {
-                getSendKeyChunkAPDU(instructions[i], (byte) 0x02, new byte[HMAC_SHA_SIG_SIZE - 1], sault);
-                fail();
-            }
-            catch (Exception e) {
-                assertEquals(e.getMessage(), ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT);
-            }
-            try {
-                getSendKeyChunkAPDU(instructions[i], (byte) 0x02, new byte[HMAC_SHA_SIG_SIZE + 1], sault);
-                fail();
-            }
-            catch (Exception e) {
-                assertEquals(e.getMessage(), ERROR_MSG_KEY_MAC_BYTES_SIZE_INCORRECT);
-            }
-            try {
-                getSendKeyChunkAPDU(instructions[i], P1, new byte[DATA_PORTION_MAX_SIZE], null);
-                fail();
-            }
-            catch (Exception e) {
-                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-            }
-            try {
-                getSendKeyChunkAPDU(instructions[i], P1, new byte[DATA_PORTION_MAX_SIZE], new byte[SAULT_LENGTH - 1]);
-                fail();
-            }
-            catch (Exception e) {
-                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-            }
-            try {
-                getSendKeyChunkAPDU(instructions[i], P1, new byte[DATA_PORTION_MAX_SIZE], new byte[SAULT_LENGTH + 1]);
-                fail();
-            }
-            catch (Exception e) {
-                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            for( byte[] badSault : Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1])) {
+                try {
+                    getSendKeyChunkAPDU(instructions[i], P1, new byte[DATA_PORTION_MAX_SIZE], badSault);
+                    fail();
+                }
+                catch (Exception e) {
+                    assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+                }
             }
         }
     }
@@ -1619,44 +1150,26 @@ public class TonWalletAppletApduCommandsTest {
         }
     }
 
-
     @Test
     public void testGetCheckAvailableVolForNewKeyAPDUIncorrectInputData() {
-        try {
-            getCheckAvailableVolForNewKeyAPDU(MAX_KEY_SIZE_IN_KEYCHAIN,null);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getCheckAvailableVolForNewKeyAPDU(MAX_KEY_SIZE_IN_KEYCHAIN, new byte[SAULT_LENGTH + 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getCheckAvailableVolForNewKeyAPDU(MAX_KEY_SIZE_IN_KEYCHAIN, new byte[SAULT_LENGTH - 1]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
-        }
-        try {
-            getCheckAvailableVolForNewKeyAPDU((short) -1, new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_SIZE_INCORRECT);
-        }
-        try {
-            getCheckAvailableVolForNewKeyAPDU((short) (MAX_KEY_SIZE_IN_KEYCHAIN + 1), new byte[SAULT_LENGTH]);
-            fail();
-        }
-        catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_SIZE_INCORRECT);
-        }
+        Arrays.asList(null, new byte[SAULT_LENGTH + 1], new byte[SAULT_LENGTH - 1]).forEach(sault -> {
+            try {
+                getCheckAvailableVolForNewKeyAPDU(MAX_KEY_SIZE_IN_KEYCHAIN, sault);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_SAULT_BYTES_SIZE_INCORRECT);
+            }
+        });
+        Arrays.asList((short) -1, (short) (MAX_KEY_SIZE_IN_KEYCHAIN + 1)).forEach(size -> {
+            try {
+                getCheckAvailableVolForNewKeyAPDU(size, new byte[SAULT_LENGTH]);
+                fail();
+            }
+            catch (Exception e) {
+                assertEquals(e.getMessage(), ERROR_MSG_KEY_SIZE_INCORRECT);
+            }
+        });
     }
 
     private void checkAPDU(CAPDU capdu, byte ins, byte p1, byte p2, byte[] data, int le) {

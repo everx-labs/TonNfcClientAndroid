@@ -4,6 +4,7 @@ import android.content.Context;
 import android.security.keystore.KeyProperties;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.tonnfccard.helpers.ExceptionHelper;
 import com.tonnfccard.helpers.HmacHelper;
@@ -18,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import java.security.KeyStore;
@@ -61,19 +63,16 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getVerifyPass
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.*;
 
+@RunWith(AndroidJUnit4.class)
 public class TonWalletApiTest {
 
     private TonWalletApi tonWalletApi;
     private final ExceptionHelper EXCEPTION_HELPER = ExceptionHelper.getInstance();
     private final StringHelper STRING_HELPER = StringHelper.getInstance();
     private final ByteArrayUtil BYTE_ARRAY_HELPER = ByteArrayUtil.getInstance();
-    private static HmacHelper HMAC_HELPER = HmacHelper.getInstance();
+    private static final HmacHelper HMAC_HELPER = HmacHelper.getInstance();
     private final JsonHelper JSON_HELPER = JsonHelper.getInstance();
-    private Random random = new Random();
-
-    private static final String SERIAL_NUMBER = "504394802433901126813236";
-    private static final String COMMON_SECRET = "7256EFE7A77AFC7E9088266EF27A93CB01CD9432E0DB66D600745D506EE04AC4";
-    private static final String PASSWORD =  "F4B072E1DF2DB7CF6CD0CD681EC5CD2D071458D278E6546763CBB4860F8082FE14418C8A8A55E2106CBC6CB1174F4BA6D827A26A2D205F99B7E00401DA4C15ACC943274B92258114B5E11C16DA64484034F93771547FBE60DA70E273E6BD64F8A4201A9913B386BCA55B6678CFD7E7E68A646A7543E9E439DD5B60B9615079FE";
+    private final Random random = new Random();
 
     @Before
     public void init() throws Exception{
