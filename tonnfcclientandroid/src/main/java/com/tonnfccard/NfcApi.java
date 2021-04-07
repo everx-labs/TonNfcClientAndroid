@@ -15,6 +15,10 @@ import static com.tonnfccard.TonWalletApi.JSON_HELPER;
 import static com.tonnfccard.TonWalletConstants.*;
 import static com.tonnfccard.helpers.ResponsesConstants.*;
 
+/**
+ * Class containing functions to work with NFC hardware on your Android device and check its state.
+ */
+
 public final class NfcApi {
     private static final String TAG = "NfcApi";
 
@@ -27,6 +31,14 @@ public final class NfcApi {
     public void setActivity(Context activity) {
         this.activity = activity;
     }
+
+    /**
+     * openNfcSettings
+     */
+
+     /**
+     * Open NFC tab on Android device where one can turn off/on NFC function.
+     */
 
     public void openNfcSettings(final NfcCallback callback) {
         new Thread(new Runnable() {
@@ -55,6 +67,14 @@ public final class NfcApi {
         }
     }
 
+    /**
+     * checkIfNfcEnabled
+     */
+
+    /**
+     * Check if NFC is turned on for your Android device.
+     */
+
     public void checkIfNfcEnabled(final NfcCallback callback) {
         new Thread(new Runnable() {
             public void run() {
@@ -80,6 +100,14 @@ public final class NfcApi {
             throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
         }
     }
+
+    /**
+     * checkIfNfcSupported
+     */
+
+    /**
+     * Check if Android device has working NFC hardware.
+     */
 
     public void checkIfNfcSupported(final NfcCallback callback) {
         new Thread(new Runnable() {

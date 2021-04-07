@@ -33,6 +33,18 @@ import static com.tonnfccard.smartcard.CoinManagerApduCommands.getChangePinAPDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.getGenerateSeedAPDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.getSetDeviceLabelAPDU;
 
+/**
+ * Class containing functions-wrappers for card operations belonging to CoinManager entity.
+ *
+ * Here there are some utility functions: setDeviceLabel, getDeviceLabel, getSeVersion (SE = secure element),
+ * getCsn (CSN = SecureElement id), getAvailableMemory, getAppsList. We do not use them now.
+ *
+ * There are important functions related to ed25519 seed maintaining : getRootKeyStatus (show if seed is generated),
+ * resetWallet (reset seed and PIN), generateSeed.
+ *
+ * And also there are functions related to PIN protecting ed25519 signature: getMaxPinTries, getRemainingPinTries, changePin.
+ */
+
 public final class CardCoinManagerApi extends TonWalletApi {
   private static final String TAG = "CardCoinManagerNfcApi";
 

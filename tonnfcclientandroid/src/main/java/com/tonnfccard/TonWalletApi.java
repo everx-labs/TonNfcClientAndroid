@@ -45,6 +45,9 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_APP_INFO_
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SAULT_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SERIAL_NUMBER_APDU;
 
+/** Basic class containing functions-wrappers for some simple basic card operations: getSault, getTonAppletState, getSerialNumber.
+ *  And also it contains all necessary functions to maintain keys living in Android keystore for HMAC-SHA256 signature.
+ */
 public class TonWalletApi {
   private static final String TAG = "TonWalletApi";
 

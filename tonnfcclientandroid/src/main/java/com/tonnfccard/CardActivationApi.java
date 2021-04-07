@@ -35,6 +35,10 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_HASH_OF_E
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getVerifyPasswordAPDU;
 
 
+/**
+ * Class containing functions-wrappers for card operations related to card activation process: turnOnWallet, getHashOfEncryptedCommonSecret, getHashOfEncryptedPassword.
+ * Use them to make security card activation.
+ */
 
 public final class CardActivationApi extends TonWalletApi {
   private static final String TAG = "CardActivationNfcApi";

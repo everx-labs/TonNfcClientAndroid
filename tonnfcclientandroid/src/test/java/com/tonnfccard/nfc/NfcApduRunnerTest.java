@@ -74,7 +74,8 @@ public class NfcApduRunnerTest {
         }
     }
 
-    /**Test setCardTag**/
+    /** Test setCardTag **/
+
     @Test
     public void setCardTagTestNullIntent()  {
         try {

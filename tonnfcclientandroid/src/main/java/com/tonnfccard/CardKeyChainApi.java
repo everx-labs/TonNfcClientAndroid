@@ -81,6 +81,17 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getNumberOfKe
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getResetKeyChainAPDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getSendKeyChunkAPDU;
 
+
+/**
+ * Class containing functions-wrappers for card operations related to card keychain.
+ *
+ * The most important functions: resetKeyChain, getKeyChainInfo, deleteKeyFromKeyChain, finishDeleteKeyFromKeyChainAfterInterruption,
+ * getKeyFromKeyChain, addKeyIntoKeyChain, changeKeyInKeyChain, getKeyChainDataAboutAllKeys.
+ *
+ * Auxiliary functions: getNumberOfKeys, checkKeyHmacConsistency, checkAvailableVolForNewKey, getIndexAndLenOfKeyInKeyChain,
+ * getDeleteKeyRecordNumOfPackets, getDeleteKeyChunkNumOfPackets, getOccupiedStorageSize, getFreeStorageSize, getHmac.
+ */
+
 public final class CardKeyChainApi extends TonWalletApi {
   public static final String KEY_INDEX_FIELD = "keyIndex";
   public static final String KEY_LENGTH_FIELD = "length";
@@ -90,8 +101,6 @@ public final class CardKeyChainApi extends TonWalletApi {
   public static final String FREE_SIZE_FIELD = "freeSize";
   public static final String KEYS_DATA_FIELD = "keysData";
   public static final String TAG = "CardKeyChainNfcApi";
-
-  private List<String> keyMacs = new ArrayList<>();
 
   public CardKeyChainApi(Context activity, NfcApduRunner apduRunner) {
     super(activity, apduRunner);
@@ -104,7 +113,6 @@ public final class CardKeyChainApi extends TonWalletApi {
           String json = resetKeyChainAndGetJson();
           resolveJson(json, callback);
           Log.d(TAG, "resetKeyChain response : " + json);
-         // keyMacs.clear();
         } catch (Exception e) {
             EXCEPTION_HELPER.handleException(e, callback, TAG);
         }
@@ -874,7 +882,6 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   private Map<String, Short> getAllHmacsOfKeysFromCard() throws Exception {
     Map<String, Short> hmacs = new LinkedHashMap<>();
-    keyMacs.clear();
     int numOfKeys = getNumberOfKeys();
     byte[] ind = new byte[2];
     for (short i = 0; i < numOfKeys; i++) {
@@ -883,7 +890,6 @@ public final class CardKeyChainApi extends TonWalletApi {
       byte[] mac = BYTE_ARR_HELPER.bSub(data, 0, HMAC_SHA_SIG_SIZE);
       short len = BYTE_ARR_HELPER.makeShort(data, HMAC_SHA_SIG_SIZE);
       hmacs.put(BYTE_ARR_HELPER.hex(mac), len);
-      keyMacs.add(BYTE_ARR_HELPER.hex(mac));
     }
     return hmacs;
   }

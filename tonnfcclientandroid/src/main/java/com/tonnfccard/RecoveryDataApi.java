@@ -23,6 +23,12 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.RESET_RECOVER
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getAddRecoveryDataPartAPDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getGetRecoveryDataPartAPDU;
 
+/**
+ * Class containing functions-wrappers for card operations related to recovery data service: resetRecoveryData, getRecoveryDataHash (SHA256), getRecoveryDataLen,
+ * isRecoveryDataSet, addRecoveryData, getRecoveryData.
+ * Use them to add/get/check state of recovery data on security card.
+ */
+
 public final class RecoveryDataApi extends TonWalletApi {
   private static final String TAG = "RecoveryDataApi";
 

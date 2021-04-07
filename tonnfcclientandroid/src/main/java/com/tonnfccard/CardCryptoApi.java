@@ -24,6 +24,16 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getSignShortM
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getSignShortMessageWithDefaultPathAPDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getVerifyPinAPDU;
 
+/**
+ * Class containing functions-wrappers for card operations related to ed25519 signature: verifyPin, getPublicKeyForDefaultPath, getPublicKey,
+ * signForDefaultHdPath, sign, verifyPinAndSignForDefaultHdPath, verifyPinAndSign.
+ *
+ * Note 1: signForDefaultHdPath and verifyPinAndSignForDefaultHdPath do the same stuff. But you must call verifyPin before signForDefaultHdPath.
+ * The same is true for sign and verifyPinAndSign.
+ *
+ * Note 2: signForDefaultHdPath, verifyPinAndSignForDefaultHdPat and getPublicKeyForDefaultPath work with bip44 HD path m/44'/396'/0'/0'/0'.
+ */
+
 public final class CardCryptoApi extends TonWalletApi {
   private static final String TAG = "CardCryptoNfcApi";
 
