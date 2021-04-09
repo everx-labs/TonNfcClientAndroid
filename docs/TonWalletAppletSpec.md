@@ -1742,8 +1742,8 @@ This set of APDU commands is not a part of TON Wallet applet. So one must make t
    P1: 0x04
 
    P2:0x00
- 
- - **GET_SE_VERSION**
+
+- **GET_SE_VERSION**
  
  Get SE (secure element) version.
    
