@@ -1743,4 +1743,24 @@ This set of APDU commands is not a part of TON Wallet applet. So one must make t
 
    P2:0x00
  
+ Commands list:
  
+ - **GET_SE_VERSION**
+ 
+ Get SE (secure element) version.
+   
+   ***APDU input params:***
+
+   CLA: 0x80
+
+   INS:0xCB
+
+   P1: 0x80
+
+   P2:0x00
+   
+   LC: 0x05
+   
+   Data: 0xDF 0xFF 0x02 0x81 0x09
+   
+   LE: 0x00
