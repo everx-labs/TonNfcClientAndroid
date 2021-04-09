@@ -42,6 +42,11 @@ public final class CardCryptoApi extends TonWalletApi {
     super(activity, apduRunner);
   }
 
+  /**
+   * @param pin - security card PIN code
+   * @param callback
+   * Make pin verification.
+   */
   public void verifyPin(final String pin, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -56,8 +61,12 @@ public final class CardCryptoApi extends TonWalletApi {
     }).start();
   }
 
-
-
+  /**
+   * @param pin - security card PIN code
+   * @return
+   * @throws Exception
+   * Make pin verification.
+   */
   public String verifyPinAndGetJson(String pin) throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -76,8 +85,10 @@ public final class CardCryptoApi extends TonWalletApi {
     }
   }
 
-
-
+  /**
+   * @param callback
+   * Return public key for HD path m/44'/396'/0'/0'/0'
+   */
   public void getPublicKeyForDefaultPath(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -92,6 +103,11 @@ public final class CardCryptoApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Return public key for HD path m/44'/396'/0'/0'/0'
+   */
   public String getPublicKeyForDefaultPathAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -106,6 +122,11 @@ public final class CardCryptoApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param index
+   * @param callback
+   * Return public key for HD path m/44'/396'/0'/0'/index'.
+   */
   public void getPublicKey(final String index, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -120,6 +141,12 @@ public final class CardCryptoApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param index
+   * @return
+   * @throws Exception
+   * Return public key for HD path m/44'/396'/0'/0'/index'.
+   */
   public String getPublicKeyAndGetJson(String index) throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -138,6 +165,11 @@ public final class CardCryptoApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param dataForSigning
+   * @param callback
+   * Make data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
+   */
   public void signForDefaultHdPath(final String dataForSigning, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -152,6 +184,12 @@ public final class CardCryptoApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param dataForSigning
+   * @return
+   * @throws Exception
+   * Make data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
+   */
   public String signForDefaultHdPathAndGetJson(final String dataForSigning) throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -170,6 +208,12 @@ public final class CardCryptoApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param dataForSigning
+   * @param index
+   * @param callback
+   * Make data signing by key for HD path m/44'/396'/0'/0'/index'. Prior to call this function you must call verifyPin.
+   */
   public void sign(final String dataForSigning, final String index, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -184,6 +228,13 @@ public final class CardCryptoApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param dataForSigning
+   * @param index
+   * @return
+   * @throws Exception
+   * Make data signing by key for HD path m/44'/396'/0'/0'/index'. Prior to call this function you must call verifyPin.
+   */
   public String signAndGetJson(final String dataForSigning, final String index) throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -206,6 +257,12 @@ public final class CardCryptoApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param dataForSigning
+   * @param pin
+   * @param callback
+   * Make pin verification data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
+   */
   public void verifyPinAndSignForDefaultHdPath(final String dataForSigning, final String pin, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -220,6 +277,13 @@ public final class CardCryptoApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param dataForSigning
+   * @param pin
+   * @return
+   * @throws Exception
+   * Make pin verification data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
+   */
   public String verifyPinAndSignForDefaultHdPathAndGetJson(final String dataForSigning, final String pin) throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -242,6 +306,13 @@ public final class CardCryptoApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param dataForSigning
+   * @param index
+   * @param pin
+   * @param callback
+   * Make pin verification and data signing by key for HD path m/44'/396'/0'/0'/index'.
+   */
   public void verifyPinAndSign(final String dataForSigning, final String index, final String pin, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -256,6 +327,14 @@ public final class CardCryptoApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param dataForSigning
+   * @param index
+   * @param pin
+   * @return
+   * @throws Exception
+   * Make pin verification and data signing by key for HD path m/44'/396'/0'/0'/index'.
+   */
   public String verifyPinAndSignAndGetJson(final String dataForSigning, final String index, final String pin) throws Exception {
     try {
       long start = System.currentTimeMillis();

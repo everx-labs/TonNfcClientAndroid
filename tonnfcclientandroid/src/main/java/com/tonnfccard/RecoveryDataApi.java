@@ -36,6 +36,10 @@ public final class RecoveryDataApi extends TonWalletApi {
     super(activity, apduRunner);
   }
 
+  /**
+   * @param callback
+   * Read actual recovery data length.
+   */
   public void resetRecoveryData(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -50,6 +54,11 @@ public final class RecoveryDataApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Read actual recovery data length.
+   */
   public String resetRecoveryDataAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -68,6 +77,10 @@ public final class RecoveryDataApi extends TonWalletApi {
     return apduRunner.sendTonWalletAppletAPDU(RESET_RECOVERY_DATA_APDU);
   }
 
+  /**
+   * @param callback
+   * Read recovery data SHA256 hash.
+   */
   public void getRecoveryDataHash(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -82,6 +95,11 @@ public final class RecoveryDataApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Read recovery data SHA256 hash.
+   */
   public String getRecoveryDataHashAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -102,7 +120,10 @@ public final class RecoveryDataApi extends TonWalletApi {
     return rapdu;
   }
 
-
+  /**
+   * @param callback
+   * Read actual recovery data length.
+   */
   public void getRecoveryDataLen(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -117,6 +138,11 @@ public final class RecoveryDataApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Read actual recovery data length.
+   */
   public String getRecoveryDataLenAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -131,6 +157,11 @@ public final class RecoveryDataApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Read actual recovery data length.
+   */
   private int getRecoveryDataLen() throws Exception {
     RAPDU rapdu = apduRunner.sendTonWalletAppletAPDU(GET_RECOVERY_DATA_LEN_APDU);
     if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != 0x02)
@@ -141,6 +172,10 @@ public final class RecoveryDataApi extends TonWalletApi {
     return len;
   }
 
+  /**
+   * @param callback
+   * Return 'true'/'false' if recovery data exists/does not exist.
+   */
   public void isRecoveryDataSet(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -155,6 +190,11 @@ public final class RecoveryDataApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Return 'true'/'false' if recovery data exists/does not exist.
+   */
   public String isRecoveryDataSetAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -175,6 +215,11 @@ public final class RecoveryDataApi extends TonWalletApi {
     return rapdu;
   }
 
+  /**
+   * @param recoveryData
+   * @param callback
+   * Save recovery data into applet.
+   */
   public void addRecoveryData(final String recoveryData, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -189,6 +234,12 @@ public final class RecoveryDataApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param recoveryData
+   * @return
+   * @throws Exception
+   * Save recovery data into applet.
+   */
   public String addRecoveryDataAndGetJson(String recoveryData) throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -207,6 +258,11 @@ public final class RecoveryDataApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param recoveryData
+   * @throws Exception
+   * Save recovery data into applet.
+   */
   private void addRecoveryData(byte[] recoveryData) throws Exception {
     int numberOfPackets = recoveryData.length / DATA_RECOVERY_PORTION_MAX_SIZE;
     for (int i = 0; i < numberOfPackets; i++) {
@@ -229,6 +285,10 @@ public final class RecoveryDataApi extends TonWalletApi {
     apduRunner.sendTonWalletAppletAPDU(getAddRecoveryDataPartAPDU((byte) 0x02, hash));
   }
 
+  /**
+   * @param callback
+   * Read recovery data from TON Wallet applet.
+   */
   public void getRecoveryData(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -243,6 +303,11 @@ public final class RecoveryDataApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Read recovery data from TON Wallet applet.
+   */
   public String getRecoveryDataAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();

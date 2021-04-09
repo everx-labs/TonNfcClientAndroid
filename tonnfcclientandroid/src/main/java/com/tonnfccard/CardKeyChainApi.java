@@ -106,6 +106,10 @@ public final class CardKeyChainApi extends TonWalletApi {
     super(activity, apduRunner);
   }
 
+  /**
+   * @param callback
+   * Clear keychain, i.e. remove all stored keys.
+   */
   public void resetKeyChain(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -120,6 +124,11 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Clear keychain, i.e. remove all stored keys.
+   */
   public String resetKeyChainAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -134,6 +143,10 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param callback
+   * Return list of pairs (keyHmac, keyLength) in json format.
+   */
   public void getKeyChainInfo(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -148,6 +161,11 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Return list of pairs (keyHmac, keyLength) in json format.
+   */
   public String getKeyChainInfoAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -168,6 +186,10 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param callback
+   * Return number of keys in card keychain.
+   */
   public void getNumberOfKeys(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -182,6 +204,11 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Return number of keys in card keychain.
+   */
   public String getNumberOfKeysAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -196,6 +223,11 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param keyHmac
+   * @param callback
+   * Checks if card's keychain stores a key with such keyHmac and if this hmac really corresponds to the key.
+   */
   public void checkKeyHmacConsistency(final String keyHmac, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -210,6 +242,12 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param keyHmac
+   * @return
+   * @throws Exception
+   * Checks if card's keychain stores a key with such keyHmac and if this hmac really corresponds to the key.
+   */
   public String checkKeyHmacConsistencyAndGetJson(String keyHmac) throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -228,6 +266,12 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param keySize
+   * @param callback
+   * Check if there is enough free volume in card keychain to add new key of length = keySize.
+   * If there is no enough space then it throws an exception
+   */
   public void checkAvailableVolForNewKey(final Short keySize, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -242,6 +286,13 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param keySize
+   * @return
+   * @throws Exception
+   * Check if there is enough free volume in card keychain to add new key of length = keySize.
+   * If there is no enough space then it throws an exception
+   */
   public String checkAvailableVolForNewKeyAndGetJson(final Short keySize) throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -258,6 +309,11 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param keyHmac
+   * @param callback
+   * Read index (inside internal applet storage) and length of key by its hmac
+   */
   public void getIndexAndLenOfKeyInKeyChain(final String keyHmac, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -272,6 +328,12 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param keyHmac
+   * @return
+   * @throws Exception
+   * Read index (inside internal applet storage) and length of key by its hmac
+   */
   public String getIndexAndLenOfKeyInKeyChainAndGetJson(String keyHmac)  throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -290,6 +352,10 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param callback
+   * Returns the number of keys records packets that must be deleted to finish deleting of key.
+   */
   public void getDeleteKeyRecordNumOfPackets(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -304,6 +370,11 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Returns the number of keys records packets that must be deleted to finish deleting of key.
+   */
   public String getDeleteKeyRecordNumOfPacketsAndGetJson()  throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -318,6 +389,10 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param callback
+   * Returns the number of keys chunks packets that must be deleted to finish deleting of key.
+   */
   public void getDeleteKeyChunkNumOfPackets(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -332,6 +407,11 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Returns the number of keys chunks packets that must be deleted to finish deleting of key.
+   */
   public String getDeleteKeyChunkNumOfPacketsAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -346,6 +426,11 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param keyHmac
+   * @param callback
+   * Delete key from card keychain based on its hmac.
+   */
   public void deleteKeyFromKeyChain(final String keyHmac, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -360,6 +445,12 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param keyHmac
+   * @return
+   * @throws Exception
+   * Delete key from card keychain based on its hmac.
+   */
   public String deleteKeyFromKeyChainAndGetJson(String keyHmac) throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -378,6 +469,11 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param callback
+   * Finish the process of deleting key from card keychain.
+   * It may be necessary if previous DELETE operation was occassionally interrupted (like card disconnection).
+   */
   public void finishDeleteKeyFromKeyChainAfterInterruption(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -392,6 +488,12 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Finish the process of deleting key from card keychain.
+   * It may be necessary if previous DELETE operation was occassionally interrupted (like card disconnection).
+   */
   public String finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -406,6 +508,10 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param callback
+   * Return the volume of occupied size in card keychain (in bytes).
+   */
   public void getOccupiedStorageSize(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -420,6 +526,11 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Return the volume of occupied size in card keychain (in bytes).
+   */
   public String getOccupiedStorageSizeAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -434,6 +545,10 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param callback
+   * Return the volume of free size in card keychain (in bytes).
+   */
   public void getFreeStorageSize(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -448,6 +563,11 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Return the volume of free size in card keychain (in bytes).
+   */
   public String getFreeStorageSizeAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -462,6 +582,11 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param keyHmac
+   * @param callback
+   * Read key from card keychain based on its hmac.
+   */
   public void getKeyFromKeyChain(final String keyHmac, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -476,6 +601,12 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param keyHmac
+   * @return
+   * @throws Exception
+   * Read key from card keychain based on its hmac.
+   */
   public String getKeyFromKeyChainAndGetJson(String keyHmac) throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -494,6 +625,11 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param newKey
+   * @param callback
+   * Save new key into card keychain.
+   */
   public void addKeyIntoKeyChain(final String newKey, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -508,6 +644,12 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param newKey
+   * @return
+   * @throws Exception
+   * Save new key into card keychain.
+   */
   public String addKeyIntoKeyChainAndGetJson(String newKey) throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -526,6 +668,12 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param newKey
+   * @param oldKeyHMac
+   * @param callback
+   * Replace existing key by new key. The length of new key must be equal to length of old key.
+   */
   public void changeKeyInKeyChain(final String newKey, final String oldKeyHMac, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -540,6 +688,13 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param newKey
+   * @param oldKeyHMac
+   * @return
+   * @throws Exception
+   * Replace existing key by new key. The length of new key must be equal to length of old key.
+   */
   public String changeKeyInKeyChainAndGetJson(String newKey, String oldKeyHMac) throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -562,6 +717,10 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param callback
+   * Return list of pairs (keyHmac, keyLength) in json format.
+   */
   public void getKeyChainDataAboutAllKeys(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -576,6 +735,11 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Return list of pairs (keyHmac, keyLength) in json format.
+   */
   public String getKeyChainDataAboutAllKeysAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -599,6 +763,11 @@ public final class CardKeyChainApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param index
+   * @param callback
+   * Get hmac of key in card keychain by its index.
+   */
   public void getHmac(final String index, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -613,6 +782,12 @@ public final class CardKeyChainApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param index
+   * @return
+   * @throws Exception
+   * Get hmac of key in card keychain by its index.
+   */
   public String getHmacAndGetJson(String index) throws Exception {
     try {
       long start = System.currentTimeMillis();

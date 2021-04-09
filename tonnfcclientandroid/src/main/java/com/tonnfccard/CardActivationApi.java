@@ -47,6 +47,15 @@ public final class CardActivationApi extends TonWalletApi {
     super(activity, apduRunner);
   }
 
+  /**
+   * @param newPin
+   * @param password
+   * @param commonSecret
+   * @param initialVector
+   * @param callback
+   * This function makes TON Labs wallet applet activation.
+   * Use here activation data tuple (password, commonSecret, initialVector) that is correct for your card, i.e. corresponds to your serialNumber.
+   */
   public void turnOnWallet(final String newPin, final String password, final String commonSecret, final String initialVector, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -62,10 +71,18 @@ public final class CardActivationApi extends TonWalletApi {
     }).start();
   }
 
-
-
-
-
+  /**
+   *
+   * @param newPin
+   * @param password
+   * @param commonSecret
+   * @param initialVector
+   * @return
+   * @throws Exception
+   * This function makes TON Labs wallet applet activation.
+   * Use here activation data tuple (password, commonSecret, initialVector) that is correct for your card, i.e. corresponds to your serialNumber.
+   *
+   */
   public String turnOnWalletAndGetJson(final String newPin, final String password, final String commonSecret, final String initialVector) throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -96,6 +113,10 @@ public final class CardActivationApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param callback
+   * Return SHA256 hash of encrypted common secret.
+   */
   public void getHashOfEncryptedCommonSecret(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -110,6 +131,11 @@ public final class CardActivationApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Return SHA256 hash of encrypted common secret.
+   */
   public String getHashOfEncryptedCommonSecretAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -124,6 +150,10 @@ public final class CardActivationApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param callback
+   * Return SHA256 hash of encrypted password.
+   */
   public void getHashOfEncryptedPassword(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -138,6 +168,11 @@ public final class CardActivationApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * Return SHA256 hash of encrypted password.
+   */
   public String getHashOfEncryptedPasswordAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
@@ -151,8 +186,6 @@ public final class CardActivationApi extends TonWalletApi {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
-
-
 
   private RAPDU getHashOfEncryptedCommonSecret() throws Exception {
     RAPDU rapdu = apduRunner.sendAPDU(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU);
