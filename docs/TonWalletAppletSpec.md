@@ -1745,7 +1745,7 @@ This set of APDU commands is not a part of TON Wallet applet. So one must make t
 
 - **GET_SE_VERSION**
  
- Get SE (secure element) version.
+   Get SE (secure element) version.
    
    ***APDU input params:***
 
