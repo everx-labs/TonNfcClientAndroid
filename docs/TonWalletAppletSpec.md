@@ -1882,3 +1882,106 @@ This set of APDU commands is not a part of TON Wallet applet. So one must make t
    Data: 0xDF 0xFF 0x02 0x81 0x06
    
    LE: 0x00  
+
+- **SET_DEVICE_LABEL**
+ 
+  Set the device label.
+   
+   ***APDU input params:***
+
+   CLA: 0x80
+
+   INS: 0xCB
+
+   P1: 0x80
+
+   P2: 0x00
+   
+   LC: 0x26
+   
+   Data: 0xDF 0xFE 0x23 0x81 0x04 0x20 labelBytes (0x20 -- length of labelBytes)
+   
+   LE: 0x00  
+   
+- **GENERATE_SEED**
+ 
+  Generate the seed for ed25519 with RNG.
+   
+   ***APDU input params:***
+
+   CLA: 0x80
+
+   INS: 0xCB
+
+   P1: 0x80
+
+   P2: 0x00
+   
+   LC: 0x0B
+
+   Data: 0xDF 0xFE 0x08 0x82 0x03 0x05 0x04 pinBytes (0x04 -- length of pinBytes, example: 0x35 0x35 0x35 0x35)
+   
+   LE: 0x00  
+   
+- **RESET_WALLET**
+ 
+   Reset the wallet state to the initial state. After resetting the wallet, the default PIN value would be 5555. The remaining retry for the PIN will be reset to MAX (default   is 10). The seed for ed25519 will be erased. And after its calling any card operation (except of CoinManager stuff) will fail with 6F02 error. TON Labs wallet applet does not work without seed.
+   
+   ***APDU input params:***
+
+   CLA: 0x80
+
+   INS: 0xCB
+
+   P1: 0x80
+
+   P2: 0x00
+   
+   LC: 0x05
+   
+   Data: 0xDF 0xFF 0x02 0x82 0x05
+   
+   LE: 0x00
+   
+- **GET_AVAILABLE_MEMORY**
+ 
+  Get application list.
+   
+   ***APDU input params:***
+
+   CLA: 0x80
+
+   INS: 0xCB
+
+   P1: 0x80
+
+   P2: 0x00
+   
+   LC: 0x05
+   
+   Data: 0xDF 0xFF 0x02 0x81 0x46
+   
+   LE: 0x00 
+
+- **CHANGE_PIN**
+ 
+  Change device PIN.
+   
+   ***APDU input params:***
+
+   CLA: 0x80
+
+   INS: 0xCB
+
+   P1: 0x80
+
+   P2: 0x00
+   
+   LC: 0x0B
+
+   Data: 0xDF 0xFE 0x0D 0x82 0x04 0x0A 0x04 oldPinBytes 0x04 newPinBytes (0x04 -- length of oldPinBytes and newPinBytes, example of newPinBytes: 0x36 0x36 0x36 0x36)
+   
+   LE: 0x00  
+
+
+   
