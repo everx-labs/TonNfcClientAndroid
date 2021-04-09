@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
+import android.util.Log;
 
 import androidx.annotation.RestrictTo;
 
@@ -128,7 +129,11 @@ public class NfcApduRunner extends ApduRunner {
     nfcTag.setTimeout(TIME_OUT);
     byte[] response;
     try {
+      long start = System.currentTimeMillis();
       response = nfcTag.transceive(apduCommandBytes);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "APDU = " + ByteArrayUtil.getInstance().hex(apduCommandBytes));
+      Log.d("TAG", "Time = " + String.valueOf(end - start) );
     } catch (Exception e) {
         throw new Exception(ERROR_TRANSCEIVE + ", More details: " + e.getMessage());
     }

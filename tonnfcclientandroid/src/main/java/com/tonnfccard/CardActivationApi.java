@@ -62,8 +62,13 @@ public final class CardActivationApi extends TonWalletApi {
     }).start();
   }
 
+
+
+
+
   public String turnOnWalletAndGetJson(final String newPin, final String password, final String commonSecret, final String initialVector) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(password))
         throw new Exception(ERROR_MSG_PASSWORD_NOT_HEX);
       if (password.length() != 2 * PASSWORD_SIZE)
@@ -81,7 +86,10 @@ public final class CardActivationApi extends TonWalletApi {
       if (initialVector.length() != 2 * IV_SIZE)
         throw new Exception(ERROR_MSG_INITIAL_VECTOR_LEN_INCORRECT);
       TonWalletAppletStates state = turnOnWallet(BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(newPin)), BYTE_ARR_HELPER.bytes(password), BYTE_ARR_HELPER.bytes(commonSecret), BYTE_ARR_HELPER.bytes(initialVector));
-      return JSON_HELPER.createResponseJson(state.getDescription());
+      String json = JSON_HELPER.createResponseJson(state.getDescription());
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -104,8 +112,12 @@ public final class CardActivationApi extends TonWalletApi {
 
   public String getHashOfEncryptedCommonSecretAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       String response = BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetHashOfEncryptedCommonSecret().getData());
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -128,13 +140,19 @@ public final class CardActivationApi extends TonWalletApi {
 
   public String getHashOfEncryptedPasswordAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       String response = BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetHashOfEncryptedPassword().getData());
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
+
+
 
   private RAPDU getHashOfEncryptedCommonSecret() throws Exception {
     RAPDU rapdu = apduRunner.sendAPDU(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU);

@@ -7,6 +7,7 @@ import com.tonnfccard.callback.NfcCallback;
 import com.tonnfccard.nfc.NfcApduRunner;
 import com.tonnfccard.smartcard.ApduRunner;
 import com.tonnfccard.smartcard.RAPDU;
+import com.tonnfccard.utils.ByteArrayUtil;
 
 import static com.tonnfccard.TonWalletConstants.*;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DATA_FOR_SIGNING_LEN_INCORRECT;
@@ -55,14 +56,20 @@ public final class CardCryptoApi extends TonWalletApi {
     }).start();
   }
 
+
+
   public String verifyPinAndGetJson(String pin) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(pin))
         throw new Exception(ERROR_MSG_PIN_FORMAT_INCORRECT);
       if (pin.length() != PIN_SIZE)
         throw new Exception(ERROR_MSG_PIN_LEN_INCORRECT);
       verifyPin(BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(pin)));
-      return JSON_HELPER.createResponseJson(DONE_MSG);
+      String json = JSON_HELPER.createResponseJson(DONE_MSG);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -87,8 +94,12 @@ public final class CardCryptoApi extends TonWalletApi {
 
   public String getPublicKeyForDefaultPathAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       String response = BYTE_ARR_HELPER.hex(getPublicKeyForDefaultPath().getData());
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -111,12 +122,16 @@ public final class CardCryptoApi extends TonWalletApi {
 
   public String getPublicKeyAndGetJson(String index) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(index))
         throw new Exception(ERROR_MSG_HD_INDEX_FORMAT_INCORRECT);
       if (index.length() == 0 || index.length() > MAX_HD_INDEX_SIZE)
         throw new Exception(ERROR_MSG_HD_INDEX_LEN_INCORRECT);
       String response = BYTE_ARR_HELPER.hex(getPublicKey(BYTE_ARR_HELPER.bytes(STR_HELPER.asciiToHex(index))).getData());
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -139,12 +154,16 @@ public final class CardCryptoApi extends TonWalletApi {
 
   public String signForDefaultHdPathAndGetJson(final String dataForSigning) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(dataForSigning))
         throw new Exception(ERROR_MSG_DATA_FOR_SIGNING_NOT_HEX);
       if (dataForSigning.length() > (2 * DATA_FOR_SIGNING_MAX_SIZE))
         throw new Exception(ERROR_MSG_DATA_FOR_SIGNING_LEN_INCORRECT);
       String response = BYTE_ARR_HELPER.hex(signForDefaultPath(BYTE_ARR_HELPER.bytes(dataForSigning)).getData());
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -167,6 +186,7 @@ public final class CardCryptoApi extends TonWalletApi {
 
   public String signAndGetJson(final String dataForSigning, final String index) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(index))
         throw new Exception(ERROR_MSG_HD_INDEX_FORMAT_INCORRECT);
       if (index.length() > MAX_HD_INDEX_SIZE)
@@ -176,7 +196,10 @@ public final class CardCryptoApi extends TonWalletApi {
       if (dataForSigning.length() > (2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH))
         throw new Exception(ERROR_MSG_DATA_FOR_SIGNING_WITH_PATH_LEN_INCORRECT);
       String response = BYTE_ARR_HELPER.hex(sign(BYTE_ARR_HELPER.bytes(dataForSigning), BYTE_ARR_HELPER.bytes(STR_HELPER.asciiToHex(index))).getData());
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -199,6 +222,7 @@ public final class CardCryptoApi extends TonWalletApi {
 
   public String verifyPinAndSignForDefaultHdPathAndGetJson(final String dataForSigning, final String pin) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(pin))
         throw new Exception(ERROR_MSG_PIN_FORMAT_INCORRECT);
       if (pin.length() != PIN_SIZE)
@@ -208,7 +232,10 @@ public final class CardCryptoApi extends TonWalletApi {
       if (dataForSigning.length() > (2 * DATA_FOR_SIGNING_MAX_SIZE))
         throw new Exception(ERROR_MSG_DATA_FOR_SIGNING_LEN_INCORRECT);
       String response = BYTE_ARR_HELPER.hex(verifyPinAndSignForDefaultHdPath(BYTE_ARR_HELPER.bytes(dataForSigning), BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(pin))).getData());
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -231,6 +258,7 @@ public final class CardCryptoApi extends TonWalletApi {
 
   public String verifyPinAndSignAndGetJson(final String dataForSigning, final String index, final String pin) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(pin))
         throw new Exception(ERROR_MSG_PIN_FORMAT_INCORRECT);
       if (pin.length() != PIN_SIZE)
@@ -244,7 +272,10 @@ public final class CardCryptoApi extends TonWalletApi {
       if (dataForSigning.length() > (2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH))
         throw new Exception(ERROR_MSG_DATA_FOR_SIGNING_WITH_PATH_LEN_INCORRECT);
       String response = BYTE_ARR_HELPER.hex(verifyPinAndSign(BYTE_ARR_HELPER.bytes(dataForSigning), BYTE_ARR_HELPER.bytes(STR_HELPER.asciiToHex(index)), BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(pin))).getData());
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);

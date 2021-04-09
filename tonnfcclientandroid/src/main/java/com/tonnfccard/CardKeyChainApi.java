@@ -122,8 +122,12 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String resetKeyChainAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       resetKeyChain();
-      return JSON_HELPER.createResponseJson(DONE_MSG);
+      String json =  JSON_HELPER.createResponseJson(DONE_MSG);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -146,6 +150,7 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String getKeyChainInfoAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       int numOfKeys = getNumberOfKeys();
       int occupiedStorageSize = getOccupiedStorageSize();
       int freeStorageSize = getFreeStorageSize();
@@ -154,6 +159,8 @@ public final class CardKeyChainApi extends TonWalletApi {
       jsonResponse.put(OCCUPIED_SIZE_FIELD, occupiedStorageSize);
       jsonResponse.put(FREE_SIZE_FIELD, freeStorageSize);
       jsonResponse.put(STATUS_FIELD, SUCCESS_STATUS);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return jsonResponse.toString();
     }
     catch (Exception e) {
@@ -177,8 +184,12 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String getNumberOfKeysAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       int numOfKeys = getNumberOfKeys();
-      return JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
+      String json = JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -201,12 +212,16 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String checkKeyHmacConsistencyAndGetJson(String keyHmac) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(keyHmac))
         throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
       if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
         throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
       checkKeyHmacConsistency(BYTE_ARR_HELPER.bytes(keyHmac));
-      return JSON_HELPER.createResponseJson(DONE_MSG);
+      String json = JSON_HELPER.createResponseJson(DONE_MSG);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -229,10 +244,14 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String checkAvailableVolForNewKeyAndGetJson(final Short keySize) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (keySize <= 0 || keySize > MAX_KEY_SIZE_IN_KEYCHAIN)
         throw new Exception(ERROR_MSG_KEY_SIZE_INCORRECT);
       checkAvailableVolForNewKey(keySize);
-      return JSON_HELPER.createResponseJson(DONE_MSG);
+      String json = JSON_HELPER.createResponseJson(DONE_MSG);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -255,12 +274,16 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String getIndexAndLenOfKeyInKeyChainAndGetJson(String keyHmac)  throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(keyHmac))
         throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
       if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
         throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
       String response = getIndexAndLenOfKeyInKeyChain(BYTE_ARR_HELPER.bytes(keyHmac)).toString();
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -283,8 +306,12 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String getDeleteKeyRecordNumOfPacketsAndGetJson()  throws Exception {
     try {
+      long start = System.currentTimeMillis();
       String numOfPackets = Integer.valueOf(getDeleteKeyRecordNumOfPackets()).toString();
-      return JSON_HELPER.createResponseJson(numOfPackets);
+      String json = JSON_HELPER.createResponseJson(numOfPackets);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -307,8 +334,12 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String getDeleteKeyChunkNumOfPacketsAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       String numOfPackets = Integer.valueOf(getDeleteKeyChunkNumOfPackets()).toString();
-      return JSON_HELPER.createResponseJson(numOfPackets);
+      String json =  JSON_HELPER.createResponseJson(numOfPackets);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -331,12 +362,16 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String deleteKeyFromKeyChainAndGetJson(String keyHmac) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(keyHmac))
         throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
       if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
         throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
       int numOfKeys = deleteKeyFromKeyChain(BYTE_ARR_HELPER.bytes(keyHmac));
-      return JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
+      String json =  JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -359,8 +394,12 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       int numOfKeys = finishDeleteKeyFromKeyChainAfterInterruption();
-      return JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
+      String json =  JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -383,8 +422,12 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String getOccupiedStorageSizeAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       String size = Integer.valueOf(getOccupiedStorageSize()).toString();
-      return JSON_HELPER.createResponseJson(size);
+      String json =  JSON_HELPER.createResponseJson(size);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -407,8 +450,12 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String getFreeStorageSizeAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       String size = Integer.valueOf(getFreeStorageSize()).toString();
-      return JSON_HELPER.createResponseJson(size);
+      String json =   JSON_HELPER.createResponseJson(size);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -431,12 +478,16 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String getKeyFromKeyChainAndGetJson(String keyHmac) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(keyHmac))
         throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
       if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
         throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
       String key = BYTE_ARR_HELPER.hex(getKeyFromKeyChain(BYTE_ARR_HELPER.bytes(keyHmac)));
-      return JSON_HELPER.createResponseJson(key);
+      String json =   JSON_HELPER.createResponseJson(key);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -459,12 +510,16 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String addKeyIntoKeyChainAndGetJson(String newKey) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(newKey))
         throw new Exception(ERROR_MSG_KEY_NOT_HEX);
       if (newKey.length() > 2 * MAX_KEY_SIZE_IN_KEYCHAIN)
         throw new Exception(ERROR_MSG_KEY_LEN_INCORRECT);
       String keyHmac = addKeyIntoKeyChain(BYTE_ARR_HELPER.bytes(newKey));
-      return JSON_HELPER.createResponseJson(keyHmac);
+      String json =   JSON_HELPER.createResponseJson(keyHmac);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -487,6 +542,7 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String changeKeyInKeyChainAndGetJson(String newKey, String oldKeyHMac) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(newKey))
         throw new Exception(ERROR_MSG_KEY_NOT_HEX);
       if (newKey.length() > 2 * MAX_KEY_SIZE_IN_KEYCHAIN)
@@ -496,7 +552,10 @@ public final class CardKeyChainApi extends TonWalletApi {
       if (oldKeyHMac.length() != 2 * HMAC_SHA_SIG_SIZE)
         throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
       String newKeyHmac = changeKeyInKeyChain(BYTE_ARR_HELPER.bytes(newKey), BYTE_ARR_HELPER.bytes(oldKeyHMac));
-      return JSON_HELPER.createResponseJson(newKeyHmac);
+      String json = JSON_HELPER.createResponseJson(newKeyHmac);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -519,6 +578,7 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String getKeyChainDataAboutAllKeysAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       Map<String, Short> map = getAllHmacsOfKeysFromCard();
       JSONObject allKeysObj = new JSONObject();
       JSONArray jArray = new JSONArray();
@@ -530,6 +590,8 @@ public final class CardKeyChainApi extends TonWalletApi {
       }
       allKeysObj.put(KEYS_DATA_FIELD, jArray);
       allKeysObj.put(STATUS_FIELD, SUCCESS_STATUS);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return allKeysObj.toString();
     }
     catch (Exception e) {
@@ -553,6 +615,7 @@ public final class CardKeyChainApi extends TonWalletApi {
 
   public String getHmacAndGetJson(String index) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(index))
         throw new Exception(ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC);
       short ind = parseIndex(index);
@@ -567,6 +630,8 @@ public final class CardKeyChainApi extends TonWalletApi {
       jObject.put(KEY_HMAC_FIELD, BYTE_ARR_HELPER.hex(mac));
       jObject.put(KEY_LENGTH_FIELD, len);
       jObject.put(STATUS_FIELD, SUCCESS_STATUS);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return jObject.toString();
     }
     catch (Exception e) {

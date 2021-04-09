@@ -52,8 +52,12 @@ public final class RecoveryDataApi extends TonWalletApi {
 
   public String resetRecoveryDataAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       resetRecoveryData();
-      return JSON_HELPER.createResponseJson(DONE_MSG);
+      String json = JSON_HELPER.createResponseJson(DONE_MSG);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return  json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -80,8 +84,12 @@ public final class RecoveryDataApi extends TonWalletApi {
 
   public String getRecoveryDataHashAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       String response = BYTE_ARR_HELPER.hex(getRecoveryDataHash().getData());
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -111,8 +119,12 @@ public final class RecoveryDataApi extends TonWalletApi {
 
   public String getRecoveryDataLenAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       String response = Integer.valueOf(getRecoveryDataLen()).toString();
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -145,8 +157,12 @@ public final class RecoveryDataApi extends TonWalletApi {
 
   public String isRecoveryDataSetAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       String response = isRecoveryDataSet().getData()[0] == 0 ? FALSE_MSG : TRUE_MSG;
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -175,12 +191,16 @@ public final class RecoveryDataApi extends TonWalletApi {
 
   public String addRecoveryDataAndGetJson(String recoveryData) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(recoveryData))
         throw new Exception(ERROR_MSG_RECOVERY_DATA_NOT_HEX);
       if (recoveryData.length() > 2 * RECOVERY_DATA_MAX_SIZE)
         throw new Exception(ERROR_MSG_RECOVERY_DATA_LEN_INCORRECT);
       addRecoveryData(BYTE_ARR_HELPER.bytes(recoveryData));
-      return JSON_HELPER.createResponseJson(DONE_MSG);
+      String json = JSON_HELPER.createResponseJson(DONE_MSG);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -225,8 +245,12 @@ public final class RecoveryDataApi extends TonWalletApi {
 
   public String getRecoveryDataAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       String response = BYTE_ARR_HELPER.hex(getRecoveryData());
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       e.printStackTrace();

@@ -130,8 +130,12 @@ public class TonWalletApi {
 
   public String getSerialNumberAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       String response = STR_HELPER.makeDigitalString(getSerialNumber());
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -154,8 +158,12 @@ public class TonWalletApi {
 
   public String getTonAppletStateAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       TonWalletAppletStates state = getTonAppletState();
-      return JSON_HELPER.createResponseJson(state.getDescription());
+      String json = JSON_HELPER.createResponseJson(state.getDescription());
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
@@ -178,7 +186,11 @@ public class TonWalletApi {
 
   public String getSaultAndGetJson() throws Exception {
     try {
-      return JSON_HELPER.createResponseJson(getSaultHex());
+      long start = System.currentTimeMillis();
+      String json = JSON_HELPER.createResponseJson(getSaultHex());
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
         throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);

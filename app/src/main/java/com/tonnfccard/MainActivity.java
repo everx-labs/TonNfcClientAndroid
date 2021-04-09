@@ -13,10 +13,12 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.tonnfccard.helpers.StringHelper;
 import com.tonnfccard.nfc.NfcApduRunner;
 import com.tonnfccard.utils.ByteArrayUtil;
 
 import static com.tonnfccard.CardKeyChainApi.NUMBER_OF_KEYS_FIELD;
+import static com.tonnfccard.TonWalletConstants.MAX_KEY_SIZE_IN_KEYCHAIN;
 import static com.tonnfccard.TonWalletConstants.MESSAGE_FIELD;
 import static com.tonnfccard.TonWalletConstants.NOT_GENERATED_MSG;
 import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE_MSG;
@@ -281,6 +283,12 @@ public class MainActivity extends AppCompatActivity {
                     response = recoveryDataApi.isRecoveryDataSetAndGetJson();
                     Log.d("TAG", "isRecoveryDataSet response : " + response);
 
+                    response = recoveryDataApi.getRecoveryDataLenAndGetJson();
+                    Log.d("TAG", "getRecoveryDataLen response : " + response);
+
+                    response = recoveryDataApi.getRecoveryDataHashAndGetJson();
+                    Log.d("TAG", "getRecoveryDataHash response : " + response);
+
                 }
                 catch (Exception e) {
                     e.printStackTrace();
@@ -357,9 +365,10 @@ public class MainActivity extends AppCompatActivity {
                     response = cardKeyChainApi.getKeyChainInfoAndGetJson();
                     Log.d("TAG", "getKeyChainInfo response : " + response);
 
-                    String keyInHex = "001122334455";
+                    String keyInHex = StringHelper.getInstance().randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN);
                     response = cardKeyChainApi.addKeyIntoKeyChainAndGetJson(keyInHex);
                     Log.d("TAG", "addKeyIntoKeyChain response : " + response);
+                    Log.d("TAG", "addKeyIntoKeyChain response : " + keyInHex .length());
 
                     String keyHmac = extractMessage(response);
                     Log.d("TAG", "keyHmac : " + response);
@@ -371,11 +380,13 @@ public class MainActivity extends AppCompatActivity {
                     String keyFromCard = extractMessage(response);
                     Log.d("TAG", "keyFromCard : " + response);
 
-                    if (!keyInHex.equals(keyFromCard)) {
+                    if (!keyInHex.toLowerCase().equals(keyFromCard.toLowerCase())) {
+                        System.out.println(keyInHex);
+                        System.out.println(keyFromCard);;
                         throw  new Exception("Bad key from card : " + keyFromCard);
                     }
 
-                    String newKeyInHex = "00AA22334466";
+                    String newKeyInHex =  StringHelper.getInstance().randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN);
                     response = cardKeyChainApi.changeKeyInKeyChainAndGetJson(newKeyInHex, keyHmac);
                     Log.d("TAG", "changeKeyInKeyChain response : " + response);
                     String newKeyHmac = extractMessage(response);
@@ -387,7 +398,7 @@ public class MainActivity extends AppCompatActivity {
                     String newKeyFromCard = extractMessage(response);
                     Log.d("TAG", "keyFromCard : " + response);
 
-                    if (!newKeyInHex.equals(newKeyFromCard)) {
+                    if (!newKeyInHex.toLowerCase().equals(newKeyFromCard.toLowerCase())) {
                         throw  new Exception("Bad key from card : " + newKeyFromCard);
                     }
 
@@ -424,7 +435,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View arg0) {
                 try {
-                    String response = cardCoinManagerNfcApi.getMaxPinTriesAndGetJson();
+                    String response = cardCoinManagerNfcApi.getAvailableMemoryAndGetJson();//.getMaxPinTriesAndGetJson();
                     Log.d("TAG", "Card response : " + response);
 
                 }
@@ -452,6 +463,9 @@ public class MainActivity extends AppCompatActivity {
 
                     String hdIndex = "234";
                     String msg = "000011";
+                  //  String response = cardCryptoApi.verifyPinAndGetJson(DEFAULT_PIN);
+                   // response = cardCryptoApi.signAndGetJson(msg, hdIndex);
+                   // String response = cardCryptoApi.verifyPinAndSignForDefaultHdPathAndGetJson(msg, DEFAULT_PIN);
                     String response = cardCryptoApi.verifyPinAndSignAndGetJson(msg, hdIndex, DEFAULT_PIN);
                     Log.d("TAG", "Card response (ed25519 signature) : " + response);
 
@@ -476,7 +490,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View arg0) {
                 try {
                     String hdIndex = "1";
-                    String response = cardCryptoApi.getPublicKeyAndGetJson(hdIndex);
+                    String response = cardCryptoApi.getTonAppletStateAndGetJson();
+                    //String response = cardCryptoApi.getPublicKeyAndGetJson(hdIndex);
                     Log.d("TAG", "Card response (ed25519 public key) : " + response);
 
                 }

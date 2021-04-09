@@ -52,6 +52,12 @@ public final class CardCoinManagerApi extends TonWalletApi {
     super(activity, apduRunner);
   }
 
+  /**
+   * @param deviceLabel
+   * @param callback
+   * This function is used to set the device label. Now we do not use this device label stored in CoinManager.
+   */
+
   public void setDeviceLabel(final String deviceLabel, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -66,20 +72,36 @@ public final class CardCoinManagerApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   *
+   * @param deviceLabel
+   * @return
+   * @throws Exception
+   * This function is used to set the device label. Now we do not use this device label stored in CoinManager.
+   */
+
   public String setDeviceLabelAndGetJson(String deviceLabel) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(deviceLabel))
         throw new IllegalArgumentException(ERROR_MSG_DEVICE_LABEL_NOT_HEX);
       if (deviceLabel.length() != 2 * LABEL_LENGTH)
         throw new IllegalArgumentException(ERROR_MSG_DEVICE_LABEL_LEN_INCORRECT);
       apduRunner.sendCoinManagerAppletAPDU(getSetDeviceLabelAPDU(BYTE_ARR_HELPER.bytes(deviceLabel)));
-      return JSON_HELPER.createResponseJson(DONE_MSG);
+      String json = JSON_HELPER.createResponseJson(DONE_MSG);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
+  /**
+   * @param callback
+   * This function is used to get device label. Now we do not use this device label stored in CoinManager.
+   */
   public void getDeviceLabel(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -94,19 +116,32 @@ public final class CardCoinManagerApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * This function is used to get device label. Now we do not use this device label stored in CoinManager.
+   */
   public String getDeviceLabelAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       RAPDU rapdu = apduRunner.sendCoinManagerAppletAPDU(GET_DEVICE_LABEL_APDU);
       if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != LABEL_LENGTH)
         throw new Exception(ERROR_MSG_GET_DEVICE_LABEL_RESPONSE_LEN_INCORRECT);
       String response = BYTE_ARR_HELPER.hex(rapdu.getData());
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
+  /**
+   * @param callback
+   * This function is used to get SE (secure element) version.
+   */
   public void getSeVersion(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -121,10 +156,23 @@ public final class CardCoinManagerApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * This function is used to get SE (secure element) version.
+   */
   public String getSeVersionAndGetJson() throws Exception {
-    return executeCoinManagerOperationAndSendHex(GET_SE_VERSION_APDU, ERROR_MSG_GET_SE_VERSION_RESPONSE_LEN_INCORRECT);
+    long start = System.currentTimeMillis();
+    String json = executeCoinManagerOperationAndSendHex(GET_SE_VERSION_APDU, ERROR_MSG_GET_SE_VERSION_RESPONSE_LEN_INCORRECT);
+    long end = System.currentTimeMillis();
+    Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+    return json;
   }
 
+  /**
+   * @param callback
+   * This function is used to get CSN (SEID)
+   */
   public void getCsn(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -139,10 +187,23 @@ public final class CardCoinManagerApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * This function is used to get CSN (SEID)
+   */
   public String getCsnAndGetJson() throws Exception {
-    return executeCoinManagerOperationAndSendHex(GET_CSN_APDU, ERROR_MSG_GET_CSN_RESPONSE_LEN_INCORRECT);
+    long start = System.currentTimeMillis();
+    String json = executeCoinManagerOperationAndSendHex(GET_CSN_APDU, ERROR_MSG_GET_CSN_RESPONSE_LEN_INCORRECT);
+    long end = System.currentTimeMillis();
+    Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+    return json;
   }
 
+  /**
+   * @param callback
+   * This function is used to get retry maximum times of PIN.
+   */
   public void getMaxPinTries(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -157,10 +218,23 @@ public final class CardCoinManagerApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * This function is used to get retry maximum times of PIN.
+   */
   public String getMaxPinTriesAndGetJson() throws Exception {
-    return getPinTries(GET_PIN_TLT_APDU);
+    long start = System.currentTimeMillis();
+    String json = getPinTries(GET_PIN_TLT_APDU);
+    long end = System.currentTimeMillis();
+    Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+    return json;
   }
 
+  /**
+   * @param callback
+   * This function is used to get remaining retry times of PIN.
+   */
   public void getRemainingPinTries(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -175,10 +249,23 @@ public final class CardCoinManagerApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * This function is used to get remaining retry times of PIN.
+   */
   public String getRemainingPinTriesAndGetJson() throws Exception {
-    return getPinTries(GET_PIN_RTL_APDU);
+    long start = System.currentTimeMillis();
+    String json =getPinTries(GET_PIN_RTL_APDU);
+    long end = System.currentTimeMillis();
+    Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+    return json;
   }
 
+  /**
+   * @param callback
+   * This function is used to get the status of seed for ed25519: is it generated or not.
+   */
   public void getRootKeyStatus(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -193,19 +280,34 @@ public final class CardCoinManagerApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * This function is used to get the status of seed for ed25519: is it generated or not.
+   */
   public String getRootKeyStatusAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       RAPDU rapdu = apduRunner.sendCoinManagerAppletAPDU(GET_ROOT_KEY_STATUS_APDU);
       if (rapdu == null || rapdu.getData() == null || rapdu.getData().length == 0)
         throw new Exception(ERROR_MSG_GET_ROOT_KEY_STATUS_RESPONSE_LEN_INCORRECT);
       String response = BYTE_ARR_HELPER.hex(rapdu.getData()).equals(POSITIVE_ROOT_KEY_STATUS) ? GENERATED_MSG : NOT_GENERATED_MSG;
-      return JSON_HELPER.createResponseJson(response);
+      String json = JSON_HELPER.createResponseJson(response);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
+  /**
+   * @param callback
+   * This function is used to reset the wallet state to the initial state. After resetting the wallet, the default PIN value would be 5555. The remaining retry for the PIN will be reset to MAX (default is 10). The seed for ed25519 will be erased.
+   * And after its calling any card operation (except of CoinManager stuff) will fail with 6F02 error.
+   * TON Labs wallet applet does not work without seed.
+   */
   public void resetWallet(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -220,16 +322,32 @@ public final class CardCoinManagerApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * This function is used to reset the wallet state to the initial state. After resetting the wallet, the default PIN value would be 5555.
+   * The remaining retry for the PIN will be reset to MAX (default is 10). The seed for ed25519 will be erased. And after its calling any card operation (except of CoinManager stuff) will fail with 6F02 error.
+   * TON Labs wallet applet does not work without seed.
+   */
   public String resetWalletAndGetJson() throws Exception {
     try {
+      long start = System.currentTimeMillis();
       apduRunner.sendCoinManagerAppletAPDU(RESET_WALLET_APDU);
-      return JSON_HELPER.createResponseJson(DONE_MSG);
+      String json = JSON_HELPER.createResponseJson(DONE_MSG);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
+  /**
+   * @param callback
+   * This function is used to obtain the amount of memory of the specified type that is available to the applet.
+   * Note that implementation-dependent memory overhead structures may also use the same memory pool.
+   */
   public void getAvailableMemory(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -244,10 +362,24 @@ public final class CardCoinManagerApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * This function is used to obtain the amount of memory of the specified type that is available to the applet.
+   * Note that implementation-dependent memory overhead structures may also use the same memory pool.
+   */
   public String getAvailableMemoryAndGetJson() throws Exception {
-    return executeCoinManagerOperationAndSendHex(GET_AVAILABLE_MEMORY_APDU, ERROR_MSG_GET_AVAILABLE_MEMORY_RESPONSE_LEN_INCORRECT);
+    long start = System.currentTimeMillis();
+    String json = executeCoinManagerOperationAndSendHex(GET_AVAILABLE_MEMORY_APDU, ERROR_MSG_GET_AVAILABLE_MEMORY_RESPONSE_LEN_INCORRECT);
+    long end = System.currentTimeMillis();
+    Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+    return json;
   }
 
+  /**
+   * @param callback
+   * This function is used to get application list. It returns list of applets AIDs that were installed onto card.
+   */
   public void getAppsList(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -262,10 +394,24 @@ public final class CardCoinManagerApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @return
+   * @throws Exception
+   * This function is used to get application list. It returns list of applets AIDs that were installed onto card.
+   */
   public String getAppsListAndGetJson() throws Exception {
-    return executeCoinManagerOperationAndSendHex(GET_APPLET_LIST_APDU, ERROR_MSG_GET_APPLET_LIST_RESPONSE_LEN_INCORRECT);
+    long start = System.currentTimeMillis();
+    String json = executeCoinManagerOperationAndSendHex(GET_APPLET_LIST_APDU, ERROR_MSG_GET_APPLET_LIST_RESPONSE_LEN_INCORRECT);
+    long end = System.currentTimeMillis();
+    Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+    return json;
   }
 
+  /**
+   * @param pin
+   * @param callback
+   * This function is used to generate the seed for ed25519 with RNG.
+   */
   public void generateSeed(final String pin, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -280,20 +426,36 @@ public final class CardCoinManagerApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param pin
+   * @return
+   * @throws Exception
+   * This function is used to generate the seed for ed25519 with RNG.
+   */
   public String generateSeedAndGetJson(String pin) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(pin))
         throw new IllegalArgumentException(ERROR_MSG_PIN_FORMAT_INCORRECT);
       if (pin.length() != PIN_SIZE)
         throw new IllegalArgumentException(ERROR_MSG_PIN_LEN_INCORRECT);
       apduRunner.sendCoinManagerAppletAPDU(getGenerateSeedAPDU(BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(pin))));
-      return JSON_HELPER.createResponseJson(DONE_MSG);
+      String json = JSON_HELPER.createResponseJson(DONE_MSG);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
 
+  /**
+   * @param oldPin
+   * @param newPin
+   * @param callback
+   * This function is used to change device PIN.
+   */
   public void changePin(final String oldPin, final String newPin, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
@@ -308,14 +470,25 @@ public final class CardCoinManagerApi extends TonWalletApi {
     }).start();
   }
 
+  /**
+   * @param oldPin
+   * @param newPin
+   * @return
+   * @throws Exception
+   * This function is used to change device PIN.
+   */
   public String changePinAndGetJson(final String oldPin, final String newPin) throws Exception {
     try {
+      long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(newPin) || !STR_HELPER.isNumericString(oldPin))
         throw new Exception(ERROR_MSG_PIN_FORMAT_INCORRECT);
       if (oldPin.length() != PIN_SIZE || newPin.length() != PIN_SIZE)
         throw new Exception(ERROR_MSG_PIN_LEN_INCORRECT);
       apduRunner.sendCoinManagerAppletAPDU(getChangePinAPDU(BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(oldPin)), BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(newPin))));
-      return JSON_HELPER.createResponseJson(DONE_MSG);
+      String json = JSON_HELPER.createResponseJson(DONE_MSG);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return json;
     }
     catch (Exception e) {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
