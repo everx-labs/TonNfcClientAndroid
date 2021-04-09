@@ -1737,11 +1737,11 @@ This set of APDU commands is not a part of TON Wallet applet. So one must make t
 
    CLA: 0x00
 
-   INS:0xA4
+   INS: 0xA4
 
    P1: 0x04
 
-   P2:0x00
+   P2: 0x00
 
 - **GET_SE_VERSION**
  
@@ -1751,14 +1751,134 @@ This set of APDU commands is not a part of TON Wallet applet. So one must make t
 
    CLA: 0x80
 
-   INS:0xCB
+   INS: 0xCB
 
    P1: 0x80
 
-   P2:0x00
+   P2: 0x00
    
    LC: 0x05
    
    Data: 0xDF 0xFF 0x02 0x81 0x09
    
    LE: 0x00
+   
+- **GET_CSN_VERSION**
+ 
+  Get CSN (Secure element ID).
+   
+   ***APDU input params:***
+
+   CLA: 0x80
+
+   INS: 0xCB
+
+   P1: 0x80
+
+   P2: 0x00
+   
+   LC: 0x05
+   
+   Data: 0xDF 0xFF 0x02 0x81 0x01
+   
+   LE: 0x00   
+   
+- **GET_PIN_RTL**
+ 
+   Get remaining retry times of PIN.
+   
+   ***APDU input params:***
+
+   CLA: 0x80
+
+   INS: 0xCB
+
+   P1: 0x80
+
+   P2: 0x00
+   
+   LC: 0x05
+   
+   Data: 0xDF 0xFF 0x02 0x81 0x02
+   
+   LE: 0x00
+   
+- **GET_PIN_TLT**
+ 
+   Get retry maximum times of PIN.
+   
+   ***APDU input params:***
+
+   CLA: 0x80
+
+   INS: 0xCB
+
+   P1: 0x80
+
+   P2: 0x00
+   
+   LC: 0x05
+   
+   Data: 0xDF 0xFF 0x02 0x81 0x03
+   
+   LE: 0x00  
+   
+- **GET_DEVICE_LABEL**
+ 
+   Get device label.
+   
+   ***APDU input params:***
+
+   CLA: 0x80
+
+   INS: 0xCB
+
+   P1: 0x80
+
+   P2: 0x00
+   
+   LC: 0x05
+   
+   Data: 0xDF 0xFF 0x02 0x81 0x04
+   
+   LE: 0x00
+
+- **GET_ROOT_KEY_STATUS**
+ 
+   Get device label.
+   
+   ***APDU input params:***
+
+   CLA: 0x80
+
+   INS: 0xCB
+
+   P1: 0x80
+
+   P2: 0x00
+   
+   LC: 0x05
+   
+   Data: 0xDF 0xFF 0x02 0x81 0x05
+   
+   LE: 0x00
+   
+- **GET_APPLET_LIST**
+ 
+  Get application list. It returns list of applets AIDs that were installed onto card.
+   
+   ***APDU input params:***
+
+   CLA: 0x80
+
+   INS: 0xCB
+
+   P1: 0x80
+
+   P2: 0x00
+   
+   LC: 0x05
+   
+   Data: 0xDF 0xFF 0x02 0x81 0x06
+   
+   LE: 0x00  
