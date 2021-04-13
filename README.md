@@ -143,7 +143,7 @@ If some error happened then functions of TonNfcClientAndroid library produce err
 
 #### Applet (card) errors
 
-It is the case when applet (installed on the card) threw some error status word (SW). So Android code just catches it and throws away. The exemplary error json looks like this.
+It is the case when applet (installed on the card) threw some error status word (SW). So Android code just catches it and throws away. The typical error json looks like this.
 ```
 {
 	"message":"Incorrect PIN (from Ton wallet applet).",
@@ -170,7 +170,7 @@ Here:
 
 #### Android errors
 
-It is the case when error happened in Android code itself. The basic examples: troubles with NFC connection or incorrect format of input data passed into TonNfcClientAndroid library from the outside world. The exemplary error json looks like this.
+It is the case when error happened in Android code itself. The basic examples: troubles with NFC connection or incorrect format of input data passed into TonNfcClientAndroid library from the outside world. The typical error json looks like this.
 
 ```
 {
@@ -230,7 +230,7 @@ At this step not only the card waits for user authentication. The user also auth
 
 The detailed info about card activation and related workflow is [here]().
 
-For now let's suppose the user somehow got activation data into his application from debot (the details of working with debot will be given later). Then to activate the card he may use the following exemplary snippets.
+For now let's suppose the user somehow got activation data into his application from debot (the details of working with debot will be given later). Then to activate the card he may use the following snippets.
 
 
 ```java
@@ -501,7 +501,7 @@ And use the following code to test recovery data adding (for example add it as b
  }
  ```
  
- There is an exemplary short code snippet demonstrating the way of getting recovery data from the card.
+ There is a short code snippet demonstrating the way of getting recovery data from the card.
  ```java
  try {
 	String response = recoveryDataApi.isRecoveryDataSetAndGetJson();
