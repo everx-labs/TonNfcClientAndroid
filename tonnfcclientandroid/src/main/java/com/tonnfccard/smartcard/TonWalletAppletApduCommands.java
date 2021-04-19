@@ -129,26 +129,66 @@ public class TonWalletAppletApduCommands {
   public final static CAPDU SELECT_TON_WALLET_APPLET_APDU = new CAPDU(SELECT_CLA, SELECT_INS, SELECT_P1, SELECT_P2, TON_WALLET_APPLET_AID, LE); // 00 A4 04 00 0C 31 31 32 32 33 33 34 34 35 35 36 36 00
 
   /**
-   * This command returns applet state. Available in any applet state.
+   * GET_APP_INFO
+   *
+   * CLA: 0xB0
+   * INS: 0xC1
+   * P1: 0x00
+   * P2: 0x00
+   * LE: 0x01
+   *
+   * This command returns applet state. Available in any applet state. Applet state = 0x07, 0x17, 0x27, 0x37 or 0x47
    */
   public final static CAPDU GET_APP_INFO_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_APP_INFO, P1, P2, GET_APP_INFO_LE);
 
   /**
-   *  This command returns SHA256 hash of encrypted (by AES) activation password. Available only in WAITE_AUTHORIZATION_MODE state of applet.
+   * GET_HASH_OF_ENCRYPTED_PASSWORD
+   *
+   * CLA: 0xB0
+   * INS: 0x93
+   * P1: 0x00
+   * P2: 0x00
+   * LE: 0x20
+   *
+   * This command returns SHA256 hash of encrypted (by AES) activation password. Available only in WAITE_AUTHORIZATION_MODE state of applet.
    */
   public final static CAPDU GET_HASH_OF_ENCRYPTED_PASSWORD_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_HASH_OF_ENCRYPTED_PASSWORD, P1, P2, SHA_HASH_SIZE);
 
   /**
-   *  This command returns SHA256 hash of encrypted (by AES) activation common secret. Available only in WAITE_AUTHORIZATION_MODE state of applet.
+   * GET_HASH_OF_COMMON_SECRET
+   *
+   * CLA: 0xB0
+   * INS: 0x95
+   * P1: 0x00
+   * P2: 0x00
+   * LE: 0x20
+   *
+   * This command returns SHA256 hash of encrypted (by AES) activation common secret. Available only in WAITE_AUTHORIZATION_MODE state of applet.
    */
   public final static CAPDU GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_HASH_OF_ENCRYPTED_COMMON_SECRET, P1, P2, SHA_HASH_SIZE);
 
   /**
+   * GET_PUBLIC_KEY_WITH_DEFAULT_HD_PATH
+   *
+   * CLA: 0xB0
+   * INS: 0xA7
+   * P1: 0x00
+   * P2: 0x00
+   * LE: 0x20
+   *
    * This function retrieves ED25519 public key from CoinManager for fixed bip44 HD path m/44'/396'/0'/0'/0
    */
   public final static CAPDU GET_PUB_KEY_WITH_DEFAULT_PATH_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_PUBLIC_KEY_WITH_DEFAULT_HD_PATH, P1, P2, PUBLIC_KEY_LEN);
 
   /**
+   * GET_SAULT
+   *
+   * CLA: 0xB0
+   * INS: 0xBD
+   * P1: 0x00
+   * P2: 0x00
+   * LE: 0x20
+   *
    * The command outputs random 32-bytes sault produced by card. This sault must be used  by the host to generate HMAC.
    * In the end of its work it calls generateNewSault. So each call of GET_SAULT should produce new random looking sault
    * Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
@@ -156,30 +196,69 @@ public class TonWalletAppletApduCommands {
   public final static CAPDU GET_SAULT_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_SAULT, P1, P2, SAULT_LENGTH);
 
   /**
+   * GET_RECOVERY_DATA_HASH
+   *
+   * CLA: 0xB0
+   * INS: 0xD3
+   * P1: 0x00
+   * P2: 0x00
+   * LE: 0x20
+   *
    * This function returns SHA256 hash of encrypted binary blob saved during registration in Recovery service. This is necessary to control the integrity.
    * Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
    */
   public final static CAPDU GET_RECOVERY_DATA_HASH_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_RECOVERY_DATA_HASH, P1, P2, SHA_HASH_SIZE);
 
   /**
+   * GET_RECOVERY_DATA_LEN
+   *
+   * CLA: 0xB0
+   * INS: 0xD4
+   * P1: 0x00
+   * P2: 0x00
+   * LE:  0x02
+   *
    * This function returns real length of recovery data  saved in applet's internal buffer.
    * Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
    */
   public final static CAPDU GET_RECOVERY_DATA_LEN_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_RECOVERY_DATA_LEN, P1, P2, GET_RECOVERY_DATA_LEN_LE);
 
   /**
+   * IS_RECOVERY_DATA_SET
+   *
+   * CLA: 0xB0
+   * INS: 0xD6
+   * P1: 0x00
+   * P2: 0x00
+   * LE: 0x01
+   *
    * Returns 0x01 if recovery data is set, 0x00 if not.
    * Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE.
    */
   public final static CAPDU IS_RECOVERY_DATA_SET_APDU = new CAPDU(WALLET_APPLET_CLA, INS_IS_RECOVERY_DATA_SET, P1, P2, IS_RECOVERY_DATA_SET_LE);
 
   /**
+   * RESET_RECOVERY_DATA
+   *
+   * CLA: 0xB0
+   * INS: 0xD5
+   * P1: 0x00
+   * P2: 0x00
+   *
    * This function reset recovery data, internal buffer is filled by zeros, internal variable realRecoveryDataLen is set to 0, internal flag  isRecoveryDataSet is set to false.
    * Available in applet states PERSONALIZED and DELETE_KEY_FROM_KEYCHAIN_MODE
    */
   public final static CAPDU RESET_RECOVERY_DATA_APDU = new CAPDU(WALLET_APPLET_CLA, INS_RESET_RECOVERY_DATA, P1, P2);
 
   /**
+   * GET_SERIAL_NUMBER
+   *
+   * CLA: 0xB0
+   * INS: 0x80
+   * P1: 0xC2
+   * P2: 0x00
+   * LE: 0x18
+   *
    * This command returns card serial number. Available in any applet state.
    */
   public final static CAPDU GET_SERIAL_NUMBER_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_SERIAL_NUMBER, P1, P2, GET_SERIAL_NUMBER_LE);
