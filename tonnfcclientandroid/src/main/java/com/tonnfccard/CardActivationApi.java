@@ -114,6 +114,44 @@ public final class CardActivationApi extends TonWalletApi {
   }
 
   /**
+   * @param password
+   * @param commonSecret
+   * @param initialVector
+   * @param callback
+   * This function makes TON Labs wallet applet activation for default PIN 5555.
+   * Use here activation data tuple (password, commonSecret, initialVector) that is correct for your card, i.e. corresponds to your serialNumber.
+   */
+  public void turnOnWallet(final String password, final String commonSecret, final String initialVector, final NfcCallback callback) {
+    new Thread(new Runnable() {
+      public void run() {
+        try {
+          String json = turnOnWalletAndGetJson(password, commonSecret, initialVector);
+          resolveJson(json, callback);
+          Log.d(TAG, "turnOnWallet response : " + json);
+        } catch (Exception e) {
+
+          EXCEPTION_HELPER.handleException(e, callback, TAG);
+        }
+      }
+    }).start();
+  }
+
+  /**
+   *
+   * @param password
+   * @param commonSecret
+   * @param initialVector
+   * @return
+   * @throws Exception
+   * This function makes TON Labs wallet applet activation for default PIN 5555.
+   * Use here activation data tuple (password, commonSecret, initialVector) that is correct for your card, i.e. corresponds to your serialNumber.
+   *
+   */
+  public String turnOnWalletAndGetJson(final String password, final String commonSecret, final String initialVector) throws Exception {
+    return turnOnWalletAndGetJson(DEFAULT_PIN_STR, password, commonSecret, initialVector);
+  }
+
+  /**
    * @param callback
    * Return SHA256 hash of encrypted common secret.
    */

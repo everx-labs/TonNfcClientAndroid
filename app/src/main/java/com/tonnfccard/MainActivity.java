@@ -532,9 +532,9 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("TAG", "hashOfEncryptedCommonSecret : " + hashOfEncryptedCommonSecret);
                     Log.d("TAG", "hashOfEncryptedPassword : " + hashOfEncryptedPassword);
 
-                    String newPin = "7777";
+                  //  String newPin = "7777";
 
-                    appletState = extractMessage(cardActivationApi.turnOnWalletAndGetJson(newPin, PASSWORD, COMMON_SECRET, IV));
+                    appletState = extractMessage(cardActivationApi.turnOnWalletAndGetJson(PASSWORD, COMMON_SECRET, IV));
 
                     Log.d("TAG", "Card response (state) : " + appletState);
 
