@@ -437,7 +437,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View arg0) {
                 try {
-                    String response = cardCoinManagerNfcApi.getAvailableMemoryAndGetJson();//.getMaxPinTriesAndGetJson();
+                    String response = cardCoinManagerNfcApi.getMaxPinTriesAndGetJson();
                     Log.d("TAG", "Card response : " + response);
 
                 }
@@ -563,6 +563,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View arg0) {
                 try {
+                    String seedStatus = extractMessage(cardCoinManagerNfcApi.getRootKeyStatusAndGetJson());
+                    if (seedStatus.equals(NOT_GENERATED_MSG)) {
+                        cardCoinManagerNfcApi.generateSeedAndGetJson(DEFAULT_PIN);
+                    }
                     String response = cardActivationApi.getHashesAndGetJson();
                     Log.d("TAG", "Hashes : " + response);
                 }

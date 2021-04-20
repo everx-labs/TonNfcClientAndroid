@@ -256,7 +256,7 @@ public final class CardActivationApi extends TonWalletApi {
   public String getHashesAndGetJson() throws Exception {
     try {
       long start = System.currentTimeMillis();
-      String ecsHash = BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetHashOfEncryptedPassword().getData());
+      String ecsHash = BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetHashOfEncryptedCommonSecret().getData());
       String epHash = BYTE_ARR_HELPER.hex(getHashOfEncryptedPassword().getData());
       JSONObject jsonResponse = new JSONObject();
       jsonResponse.put(ECS_HASH_FIELD, ecsHash);
