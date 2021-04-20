@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button buttonGetMaxPinTries;
     Button buttonActivateCard;
+    Button buttonGetHashes;
     Button buttonPk;
     Button buttonSign;
     Button buttonTryKeychain;
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnCheckIfNfcEnabledButton();
         addListenerOnOpenNfcSettingsButton();
         addListenerOnGetKeyChainDataAboutAllKeysButton();
+        addListenerOnGetHashesButton();
         try {
             Context activity = getApplicationContext();
             NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(activity);
@@ -541,6 +543,28 @@ public class MainActivity extends AppCompatActivity {
                     if (!appletState.equals(PERSONALIZED_STATE_MSG)) {
                         throw new Exception("Incorrect applet state after activation : " + appletState);
                     }
+                }
+
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("TAG", "Error happened : " + e.getMessage());
+                }
+            }
+
+        });
+    }
+
+    public void addListenerOnGetHashesButton() {
+
+        buttonGetHashes = findViewById(R.id.getHashes);
+
+        buttonGetHashes.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                try {
+                    String response = cardActivationApi.getHashesAndGetJson();
+                    Log.d("TAG", "Hashes : " + response);
                 }
 
                 catch (Exception e) {

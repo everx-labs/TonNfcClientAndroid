@@ -9,6 +9,8 @@ import com.tonnfccard.smartcard.TonWalletAppletStates;
 import com.tonnfccard.smartcard.ApduRunner;
 import com.tonnfccard.smartcard.RAPDU;
 
+import org.json.JSONObject;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -42,6 +44,8 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getVerifyPass
 
 public final class CardActivationApi extends TonWalletApi {
   private static final String TAG = "CardActivationNfcApi";
+  public static final String ECS_HASH_FIELD = "ecsHash";
+  public static final String EP_HASH_FIELD = "epHash";
 
   public CardActivationApi(Context activity, NfcApduRunner apduRunner) {
     super(activity, apduRunner);
@@ -225,6 +229,48 @@ public final class CardActivationApi extends TonWalletApi {
     }
   }
 
+  /**
+   * @param callback
+   * Return SHA256 hashes of encrypted password and encrypted common secret.
+   */
+  public void getHashes(final NfcCallback callback) {
+    new Thread(new Runnable() {
+      public void run() {
+        try {
+          String json = getHashesAndGetJson();
+          resolveJson(json, callback);
+          Log.d(TAG, "getHashes response : " + json);
+        } catch (Exception e) {
+          EXCEPTION_HELPER.handleException(e, callback, TAG);
+        }
+      }
+    }).start();
+  }
+
+
+  /**
+   * @return
+   * @throws Exception
+   * Return SHA256 hashes of encrypted password and encrypted common secret.
+   */
+  public String getHashesAndGetJson() throws Exception {
+    try {
+      long start = System.currentTimeMillis();
+      String ecsHash = BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetHashOfEncryptedPassword().getData());
+      String epHash = BYTE_ARR_HELPER.hex(getHashOfEncryptedPassword().getData());
+      JSONObject jsonResponse = new JSONObject();
+      jsonResponse.put(ECS_HASH_FIELD, ecsHash);
+      jsonResponse.put(EP_HASH_FIELD, epHash);
+      jsonResponse.put(STATUS_FIELD, SUCCESS_STATUS);
+      long end = System.currentTimeMillis();
+      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return jsonResponse.toString();
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
+    }
+  }
+
   private RAPDU getHashOfEncryptedCommonSecret() throws Exception {
     RAPDU rapdu = apduRunner.sendAPDU(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU);
     if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != SHA_HASH_SIZE) throw new Exception(ERROR_MSG_HASH_OF_ENCRYPTED_COMMON_SECRET_RESPONSE_LEN_INCORRECT);
@@ -248,6 +294,7 @@ public final class CardActivationApi extends TonWalletApi {
     if (rapdu == null || rapdu.getData() == null || rapdu.getData().length != SHA_HASH_SIZE) throw new Exception(ERROR_MSG_HASH_OF_ENCRYPTED_PASSWORD_RESPONSE_LEN_INCORRECT);
     return rapdu;
   }
+
 
   private TonWalletAppletStates turnOnWallet(byte[] newPinBytes, byte[] password, byte[] commonSecret, byte[] initialVector) throws Exception {
     apduRunner.sendCoinManagerAppletAPDU(RESET_WALLET_APDU);
