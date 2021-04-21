@@ -126,7 +126,7 @@ public final class TonWalletConstants {
      *  Json fields names
      */
     public static final String STATUS_FIELD = "status";
-    public static final String ERROR_CODE_FIELD = "errorCode";
+    public static final String ERROR_CODE_FIELD = "code";
     public static final String ERROR_TYPE_FIELD = "errorType";
     public static final String ERROR_TYPE_ID_FIELD = "errorTypeId";
     public static final String MESSAGE_FIELD = "message";
