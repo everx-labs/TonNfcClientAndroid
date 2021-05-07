@@ -60,11 +60,11 @@ public final class CardActivationApi extends TonWalletApi {
    * This function makes TON Labs wallet applet activation.
    * Use here activation data tuple (password, commonSecret, initialVector) that is correct for your card, i.e. corresponds to your serialNumber.
    */
-  public void turnOnWallet(final String newPin, final String password, final String commonSecret, final String initialVector, final NfcCallback callback) {
+  public void turnOnWallet(final String newPin, final String password, final String commonSecret, final String initialVector, final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = turnOnWalletAndGetJson(newPin, password, commonSecret, initialVector);
+          String json = turnOnWalletAndGetJson(newPin, password, commonSecret, initialVector, showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "turnOnWallet response : " + json);
         } catch (Exception e) {
@@ -87,9 +87,9 @@ public final class CardActivationApi extends TonWalletApi {
    * Use here activation data tuple (password, commonSecret, initialVector) that is correct for your card, i.e. corresponds to your serialNumber.
    *
    */
-  public String turnOnWalletAndGetJson(final String newPin, final String password, final String commonSecret, final String initialVector) throws Exception {
+  public String turnOnWalletAndGetJson(final String newPin, final String password, final String commonSecret, final String initialVector, Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(password))
         throw new Exception(ERROR_MSG_PASSWORD_NOT_HEX);
       if (password.length() != 2 * PASSWORD_SIZE)
@@ -106,13 +106,17 @@ public final class CardActivationApi extends TonWalletApi {
         throw new Exception(ERROR_MSG_INITIAL_VECTOR_NOT_HEX);
       if (initialVector.length() != 2 * IV_SIZE)
         throw new Exception(ERROR_MSG_INITIAL_VECTOR_LEN_INCORRECT);
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       TonWalletAppletStates state = turnOnWallet(BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(newPin)), BYTE_ARR_HELPER.bytes(password), BYTE_ARR_HELPER.bytes(commonSecret), BYTE_ARR_HELPER.bytes(initialVector));
       String json = JSON_HELPER.createResponseJson(state.getDescription());
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -125,15 +129,14 @@ public final class CardActivationApi extends TonWalletApi {
    * This function makes TON Labs wallet applet activation for default PIN 5555.
    * Use here activation data tuple (password, commonSecret, initialVector) that is correct for your card, i.e. corresponds to your serialNumber.
    */
-  public void turnOnWallet(final String password, final String commonSecret, final String initialVector, final NfcCallback callback) {
+  public void turnOnWallet(final String password, final String commonSecret, final String initialVector, final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = turnOnWalletAndGetJson(password, commonSecret, initialVector);
+          String json = turnOnWalletAndGetJson(password, commonSecret, initialVector, showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "turnOnWallet response : " + json);
         } catch (Exception e) {
-
           EXCEPTION_HELPER.handleException(e, callback, TAG);
         }
       }
@@ -151,19 +154,19 @@ public final class CardActivationApi extends TonWalletApi {
    * Use here activation data tuple (password, commonSecret, initialVector) that is correct for your card, i.e. corresponds to your serialNumber.
    *
    */
-  public String turnOnWalletAndGetJson(final String password, final String commonSecret, final String initialVector) throws Exception {
-    return turnOnWalletAndGetJson(DEFAULT_PIN_STR, password, commonSecret, initialVector);
+  public String turnOnWalletAndGetJson(final String password, final String commonSecret, final String initialVector, Boolean... showDialog) throws Exception {
+    return turnOnWalletAndGetJson(DEFAULT_PIN_STR, password, commonSecret, initialVector, showDialog.length > 0 ? showDialog[0] : true);
   }
 
   /**
    * @param callback
    * Return SHA256 hash of encrypted common secret.
    */
-  public void getHashOfEncryptedCommonSecret(final NfcCallback callback) {
+  public void getHashOfEncryptedCommonSecret(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getHashOfEncryptedCommonSecretAndGetJson();
+          String json = getHashOfEncryptedCommonSecretAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getHashOfCommonSecret response : " + json);
         } catch (Exception e) {
@@ -178,16 +181,20 @@ public final class CardActivationApi extends TonWalletApi {
    * @throws Exception
    * Return SHA256 hash of encrypted common secret.
    */
-  public String getHashOfEncryptedCommonSecretAndGetJson() throws Exception {
+  public String getHashOfEncryptedCommonSecretAndGetJson(Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String response = BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetHashOfEncryptedCommonSecret().getData());
       String json = JSON_HELPER.createResponseJson(response);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -196,11 +203,11 @@ public final class CardActivationApi extends TonWalletApi {
    * @param callback
    * Return SHA256 hash of encrypted password.
    */
-  public void getHashOfEncryptedPassword(final NfcCallback callback) {
+  public void getHashOfEncryptedPassword(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getHashOfEncryptedPasswordAndGetJson();
+          String json = getHashOfEncryptedPasswordAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getHashOfEncryptedPassword response : " + json);
         } catch (Exception e) {
@@ -215,16 +222,20 @@ public final class CardActivationApi extends TonWalletApi {
    * @throws Exception
    * Return SHA256 hash of encrypted password.
    */
-  public String getHashOfEncryptedPasswordAndGetJson() throws Exception {
+  public String getHashOfEncryptedPasswordAndGetJson(Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String response = BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetHashOfEncryptedPassword().getData());
       String json = JSON_HELPER.createResponseJson(response);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -233,11 +244,11 @@ public final class CardActivationApi extends TonWalletApi {
    * @param callback
    * Return SHA256 hashes of encrypted password and encrypted common secret.
    */
-  public void getHashes(final NfcCallback callback) {
+  public void getHashes(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getHashesAndGetJson();
+          String json = getHashesAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getHashes response : " + json);
         } catch (Exception e) {
@@ -253,20 +264,24 @@ public final class CardActivationApi extends TonWalletApi {
    * @throws Exception
    * Return SHA256 hashes of encrypted password and encrypted common secret.
    */
-  public String getHashesAndGetJson() throws Exception {
+  public String getHashesAndGetJson(Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String ecsHash = BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetHashOfEncryptedCommonSecret().getData());
       String epHash = BYTE_ARR_HELPER.hex(getHashOfEncryptedPassword().getData());
       JSONObject jsonResponse = new JSONObject();
       jsonResponse.put(ECS_HASH_FIELD, ecsHash);
       jsonResponse.put(EP_HASH_FIELD, epHash);
       jsonResponse.put(STATUS_FIELD, SUCCESS_STATUS);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return jsonResponse.toString();
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }

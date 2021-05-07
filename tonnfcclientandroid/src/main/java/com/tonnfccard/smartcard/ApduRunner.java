@@ -54,7 +54,6 @@ public abstract class ApduRunner {
 
   public RAPDU sendCoinManagerAppletAPDU(CAPDU commandAPDU) throws Exception {
     if (commandAPDU == null) throw new Exception(ERROR_MSG_APDU_EMPTY);
-    Log.d("TAG","KKK1");
     sendAPDU(SELECT_COIN_MANAGER_APDU);
     return sendAPDU(commandAPDU);
   }
@@ -88,7 +87,6 @@ public abstract class ApduRunner {
     String apduName = APDU_HELPER.getApduCommandName(commandAPDU);
     if (apduName != null)
       Log.d(TAG, "(" + apduName + ")");
-    Log.d("TAG","KKK2");
     RAPDU rapdu = transmitCommand(commandAPDU);
 
     StringBuilder msg = new StringBuilder();

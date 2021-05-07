@@ -84,12 +84,14 @@ public class TonWalletApi {
 
   private final int START_CARD_INVITATION_DIALOG = 0;
   private final int FINISH_CARD_INVITATION_DIALOG = 1;
+  private final int FINISH_CARD_INVITATION_DIALOG_WITH_FAIL = 2;
 
   private final AlertDialog cardInvitationDialog;
   protected Handler mHandler = new Handler()
   {
     public void handleMessage(Message msg)
     {
+      System.out.println("msg.what = " + msg.what);
       if (msg.what == START_CARD_INVITATION_DIALOG) {
         cardInvitationDialog.show();
         final Timer timer2 = new Timer();
@@ -110,6 +112,16 @@ public class TonWalletApi {
           e.printStackTrace();
         }
       }
+      else if (msg.what == FINISH_CARD_INVITATION_DIALOG_WITH_FAIL) {
+        try {
+          Thread.sleep(500);
+          cardInvitationDialog.dismiss();
+          Toast.makeText(activity, "NFC Card operation failed!", Toast.LENGTH_SHORT).show();
+        }
+        catch (Exception e){
+          e.printStackTrace();
+        }
+      }
 
     }
   };
@@ -120,6 +132,10 @@ public class TonWalletApi {
 
   protected void closeInvitationDialog() {
     mHandler.sendEmptyMessage(FINISH_CARD_INVITATION_DIALOG);
+  }
+
+  protected void closeInvitationDialogWithFail() {
+    mHandler.sendEmptyMessage(FINISH_CARD_INVITATION_DIALOG_WITH_FAIL);
   }
 
   TonWalletApi(Context activity, NfcApduRunner apduRunner) {
@@ -173,11 +189,11 @@ public class TonWalletApi {
    * @param callback
    * This function returns serial number (SN). It must be identical to SN printed on the card.
    */
-  public void getSerialNumber(final NfcCallback callback) {
+  public void getSerialNumber(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getSerialNumberAndGetJson();
+          String json = getSerialNumberAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getSerialNumber response : " + json);
         } catch (Exception e) {
@@ -192,16 +208,20 @@ public class TonWalletApi {
    * @throws Exception
    * This function returns serial number (SN). It must be identical to SN printed on the card.
    */
-  public String getSerialNumberAndGetJson() throws Exception {
+  public String getSerialNumberAndGetJson(Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String response = STR_HELPER.makeDigitalString(getSerialNumber());
       String json = JSON_HELPER.createResponseJson(response);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -210,11 +230,11 @@ public class TonWalletApi {
    * @param callback
    * This function returns state of TON Labs wallet applet.
    */
-  public void getTonAppletState(final NfcCallback callback) {
+  public void getTonAppletState(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getTonAppletStateAndGetJson();
+          String json = getTonAppletStateAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getTonAppletState response : " + json);
         } catch (Exception e) {
@@ -229,16 +249,20 @@ public class TonWalletApi {
    * @throws Exception
    * This function returns state of TON Labs wallet applet.
    */
-  public String getTonAppletStateAndGetJson() throws Exception {
+  public String getTonAppletStateAndGetJson(Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       TonWalletAppletStates state = getTonAppletState();
       String json = JSON_HELPER.createResponseJson(state.getDescription());
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -247,11 +271,11 @@ public class TonWalletApi {
    * @param callback
    * This function returns fresh 32 bytes sault generated by the card.
    */
-  public void getSault(NfcCallback callback) {
+  public void getSault(NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getSaultAndGetJson();
+          String json = getSaultAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getSault response : " + json);
         } catch (Exception e) {
@@ -266,15 +290,19 @@ public class TonWalletApi {
    * @throws Exception
    * This function returns fresh 32 bytes sault generated by the card.
    */
-  public String getSaultAndGetJson() throws Exception {
+  public String getSaultAndGetJson(Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String json = JSON_HELPER.createResponseJson(getSaultHex());
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
         throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
