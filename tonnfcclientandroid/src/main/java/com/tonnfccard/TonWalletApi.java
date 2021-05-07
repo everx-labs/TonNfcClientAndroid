@@ -2,9 +2,14 @@ package com.tonnfccard;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.security.keystore.KeyProperties;
 import android.security.keystore.KeyProtection;
 import android.util.Log;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.tonnfccard.callback.NfcCallback;
 import com.tonnfccard.helpers.ExceptionHelper;
@@ -13,7 +18,6 @@ import com.tonnfccard.helpers.StringHelper;
 import com.tonnfccard.nfc.NfcApduRunner;
 import com.tonnfccard.smartcard.TonWalletAppletStates;
 import com.tonnfccard.helpers.HmacHelper;
-import com.tonnfccard.smartcard.ApduRunner;
 import com.tonnfccard.smartcard.RAPDU;
 import com.tonnfccard.utils.ByteArrayUtil;
 
@@ -25,6 +29,8 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -65,6 +71,7 @@ public class TonWalletApi {
     this.apduRunner = apduRunner;
   }
 
+  protected Context activity;
   NfcApduRunner apduRunner;
 
   static {
@@ -75,8 +82,50 @@ public class TonWalletApi {
     }
   }
 
+  private final int START_CARD_INVITATION_DIALOG = 0;
+  private final int FINISH_CARD_INVITATION_DIALOG = 1;
+
+  private final AlertDialog cardInvitationDialog;
+  protected Handler mHandler = new Handler()
+  {
+    public void handleMessage(Message msg)
+    {
+      if (msg.what == START_CARD_INVITATION_DIALOG) {
+        cardInvitationDialog.show();
+        final Timer timer2 = new Timer();
+        timer2.schedule(new TimerTask() {
+          public void run() {
+            cardInvitationDialog.dismiss();
+            timer2.cancel(); //this will cancel the timer of the system
+          }
+        }, 35000);
+      }
+      else if (msg.what == FINISH_CARD_INVITATION_DIALOG) {
+        try {
+          Thread.sleep(500);
+          cardInvitationDialog.dismiss();
+          Toast.makeText(activity, "NFC Card operation is finished!", Toast.LENGTH_SHORT).show();
+        }
+        catch (Exception e){
+          e.printStackTrace();
+        }
+      }
+
+    }
+  };
+
+  protected void openInvitationDialog() {
+    mHandler.sendEmptyMessage(START_CARD_INVITATION_DIALOG);
+  }
+
+  protected void closeInvitationDialog() {
+    mHandler.sendEmptyMessage(FINISH_CARD_INVITATION_DIALOG);
+  }
+
   TonWalletApi(Context activity, NfcApduRunner apduRunner) {
+    this.activity = activity;
     this.apduRunner = apduRunner;
+    cardInvitationDialog = DialogHelper.createInvitationDialog(activity, apduRunner);
   }
 
   public static void setHmacHelper(HmacHelper hmacHelper) {

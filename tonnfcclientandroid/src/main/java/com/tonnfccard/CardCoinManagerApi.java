@@ -1,7 +1,15 @@
 package com.tonnfccard;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentManager;
 
 import com.tonnfccard.callback.NfcCallback;
 import com.tonnfccard.nfc.NfcApduRunner;
@@ -9,8 +17,12 @@ import com.tonnfccard.smartcard.ApduRunner;
 import com.tonnfccard.smartcard.RAPDU;
 import com.tonnfccard.smartcard.CAPDU;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.xml.transform.Result;
 
+import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
+import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.shouldRunOnUiThread;
 import static com.tonnfccard.TonWalletConstants.DONE_MSG;
 import static com.tonnfccard.TonWalletConstants.GENERATED_MSG;
 import static com.tonnfccard.TonWalletConstants.MAX_PIN_TRIES;
@@ -47,6 +59,7 @@ import static com.tonnfccard.smartcard.CoinManagerApduCommands.getSetDeviceLabel
 
 public final class CardCoinManagerApi extends TonWalletApi {
   private static final String TAG = "CardCoinManagerNfcApi";
+
 
   public CardCoinManagerApi(Context activity, NfcApduRunner apduRunner) {
     super(activity, apduRunner);
@@ -204,11 +217,11 @@ public final class CardCoinManagerApi extends TonWalletApi {
    * @param callback
    * This function is used to get retry maximum times of PIN.
    */
-  public void getMaxPinTries(final NfcCallback callback) {
+  public void getMaxPinTries(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getMaxPinTriesAndGetJson();
+          String json = getMaxPinTriesAndGetJson(showDialog.length > 0 ? showDialog[0] : true);
           resolveJson(json, callback);
           Log.d(TAG, "getMaxPinTries response : " + json);
         } catch (Exception e) {
@@ -223,11 +236,14 @@ public final class CardCoinManagerApi extends TonWalletApi {
    * @throws Exception
    * This function is used to get retry maximum times of PIN.
    */
-  public String getMaxPinTriesAndGetJson() throws Exception {
-    long start = System.currentTimeMillis();
+  public String getMaxPinTriesAndGetJson(Boolean... showDialog) throws Exception {
+    Boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+    if (showDialogFlag) openInvitationDialog();
+    //long start = System.currentTimeMillis();
     String json = getPinTries(GET_PIN_TLT_APDU);
-    long end = System.currentTimeMillis();
-    Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+    //long end = System.currentTimeMillis();
+    if (showDialogFlag) closeInvitationDialog();
+    //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
     return json;
   }
 
@@ -235,11 +251,11 @@ public final class CardCoinManagerApi extends TonWalletApi {
    * @param callback
    * This function is used to get remaining retry times of PIN.
    */
-  public void getRemainingPinTries(final NfcCallback callback) {
+  public void getRemainingPinTries(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getRemainingPinTriesAndGetJson();
+          String json = getRemainingPinTriesAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getRemainingPinTries response : " + json);
         } catch (Exception e) {
@@ -254,11 +270,14 @@ public final class CardCoinManagerApi extends TonWalletApi {
    * @throws Exception
    * This function is used to get remaining retry times of PIN.
    */
-  public String getRemainingPinTriesAndGetJson() throws Exception {
-    long start = System.currentTimeMillis();
-    String json =getPinTries(GET_PIN_RTL_APDU);
-    long end = System.currentTimeMillis();
-    Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+  public String getRemainingPinTriesAndGetJson(Boolean... showDialog) throws Exception {
+    //long start = System.currentTimeMillis();
+    Boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+    if (showDialogFlag) openInvitationDialog();
+    String json = getPinTries(GET_PIN_RTL_APDU);
+    if (showDialogFlag) closeInvitationDialog();
+    //long end = System.currentTimeMillis();
+    //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
     return json;
   }
 
@@ -510,6 +529,7 @@ public final class CardCoinManagerApi extends TonWalletApi {
 
   private String getPinTries(CAPDU apdu) throws Exception {
     try {
+      Log.d("TAG","KKK");
       RAPDU rapdu = apduRunner.sendCoinManagerAppletAPDU(apdu);
       if (rapdu == null || rapdu.getData() == null || rapdu.getData().length == 0)
         throw new Exception(ERROR_MSG_GET_PIN_TLT_OR_RTL_RESPONSE_LEN_INCORRECT);

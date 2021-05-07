@@ -12,6 +12,12 @@
         android:text="Get max PIN tries" />
 
     <Button
+        android:id="@+id/getRemainingPinTries"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Get remaining PIN tries" />
+
+    <Button
         android:id="@+id/getHashes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

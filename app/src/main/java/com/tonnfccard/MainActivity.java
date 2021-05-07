@@ -1,9 +1,11 @@
 package com.tonnfccard;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.tonnfccard.callback.NfcCallback;
 import com.tonnfccard.helpers.StringHelper;
 import com.tonnfccard.nfc.NfcApduRunner;
 import com.tonnfccard.utils.ByteArrayUtil;
@@ -64,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private byte[] counter = new byte[AES_COUNTER_SIZE];
 
     Button buttonGetMaxPinTries;
+    Button buttonGetRemainingPinTries;
     Button buttonActivateCard;
     Button buttonGetHashes;
     Button buttonPk;
@@ -79,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.d("TAG", "Current thread 1 : " + Thread.currentThread().getName());
         setContentView(R.layout.activity_main);
         addListenerOnGetMaxPinTriesButton();
         addListenerOnActivateCardButton();
@@ -93,15 +97,15 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnOpenNfcSettingsButton();
         addListenerOnGetKeyChainDataAboutAllKeysButton();
         addListenerOnGetHashesButton();
+        addListenerOnGetRemainingPinTriesButton();
         try {
-            Context activity = getApplicationContext();
-            NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(activity);
-            cardCoinManagerNfcApi = new CardCoinManagerApi(activity,  nfcApduRunner);
-            cardActivationApi = new CardActivationApi(activity,  nfcApduRunner);
-            cardCryptoApi =  new CardCryptoApi(activity,  nfcApduRunner);
-            cardKeyChainApi = new CardKeyChainApi(activity,  nfcApduRunner);
-            recoveryDataApi = new RecoveryDataApi(activity,  nfcApduRunner);
-            nfcApi = new NfcApi(activity);
+            NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(MainActivity.this);
+            cardCoinManagerNfcApi = new CardCoinManagerApi(MainActivity.this,  nfcApduRunner);
+            cardActivationApi = new CardActivationApi(MainActivity.this,  nfcApduRunner);
+            cardCryptoApi =  new CardCryptoApi(MainActivity.this,  nfcApduRunner);
+            cardKeyChainApi = new CardKeyChainApi(MainActivity.this,  nfcApduRunner);
+            recoveryDataApi = new RecoveryDataApi(MainActivity.this,  nfcApduRunner);
+            nfcApi = new NfcApi(MainActivity.this);
 
             kg = KeyGenerator.getInstance("AES");
             kg.init(AES_KEY_SIZE);
@@ -116,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         try {
+            Log.d("TAG", "Current thread 2 : " + Thread.currentThread().getName());
             if (cardActivationApi.setCardTag(intent)) {
                 Toast.makeText(this, "NFC hardware touched!", Toast.LENGTH_SHORT).show();
             }
@@ -123,6 +128,18 @@ public class MainActivity extends AppCompatActivity {
         catch (Exception e) {
             Log.e("TAG", "Error happened : " + e.getMessage());
         }
+    }
+
+    public void addListenerOnGetRemainingPinTriesButton() {
+
+        buttonGetRemainingPinTries = findViewById(R.id.getRemainingPinTries);
+
+        buttonGetRemainingPinTries.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                cardCoinManagerNfcApi.getRemainingPinTries(new NfcCallback(System.out::println, System.out::println));
+            }
+        });
     }
 
     public void addListenerOnGetKeyChainDataAboutAllKeysButton() {
@@ -357,71 +374,75 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
-                try {
-                    String status = cardCryptoApi.createKeyForHmacAndGetJson(PASSWORD, COMMON_SECRET, SERIAL_NUMBER);
-                    Log.d("TAG", "status : " + status);
+                new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            String status = cardCryptoApi.createKeyForHmacAndGetJson(PASSWORD, COMMON_SECRET, SERIAL_NUMBER);
+                            Log.d("TAG", "status : " + status);
 
-                    String response = cardKeyChainApi.resetKeyChainAndGetJson();
-                    Log.d("TAG", "resetKeyChain response : " + response);
+                            String response = cardKeyChainApi.resetKeyChainAndGetJson();
+                            Log.d("TAG", "resetKeyChain response : " + response);
 
-                    response = cardKeyChainApi.getKeyChainInfoAndGetJson();
-                    Log.d("TAG", "getKeyChainInfo response : " + response);
+                            response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+                            Log.d("TAG", "getKeyChainInfo response : " + response);
 
-                    String keyInHex = StringHelper.getInstance().randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN);
-                    response = cardKeyChainApi.addKeyIntoKeyChainAndGetJson(keyInHex);
-                    Log.d("TAG", "addKeyIntoKeyChain response : " + response);
-                    Log.d("TAG", "addKeyIntoKeyChain response : " + keyInHex .length());
+                            String keyInHex = StringHelper.getInstance().randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN);
+                            response = cardKeyChainApi.addKeyIntoKeyChainAndGetJson(keyInHex);
+                            Log.d("TAG", "addKeyIntoKeyChain response : " + response);
+                            Log.d("TAG", "addKeyIntoKeyChain response : " + keyInHex .length());
 
-                    String keyHmac = extractMessage(response);
-                    Log.d("TAG", "keyHmac : " + response);
+                            String keyHmac = extractMessage(response);
+                            Log.d("TAG", "keyHmac : " + response);
 
-                    response = cardKeyChainApi.getKeyChainInfoAndGetJson();
-                    Log.d("TAG", "getKeyChainInfo response : " + response);
+                            response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+                            Log.d("TAG", "getKeyChainInfo response : " + response);
 
-                    response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(keyHmac);
-                    String keyFromCard = extractMessage(response);
-                    Log.d("TAG", "keyFromCard : " + response);
+                            response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(keyHmac);
+                            String keyFromCard = extractMessage(response);
+                            Log.d("TAG", "keyFromCard : " + response);
 
-                    if (!keyInHex.toLowerCase().equals(keyFromCard.toLowerCase())) {
-                        System.out.println(keyInHex);
-                        System.out.println(keyFromCard);;
-                        throw  new Exception("Bad key from card : " + keyFromCard);
+                            if (!keyInHex.toLowerCase().equals(keyFromCard.toLowerCase())) {
+                                System.out.println(keyInHex);
+                                System.out.println(keyFromCard);;
+                                throw  new Exception("Bad key from card : " + keyFromCard);
+                            }
+
+                            String newKeyInHex =  StringHelper.getInstance().randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN);
+                            response = cardKeyChainApi.changeKeyInKeyChainAndGetJson(newKeyInHex, keyHmac);
+                            Log.d("TAG", "changeKeyInKeyChain response : " + response);
+                            String newKeyHmac = extractMessage(response);
+
+                            response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+                            Log.d("TAG", "getKeyChainInfo response : " + response);
+
+                            response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(newKeyHmac);
+                            String newKeyFromCard = extractMessage(response);
+                            Log.d("TAG", "keyFromCard : " + response);
+
+                            if (!newKeyInHex.toLowerCase().equals(newKeyFromCard.toLowerCase())) {
+                                throw  new Exception("Bad key from card : " + newKeyFromCard);
+                            }
+
+                            response = cardKeyChainApi.deleteKeyFromKeyChainAndGetJson(newKeyHmac);
+                            Log.d("TAG", "deleteKeyFromKeyChain response : " + response);
+
+                            response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+                            Log.d("TAG", "getKeyChainInfo response : " + response);
+
+                            JSONObject jObject = new JSONObject(response);
+                            Integer num  =  Integer.parseInt(jObject.getString(NUMBER_OF_KEYS_FIELD));
+
+                            if (num != 0) {
+                                throw  new Exception("Bad number of keys : " + num);
+                            }
+
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e("TAG", "Error happened : " + e.getMessage());
+                        }
                     }
-
-                    String newKeyInHex =  StringHelper.getInstance().randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN);
-                    response = cardKeyChainApi.changeKeyInKeyChainAndGetJson(newKeyInHex, keyHmac);
-                    Log.d("TAG", "changeKeyInKeyChain response : " + response);
-                    String newKeyHmac = extractMessage(response);
-
-                    response = cardKeyChainApi.getKeyChainInfoAndGetJson();
-                    Log.d("TAG", "getKeyChainInfo response : " + response);
-
-                    response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(newKeyHmac);
-                    String newKeyFromCard = extractMessage(response);
-                    Log.d("TAG", "keyFromCard : " + response);
-
-                    if (!newKeyInHex.toLowerCase().equals(newKeyFromCard.toLowerCase())) {
-                        throw  new Exception("Bad key from card : " + newKeyFromCard);
-                    }
-
-                    response = cardKeyChainApi.deleteKeyFromKeyChainAndGetJson(newKeyHmac);
-                    Log.d("TAG", "deleteKeyFromKeyChain response : " + response);
-
-                    response = cardKeyChainApi.getKeyChainInfoAndGetJson();
-                    Log.d("TAG", "getKeyChainInfo response : " + response);
-
-                    JSONObject jObject = new JSONObject(response);
-                    Integer num  =  Integer.parseInt(jObject.getString(NUMBER_OF_KEYS_FIELD));
-
-                    if (num != 0) {
-                        throw  new Exception("Bad number of keys : " + num);
-                    }
-
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e("TAG", "Error happened : " + e.getMessage());
-                }
+                }).start();
             }
 
         });
@@ -433,22 +454,22 @@ public class MainActivity extends AppCompatActivity {
         buttonGetMaxPinTries = findViewById(R.id.getMaxPinTries);
 
         buttonGetMaxPinTries.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View arg0) {
-                try {
-                    String response = cardCoinManagerNfcApi.getMaxPinTriesAndGetJson();
-                    Log.d("TAG", "Card response : " + response);
-
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e("TAG", "Error happened : " + e.getMessage());
-                }
+                new Thread(new Runnable() {
+                   public void run() {
+                        try {
+                            String response = cardCoinManagerNfcApi.getMaxPinTriesAndGetJson(false);
+                            Log.d("TAG", "Card response : " + response);
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e("TAG", "Error happened : " + e.getMessage());
+                        }
+                    }
+                }).start();
             }
-
         });
-
     }
 
     public void addListenerOnSignButton() {

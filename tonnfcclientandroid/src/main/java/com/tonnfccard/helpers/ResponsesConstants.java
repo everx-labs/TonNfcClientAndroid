@@ -181,6 +181,7 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_NFC_DISCONNECT = "Error happened during NFC tag disconnection.";
   public static final String ERROR_TRANSCEIVE = "Data transfer via NFC failed. Probably NFC connection was lost.";
   public static final String ERROR_BAD_RESPONSE = "Response from the card is too short. It must contain at least 2 bytes.";
+  public static final String ERROR_NFC_CARD_WAS_NOT_CONNECTED = "After 30 seconds of waiting NFC card has not been connected yet.";
 
   public static final List<String>  ANDROID_NFC_ERRORS = Arrays.asList(
     ERROR_MSG_NFC_CONNECT,
@@ -189,7 +190,8 @@ public class ResponsesConstants {
     ERROR_MSG_NO_TAG,
     ERROR_MSG_NFC_DISCONNECT,
     ERROR_TRANSCEIVE,
-    ERROR_BAD_RESPONSE
+    ERROR_BAD_RESPONSE,
+          ERROR_NFC_CARD_WAS_NOT_CONNECTED
   );
 
   /**
