@@ -331,7 +331,7 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
         
 - **getHashes()**
 
-    Return SHA256 hash of encrypted password and encrypted common secret.
+    Return SHA256 hashes of encrypted password and encrypted common secret.
 
     *Exemplary responses:*
 
