@@ -296,7 +296,7 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
         
 - **turnOnWallet(String password, String commonSecret, String initialVector)**
 
-    This function makes TON Labs wallet applet activation. After its succesfull call applet will be in working personalized state (so getTonAppletState() will return {"message":"TonWalletApplet is personalized.","status":"ok"}).
+    This function makes TON Labs wallet applet activation. After its succesfull call applet will be in working personalized state (so getTonAppletState() will return {"message":"TonWalletApplet is personalized.","status":"ok"}). It uses default PIN '5555'.
 
     *Arguments requirements:*
 
