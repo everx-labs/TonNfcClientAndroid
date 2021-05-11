@@ -1,5 +1,6 @@
 package com.tonnfccard;
 
+import com.tonnfccard.helpers.CardApiInterface;
 import android.content.Context;
 import android.nfc.tech.IsoDep;
 import android.os.Build;

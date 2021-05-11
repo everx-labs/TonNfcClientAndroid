@@ -1,5 +1,6 @@
 package com.tonnfccard;
 
+import com.tonnfccard.helpers.CardApiInterface;
 import android.content.Context;
 import android.nfc.tech.IsoDep;
 import android.os.Build;
@@ -96,8 +97,10 @@ public class CommonNfcApiTest {
     private final CardApiInterface<List<String>> getTonAppletState = list -> recoveryDataApi.getTonAppletStateAndGetJson();
 
     private final CardApiInterface<List<String>> turnOnWallet = list -> cardActivationApi.turnOnWalletAndGetJson(list.get(0), list.get(1), list.get(2), list.get(3));
+    private final CardApiInterface<List<String>> turnOnWalletWithoutPin = list -> cardActivationApi.turnOnWalletAndGetJson(list.get(0), list.get(1), list.get(2));
     private final CardApiInterface<List<String>> getHashOfEncryptedCommonSecret = list -> cardActivationApi.getHashOfEncryptedCommonSecretAndGetJson();
     private final CardApiInterface<List<String>> getHashOfEncryptedPassword = list -> cardActivationApi.getHashOfEncryptedPasswordAndGetJson();
+    private final CardApiInterface<List<String>> getHashes = list -> cardActivationApi.getHashesAndGetJson();
 
     private final CardApiInterface<List<String>> addRecoveryData = list -> recoveryDataApi.addRecoveryDataAndGetJson(list.get(0));
     private final CardApiInterface<List<String>> getRecoveryData = list -> recoveryDataApi.getRecoveryDataAndGetJson();
@@ -152,6 +155,7 @@ public class CommonNfcApiTest {
             put(generateSeed, Collections.singletonList(DEFAULT_PIN_STR));
             put(changePin, Arrays.asList(DEFAULT_PIN_STR, DEFAULT_PIN_STR));
             put(turnOnWallet, Arrays.asList(DEFAULT_PIN_STR, STRING_HELPER.randomHexString(2 * PASSWORD_SIZE), STRING_HELPER.randomHexString(2 * COMMON_SECRET_SIZE), STRING_HELPER.randomHexString(2 * IV_SIZE)));
+            put(turnOnWalletWithoutPin, Arrays.asList(STRING_HELPER.randomHexString(2 * PASSWORD_SIZE), STRING_HELPER.randomHexString(2 * COMMON_SECRET_SIZE), STRING_HELPER.randomHexString(2 * IV_SIZE)));
             put(sign, Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), "1"));
             put(verifyPinAndSign, Arrays.asList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH), "2", DEFAULT_PIN_STR));
             put(signForDefaultHdPath, Collections.singletonList(STRING_HELPER.randomHexString(2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH)));
@@ -192,6 +196,7 @@ public class CommonNfcApiTest {
             put(resetRecovery, Collections.emptyList());
             put(getHashOfEncryptedCommonSecret, Collections.emptyList());
             put(getHashOfEncryptedPassword, Collections.emptyList());
+            put(getHashes, Collections.emptyList());
             put(getSault, Collections.emptyList());
             put(getSerialNumber, Collections.emptyList());
             put(getTonAppletState, Collections.emptyList());
@@ -200,6 +205,7 @@ public class CommonNfcApiTest {
     List<CardApiInterface<List<String>>> cardTonWalletOperationsListNotSaulty = Arrays.asList(
             getHashOfEncryptedCommonSecret,
             getHashOfEncryptedPassword,
+            getHashes,
             addRecoveryData,
             getRecoveryData,
             getRecoveryDataLen,

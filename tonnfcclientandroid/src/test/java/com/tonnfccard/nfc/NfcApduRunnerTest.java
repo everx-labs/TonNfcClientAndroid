@@ -3,14 +3,11 @@ package com.tonnfccard.nfc;
 import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
-import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.Build;
-import android.os.Bundle;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.tonnfccard.CardApiInterface;
 import com.tonnfccard.helpers.ResponsesConstants;
 import com.tonnfccard.smartcard.CAPDU;
 import com.tonnfccard.smartcard.RAPDU;
@@ -26,7 +23,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.internal.DoNotInstrument;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,7 +30,6 @@ import static com.tonnfccard.TonWalletConstants.BLOCKED_STATE;
 import static com.tonnfccard.TonWalletConstants.INSTALLED_STATE;
 import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE;
 import static com.tonnfccard.nfc.NfcApduRunner.TIME_OUT;
-import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_ROOT_KEY_STATUS_APDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.SELECT_COIN_MANAGER_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_APPLET_STATE_APDU_LIST;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_APP_INFO_APDU;

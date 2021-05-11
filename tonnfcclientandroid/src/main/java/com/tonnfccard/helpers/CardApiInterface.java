@@ -1,4 +1,4 @@
-package com.tonnfccard;
+package com.tonnfccard.helpers;
 
 @FunctionalInterface
 public interface CardApiInterface<T> {

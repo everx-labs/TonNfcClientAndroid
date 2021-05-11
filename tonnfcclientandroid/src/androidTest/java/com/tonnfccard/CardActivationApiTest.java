@@ -7,6 +7,7 @@ import android.util.Log;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.tonnfccard.helpers.CardApiInterface;
 import com.tonnfccard.helpers.ExceptionHelper;
 import com.tonnfccard.helpers.HmacHelper;
 import com.tonnfccard.helpers.JsonHelper;
@@ -23,6 +24,9 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import java.security.KeyStore;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN;
@@ -61,6 +65,10 @@ public class CardActivationApiTest {
     private static final String H3 = "71106ED2161D12E5E59FA7FF298930F0F4BB398171A712CB26D947A0DAF5F0EF";
     private static final String H2 = "112716D2053C2828DC265B5DF14F85F203F8350DCB5774950901F3136108FA2C";
 
+    private final CardApiInterface<List<String>> turnOnWallet = list ->  cardActivationApi.turnOnWalletAndGetJson(list.get(0), list.get(1), list.get(2), list.get(3));
+    private final CardApiInterface<List<String>> turnOnWalletWithoutPin = list ->  cardActivationApi.turnOnWalletAndGetJson(list.get(0), list.get(1), list.get(2));
+    List<CardApiInterface<List<String>>> cardOperationsList = Arrays.asList(turnOnWallet, turnOnWalletWithoutPin);
+
     @Before
     public  void init() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
@@ -69,35 +77,38 @@ public class CardActivationApiTest {
     }
 
     @Test
-    public void testTurnOnWalletAppletSuccessfullOperations()  {
-        try {
-            NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
-            Mockito.doReturn(SUCCESS_RAPDU).when(nfcApduRunnerMock).sendCoinManagerAppletAPDU(RESET_WALLET_APDU);
-            Mockito.doReturn(SUCCESS_RAPDU).when(nfcApduRunnerMock).sendAPDU(getGenerateSeedAPDU(DEFAULT_PIN));
-            Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
-                    .doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
-                    .when(nfcApduRunnerMock).sendTonWalletAppletAPDU(GET_APP_INFO_APDU);
-            Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
-                    .when(nfcApduRunnerMock).sendAPDU(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU);
-            Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H2), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
-                    .when(nfcApduRunnerMock).sendAPDU(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU);
-            Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)))
-                    .when(nfcApduRunnerMock).sendAPDU(getVerifyPasswordAPDU(BYTE_ARRAY_HELPER.bytes(PASSWORD), BYTE_ARRAY_HELPER.bytes(IV)));
-            Mockito.doReturn(SUCCESS_RAPDU).when(nfcApduRunnerMock).sendCoinManagerAppletAPDU(getChangePinAPDU(DEFAULT_PIN, DEFAULT_PIN));
-            Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
-                    .when(nfcApduRunnerMock).sendTonWalletAppletAPDU(GET_SERIAL_NUMBER_APDU);
-            cardActivationApi.setApduRunner(nfcApduRunnerMock);
-            String response = cardActivationApi.turnOnWalletAndGetJson(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV);
+    public void testTurnOnWalletAppletSuccessfullOperations() throws Exception {
+        NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
+        Mockito.doReturn(SUCCESS_RAPDU).when(nfcApduRunnerMock).sendCoinManagerAppletAPDU(RESET_WALLET_APDU);
+        Mockito.doReturn(SUCCESS_RAPDU).when(nfcApduRunnerMock).sendAPDU(getGenerateSeedAPDU(DEFAULT_PIN));
+        Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
+                .doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
+                .doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
+                .doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
+                .when(nfcApduRunnerMock).sendTonWalletAppletAPDU(GET_APP_INFO_APDU);
+        Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
+                .when(nfcApduRunnerMock).sendAPDU(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU);
+        Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H2), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
+                .when(nfcApduRunnerMock).sendAPDU(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU);
+        Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)))
+                .when(nfcApduRunnerMock).sendAPDU(getVerifyPasswordAPDU(BYTE_ARRAY_HELPER.bytes(PASSWORD), BYTE_ARRAY_HELPER.bytes(IV)));
+        Mockito.doReturn(SUCCESS_RAPDU).when(nfcApduRunnerMock).sendCoinManagerAppletAPDU(getChangePinAPDU(DEFAULT_PIN, DEFAULT_PIN));
+        Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SN), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
+                .when(nfcApduRunnerMock).sendTonWalletAppletAPDU(GET_SERIAL_NUMBER_APDU);
+        cardActivationApi.setApduRunner(nfcApduRunnerMock);
+        final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+        keyStore.load(null);
+        for (int i = 0; i < cardOperationsList.size(); i++) {
+            System.out.println("i = " + i);
+            String response = cardOperationsList.get(i).accept(i == 0 ?
+                    Arrays.asList(DEFAULT_PIN_STR, PASSWORD, COMMON_SECRET, IV) :
+                    Arrays.asList(PASSWORD, COMMON_SECRET, IV));
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(PERSONALIZED_STATE_MSG).toLowerCase());
-            System.out.println(response);
-            final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            System.out.println("response = " + response);
             String keyAlias = HmacHelper.HMAC_KEY_ALIAS + SERIAL_NUMBER;
-            keyStore.load(null);
+            System.out.println(keyStore.containsAlias(keyAlias));
             assertTrue(keyStore.containsAlias(keyAlias));
-        }
-        catch (Exception e) {
-            fail();
-            e.printStackTrace();
+            keyStore.deleteEntry(keyAlias);
         }
     }
 
