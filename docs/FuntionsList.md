@@ -206,7 +206,7 @@ These functions are naturally divided into four groups. And there are respective
 
         {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
 
-- **disconnectCard(final NfcCallback callback),**
+- **disconnectCard(final NfcCallback callback),** <br/>
   **disconnectCardAndGetJson()**
 
     Breaks NFC connection. 
@@ -217,7 +217,7 @@ These functions are naturally divided into four groups. And there are respective
 
 #### Functions to mantain keys for HMAC SHA256 
 
-- **selectKeyForHmac(final String serialNumber, final NfcCallback callback), ** <br/>
+- **selectKeyForHmac(final String serialNumber, final NfcCallback callback),** <br/>
   **selectKeyForHmacAndGetJson(final String serialNumber)**
 
     Manually select new active card (it selects the serial number and correspondingly choose the appropriate key HMAC SHA256 from Android Keystore).
