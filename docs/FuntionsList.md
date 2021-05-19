@@ -4,7 +4,7 @@ Here there is full functions list provided by TonNfcClientAndroid library to mak
 
 In [readme](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/README.md) (see section about NfcCallback) we said that for each card operation there was a pair of functions. One of them puts result/error message into callback, the second just returns the result/ throws an exception. For example, there is getSerialNumberAndGetJson() function returning json string and getSerialNumber(NfcCallback callback) returning void and putting the same json into callback. They do the same work.
 
-**Note:** All functions working with NfcCallback create their separate thread for card operation. Whereas functions returning json string does not create their own thread. So if one does not want to block thr UI, then they should be called in new thread.
+**Note:** All functions working with NfcCallback create their separate thread for card operation. Whereas functions returning json string do not create their own thread. So if one does not want to block UI, then they should be called in new thread.
 
 The majority of functions below has the last input parameter 'Boolean... showDialog'. It indicates if one wants to show invitation dialog for NFC card connection. If this parameter is not specified at all, the dialog will be shown by default.
 
