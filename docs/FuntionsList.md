@@ -342,7 +342,7 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 
         {"message":"TonWalletApplet is personalized.","status":"ok"}
 
-- **getHashOfEncryptedCommonSecret(final NfcCallback callback, Boolean... showDialog)** <br/>
+- **getHashOfEncryptedCommonSecret(final NfcCallback callback, Boolean... showDialog),** <br/>
   **getHashOfEncryptedCommonSecretAndGetJson(Boolean... showDialog)**
 
     Return SHA256 hash of encrypted common secret.
@@ -351,7 +351,7 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 
         {"message":"EFBF24AC1563B34ADB0FFE0B0A53659E72E26765704C109C95346EEAA1D4BEAF","status":"ok"}
 
-- **getHashOfEncryptedPassword(final NfcCallback callback, Boolean... showDialog)** <br/>
+- **getHashOfEncryptedPassword(final NfcCallback callback, Boolean... showDialog),** <br/>
   **getHashOfEncryptedPasswordAndGetJson(Boolean... showDialog)**
 
     Return SHA256 hash of encrypted password.
@@ -360,7 +360,7 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 
         {"message":"26D4B03C0C0E168DC33E48BBCEB457C21364658C9D487341827BBFFB4D8B38F3","status":"ok"}
         
-- **getHashes(final NfcCallback callback, Boolean... showDialog)** <br/>
+- **getHashes(final NfcCallback callback, Boolean... showDialog),** <br/>
   **getHashesAndGetJson(Boolean... showDialog)**
 
     Return SHA256 hashes of encrypted password and encrypted common secret.
@@ -373,7 +373,8 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 
 Here there are functions related to ed25519 signature.
 
-- **getPublicKeyForDefaultPath()**
+- **getPublicKeyForDefaultPath(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getPublicKeyForDefaultPathAndGetJson(Boolean... showDialog)**
 
     Return public key for HD path m/44'/396'/0'/0'/0'
 
@@ -381,7 +382,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
 
-- **verifyPin(String pin)**
+- **verifyPin(final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **verifyPinAndGetJson(final String pin, Boolean... showDialog)**
 
     Make pin verification.
 
@@ -393,7 +395,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"done","status":"ok"}
 
-- **signForDefaultHdPath(String dataForSigning)**
+- **signForDefaultHdPath(final String dataForSigning, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **signForDefaultHdPathAndGetJson(final String dataForSigning, Boolean... showDialog)**
 
     Make  data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
 
@@ -405,7 +408,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"2D6A2749DD5AF5BB356220BFA06A0C624D5814438F37983322BBAD762EFB4759CFA927E6735B7CD556196894F3CE077ADDD6B49447B8B325ADC494B82DC8B605","status":"ok"}
 
-- **sign(String dataForSigning, String index)**
+- **sign(final String dataForSigning, final String index, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **signAndGetJson(final String dataForSigning, final String index, Boolean... showDialog)**
 
     Make data signing by key for HD path m/44'/396'/0'/0'/index'. Prior to call this function you must call verifyPin.
 
@@ -419,7 +423,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"13FB836213B12BBD41209273F81BCDCF7C226947B18128F73E9A6E96C84B30C3288E51C622C045488981B6544D02D0940DE54D68A0A78BC2A5F9523B8757B904","status":"ok"}
 
-- **getPublicKey(String index)**
+- **getPublicKey(final String index, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getPublicKeyAndGetJson(final String index, Boolean... showDialog)** 
 
     Return public key for HD path m/44'/396'/0'/0'/index'.
 
@@ -431,7 +436,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
 
-- **verifyPinAndSignForDefaultHdPath(String dataForSigning, String pin)**
+- **verifyPinAndSignForDefaultHdPath(final String dataForSigning, final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **verifyPinAndSignForDefaultHdPathAndGetJson(final String dataForSigning, final String pin, Boolean... showDialog)**
 
     Make  pin verification data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
 
@@ -445,7 +451,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"2D6A2749DD5AF5BB356220BFA06A0C624D5814438F37983322BBAD762EFB4759CFA927E6735B7CD556196894F3CE077ADDD6B49447B8B325ADC494B82DC8B605","status":"ok"}
 
-- **verifyPinAndSign(String dataForSigning, String index, String pin)**
+- **verifyPinAndSign(final String dataForSigning, final String index, final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **verifyPinAndSignAndGetJson(final String dataForSigning, final String index, final String pin, Boolean... showDialog)**
 
     Make pin verification and data signing by key for HD path m/44'/396'/0'/0'/index'.
 
