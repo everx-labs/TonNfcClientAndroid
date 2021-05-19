@@ -300,7 +300,8 @@ These functions are naturally divided into four groups. And there are respective
 
 When user gets NFC TON Labs security card at the first time, the applet on the card is in a special state. It waits for user authentication. And the main functionality of applet is blocked for now. At this point you may call all functions from previous subsections. And also some special functions are available in CardActivationApi. They are necessary to complete card activation. 
 
-- **turnOnWallet(String newPin, String password, String commonSecret, String initialVector)**
+- **turnOnWallet(final String newPin, final String password, final String commonSecret, final String initialVector, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **turnOnWalletAndGetJson(final String newPin, final String password, final String commonSecret, final String initialVector, Boolean... showDialog)**
 
     This function makes TON Labs wallet applet activation. After its succesfull call applet will be in working personalized state (so getTonAppletState() will return {"message":"TonWalletApplet is personalized.","status":"ok"}).
 
@@ -321,7 +322,8 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 
         {"message":"TonWalletApplet is personalized.","status":"ok"}
         
-- **turnOnWallet(String password, String commonSecret, String initialVector)**
+- **turnOnWallet(final String password, final String commonSecret, final String initialVector, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **turnOnWalletAndGetJson(final String password, final String commonSecret, final String initialVector, Boolean... showDialog)**
 
     This function makes TON Labs wallet applet activation. After its succesfull call applet will be in working personalized state (so getTonAppletState() will return {"message":"TonWalletApplet is personalized.","status":"ok"}). It uses default PIN '5555'.
 
@@ -340,7 +342,8 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 
         {"message":"TonWalletApplet is personalized.","status":"ok"}
 
-- **getHashOfEncryptedCommonSecret()**
+- **getHashOfEncryptedCommonSecret(final NfcCallback callback, Boolean... showDialog)** <br/>
+  **getHashOfEncryptedCommonSecretAndGetJson(Boolean... showDialog)**
 
     Return SHA256 hash of encrypted common secret.
 
@@ -348,7 +351,8 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 
         {"message":"EFBF24AC1563B34ADB0FFE0B0A53659E72E26765704C109C95346EEAA1D4BEAF","status":"ok"}
 
-- **getHashOfEncryptedPassword()**
+- **getHashOfEncryptedPassword(final NfcCallback callback, Boolean... showDialog)** <br/>
+  **getHashOfEncryptedPasswordAndGetJson(Boolean... showDialog)**
 
     Return SHA256 hash of encrypted password.
 
@@ -356,7 +360,8 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 
         {"message":"26D4B03C0C0E168DC33E48BBCEB457C21364658C9D487341827BBFFB4D8B38F3","status":"ok"}
         
-- **getHashes()**
+- **getHashes(final NfcCallback callback, Boolean... showDialog)** <br/>
+  **getHashesAndGetJson(Boolean... showDialog)**
 
     Return SHA256 hashes of encrypted password and encrypted common secret.
 
