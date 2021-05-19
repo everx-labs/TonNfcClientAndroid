@@ -470,7 +470,8 @@ Here there are functions related to ed25519 signature.
 
 ### RecoveryDataApi functions
 
-- **getRecoveryDataLen()**
+- **getRecoveryDataLen(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getRecoveryDataLenAndGetJson(Boolean... showDialog)**
 
     Read actual recovery data length.
 
@@ -478,7 +479,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"7","status":"ok"}
 
-- **getRecoveryDataHash()**
+- **getRecoveryDataHash(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getRecoveryDataHashAndGetJson(Boolean... showDialog)**
 
     Read recovery data SHA256 hash.
 
@@ -486,7 +488,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
 
-- **getRecoveryData()**
+- **getRecoveryData(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getRecoveryDataAndGetJson(Boolean... showDialog)**
 
     Read  recovery data from TON Wallet applet.
 
@@ -494,7 +497,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"00112233445566","status":"ok"}
 
-- **addRecoveryData(String recoveryData)**
+- **addRecoveryData(final String recoveryData, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **addRecoveryDataAndGetJson(final String recoveryData, Boolean... showDialog)**
 
     Save recovery data into applet. 
 
@@ -506,7 +510,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"done","status":"ok"}
 
-- **isRecoveryDataSet()**
+- **isRecoveryDataSet(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **isRecoveryDataSetAndGetJson(Boolean... showDialog)**
 
     Return 'true'/'false' if recovery data exists/does not exist.
 
@@ -515,7 +520,8 @@ Here there are functions related to ed25519 signature.
         1) If we added recovery data, then: {"message":"true","status":"ok"}
         2) If we did not add recovery data, then: {"message":"false","status":"ok"}
 
-- **resetRecoveryData()**
+- **resetRecoveryData(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **resetRecoveryDataAndGetJson(Boolean... showDialog)**
 
     Clear recovery data.
 
