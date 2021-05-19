@@ -43,8 +43,8 @@ Here there are functions to check/change the state of your NFC hardware.  In Ton
 
 Here there are functions to call APDU commands of CoinManager. CoinManager is an additional software integrated into NFC TON Labs Security card. It is responsible for maintaining ed25519 seed, related PIN and it provides some auxiliary operations.  In TonNfcClientAndroid library there is a class CardCoinManagerApi providing all CoinManager functions.
 
-- **setDeviceLabel(final String deviceLabel, final NfcCallback callback, Boolean... showDialog), ** <br/>
-  **setDeviceLabelAndGetJson(String deviceLabel, Boolean... showDialog) **
+- **setDeviceLabel(final String deviceLabel, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **setDeviceLabelAndGetJson(String deviceLabel, Boolean... showDialog)**
 
     This function is used to set the device label. Now we do not use this device label stored in CoinManager.
 
@@ -56,8 +56,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
         {"message":"done","status":"ok"}
 
-- **getDeviceLabel(final NfcCallback callback, Boolean... showDialog), ** <br/>
-  **getDeviceLabelAndGetJson(Boolean... showDialog) **
+- **getDeviceLabel(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getDeviceLabelAndGetJson(Boolean... showDialog)**
 
     This function is used to get device label. Now we do not use this device label stored in CoinManager.
 
@@ -75,7 +75,7 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
         {"message":"1008","status":"ok"}
 
 - **getCsn(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getCsnAndGetJson(Boolean... showDialog)*
+  **getCsnAndGetJson(Boolean... showDialog)**
 
     This function is used to get CSN (SEID).
 
