@@ -87,7 +87,6 @@ public abstract class ApduRunner {
     String apduName = APDU_HELPER.getApduCommandName(commandAPDU);
     if (apduName != null)
       Log.d(TAG, "(" + apduName + ")");
-
     RAPDU rapdu = transmitCommand(commandAPDU);
 
     StringBuilder msg = new StringBuilder();

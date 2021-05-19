@@ -47,11 +47,11 @@ public final class CardCryptoApi extends TonWalletApi {
    * @param callback
    * Make pin verification.
    */
-  public void verifyPin(final String pin, final NfcCallback callback) {
+  public void verifyPin(final String pin, final NfcCallback callback,  Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = verifyPinAndGetJson(pin);
+          String json = verifyPinAndGetJson(pin, showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "verifyPin response : " + json);
         } catch (Exception e) {
@@ -67,20 +67,24 @@ public final class CardCryptoApi extends TonWalletApi {
    * @throws Exception
    * Make pin verification.
    */
-  public String verifyPinAndGetJson(String pin) throws Exception {
+  public String verifyPinAndGetJson(String pin,  Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(pin))
         throw new Exception(ERROR_MSG_PIN_FORMAT_INCORRECT);
       if (pin.length() != PIN_SIZE)
         throw new Exception(ERROR_MSG_PIN_LEN_INCORRECT);
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       verifyPin(BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(pin)));
       String json = JSON_HELPER.createResponseJson(DONE_MSG);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -89,11 +93,11 @@ public final class CardCryptoApi extends TonWalletApi {
    * @param callback
    * Return public key for HD path m/44'/396'/0'/0'/0'
    */
-  public void getPublicKeyForDefaultPath(final NfcCallback callback) {
+  public void getPublicKeyForDefaultPath(final NfcCallback callback,  Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getPublicKeyForDefaultPathAndGetJson();
+          String json = getPublicKeyForDefaultPathAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getPublicKeyForDefaultPath response : " + json);
         } catch (Exception e) {
@@ -108,16 +112,20 @@ public final class CardCryptoApi extends TonWalletApi {
    * @throws Exception
    * Return public key for HD path m/44'/396'/0'/0'/0'
    */
-  public String getPublicKeyForDefaultPathAndGetJson() throws Exception {
+  public String getPublicKeyForDefaultPathAndGetJson(Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String response = BYTE_ARR_HELPER.hex(getPublicKeyForDefaultPath().getData());
       String json = JSON_HELPER.createResponseJson(response);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -127,11 +135,11 @@ public final class CardCryptoApi extends TonWalletApi {
    * @param callback
    * Return public key for HD path m/44'/396'/0'/0'/index'.
    */
-  public void getPublicKey(final String index, final NfcCallback callback) {
+  public void getPublicKey(final String index, final NfcCallback callback,  Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getPublicKeyAndGetJson(index);
+          String json = getPublicKeyAndGetJson(index, showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getPublicKey response : " + json);
         } catch (Exception e) {
@@ -147,20 +155,24 @@ public final class CardCryptoApi extends TonWalletApi {
    * @throws Exception
    * Return public key for HD path m/44'/396'/0'/0'/index'.
    */
-  public String getPublicKeyAndGetJson(String index) throws Exception {
+  public String getPublicKeyAndGetJson(String index,  Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(index))
         throw new Exception(ERROR_MSG_HD_INDEX_FORMAT_INCORRECT);
       if (index.length() == 0 || index.length() > MAX_HD_INDEX_SIZE)
         throw new Exception(ERROR_MSG_HD_INDEX_LEN_INCORRECT);
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String response = BYTE_ARR_HELPER.hex(getPublicKey(BYTE_ARR_HELPER.bytes(STR_HELPER.asciiToHex(index))).getData());
       String json = JSON_HELPER.createResponseJson(response);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -170,11 +182,11 @@ public final class CardCryptoApi extends TonWalletApi {
    * @param callback
    * Make data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
    */
-  public void signForDefaultHdPath(final String dataForSigning, final NfcCallback callback) {
+  public void signForDefaultHdPath(final String dataForSigning, final NfcCallback callback,  Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = signForDefaultHdPathAndGetJson(dataForSigning);
+          String json = signForDefaultHdPathAndGetJson(dataForSigning, showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "signForDefaultHdPath response : " + json);
         } catch (Exception e) {
@@ -190,20 +202,24 @@ public final class CardCryptoApi extends TonWalletApi {
    * @throws Exception
    * Make data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
    */
-  public String signForDefaultHdPathAndGetJson(final String dataForSigning) throws Exception {
+  public String signForDefaultHdPathAndGetJson(final String dataForSigning,  Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(dataForSigning))
         throw new Exception(ERROR_MSG_DATA_FOR_SIGNING_NOT_HEX);
       if (dataForSigning.length() > (2 * DATA_FOR_SIGNING_MAX_SIZE))
         throw new Exception(ERROR_MSG_DATA_FOR_SIGNING_LEN_INCORRECT);
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String response = BYTE_ARR_HELPER.hex(signForDefaultPath(BYTE_ARR_HELPER.bytes(dataForSigning)).getData());
       String json = JSON_HELPER.createResponseJson(response);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -214,11 +230,11 @@ public final class CardCryptoApi extends TonWalletApi {
    * @param callback
    * Make data signing by key for HD path m/44'/396'/0'/0'/index'. Prior to call this function you must call verifyPin.
    */
-  public void sign(final String dataForSigning, final String index, final NfcCallback callback) {
+  public void sign(final String dataForSigning, final String index, final NfcCallback callback,  Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = signAndGetJson(dataForSigning, index);
+          String json = signAndGetJson(dataForSigning, index, showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "sign response : " + json);
         } catch (Exception e) {
@@ -235,9 +251,9 @@ public final class CardCryptoApi extends TonWalletApi {
    * @throws Exception
    * Make data signing by key for HD path m/44'/396'/0'/0'/index'. Prior to call this function you must call verifyPin.
    */
-  public String signAndGetJson(final String dataForSigning, final String index) throws Exception {
+  public String signAndGetJson(final String dataForSigning, final String index,  Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(index))
         throw new Exception(ERROR_MSG_HD_INDEX_FORMAT_INCORRECT);
       if (index.length() > MAX_HD_INDEX_SIZE)
@@ -246,13 +262,17 @@ public final class CardCryptoApi extends TonWalletApi {
         throw new Exception(ERROR_MSG_DATA_FOR_SIGNING_NOT_HEX);
       if (dataForSigning.length() > (2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH))
         throw new Exception(ERROR_MSG_DATA_FOR_SIGNING_WITH_PATH_LEN_INCORRECT);
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String response = BYTE_ARR_HELPER.hex(sign(BYTE_ARR_HELPER.bytes(dataForSigning), BYTE_ARR_HELPER.bytes(STR_HELPER.asciiToHex(index))).getData());
       String json = JSON_HELPER.createResponseJson(response);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -263,11 +283,11 @@ public final class CardCryptoApi extends TonWalletApi {
    * @param callback
    * Make pin verification data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
    */
-  public void verifyPinAndSignForDefaultHdPath(final String dataForSigning, final String pin, final NfcCallback callback) {
+  public void verifyPinAndSignForDefaultHdPath(final String dataForSigning, final String pin, final NfcCallback callback,  Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = verifyPinAndSignForDefaultHdPathAndGetJson(dataForSigning, pin);
+          String json = verifyPinAndSignForDefaultHdPathAndGetJson(dataForSigning, pin, showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "verifyPinAndSignForDefaultHdPath response : " + json);
         } catch (Exception e) {
@@ -284,9 +304,9 @@ public final class CardCryptoApi extends TonWalletApi {
    * @throws Exception
    * Make pin verification data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
    */
-  public String verifyPinAndSignForDefaultHdPathAndGetJson(final String dataForSigning, final String pin) throws Exception {
+  public String verifyPinAndSignForDefaultHdPathAndGetJson(final String dataForSigning, final String pin,  Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(pin))
         throw new Exception(ERROR_MSG_PIN_FORMAT_INCORRECT);
       if (pin.length() != PIN_SIZE)
@@ -295,13 +315,17 @@ public final class CardCryptoApi extends TonWalletApi {
         throw new Exception(ERROR_MSG_DATA_FOR_SIGNING_NOT_HEX);
       if (dataForSigning.length() > (2 * DATA_FOR_SIGNING_MAX_SIZE))
         throw new Exception(ERROR_MSG_DATA_FOR_SIGNING_LEN_INCORRECT);
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String response = BYTE_ARR_HELPER.hex(verifyPinAndSignForDefaultHdPath(BYTE_ARR_HELPER.bytes(dataForSigning), BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(pin))).getData());
       String json = JSON_HELPER.createResponseJson(response);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -313,11 +337,11 @@ public final class CardCryptoApi extends TonWalletApi {
    * @param callback
    * Make pin verification and data signing by key for HD path m/44'/396'/0'/0'/index'.
    */
-  public void verifyPinAndSign(final String dataForSigning, final String index, final String pin, final NfcCallback callback) {
+  public void verifyPinAndSign(final String dataForSigning, final String index, final String pin, final NfcCallback callback,  Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = verifyPinAndSignAndGetJson(dataForSigning, index, pin);
+          String json = verifyPinAndSignAndGetJson(dataForSigning, index, pin, showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "verifyPinAndSign response : " + json);
         } catch (Exception e) {
@@ -335,9 +359,9 @@ public final class CardCryptoApi extends TonWalletApi {
    * @throws Exception
    * Make pin verification and data signing by key for HD path m/44'/396'/0'/0'/index'.
    */
-  public String verifyPinAndSignAndGetJson(final String dataForSigning, final String index, final String pin) throws Exception {
+  public String verifyPinAndSignAndGetJson(final String dataForSigning, final String index, final String pin,  Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(pin))
         throw new Exception(ERROR_MSG_PIN_FORMAT_INCORRECT);
       if (pin.length() != PIN_SIZE)
@@ -350,13 +374,17 @@ public final class CardCryptoApi extends TonWalletApi {
         throw new Exception(ERROR_MSG_DATA_FOR_SIGNING_NOT_HEX);
       if (dataForSigning.length() > (2 * DATA_FOR_SIGNING_MAX_SIZE_FOR_CASE_WITH_PATH))
         throw new Exception(ERROR_MSG_DATA_FOR_SIGNING_WITH_PATH_LEN_INCORRECT);
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String response = BYTE_ARR_HELPER.hex(verifyPinAndSign(BYTE_ARR_HELPER.bytes(dataForSigning), BYTE_ARR_HELPER.bytes(STR_HELPER.asciiToHex(index)), BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(pin))).getData());
       String json = JSON_HELPER.createResponseJson(response);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }

@@ -27,6 +27,7 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_DISCONNECT
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_CONTEXT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_NFC;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_TAG;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_NFC_CARD_WAS_NOT_CONNECTED;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_TRANSCEIVE;
 import static com.tonnfccard.smartcard.RAPDU.MAX_LENGTH;
 
@@ -37,6 +38,8 @@ import static com.tonnfccard.smartcard.RAPDU.MAX_LENGTH;
  */
 public class NfcApduRunner extends ApduRunner {
   public static final int TIME_OUT = 60000;
+  public static final int NUMBER_OF_RETRIES_ATTEMPTS = 10;
+  public static final int RETRY_TIME_OUT = 3000;
   private static NfcApduRunner nfcApduRunner;
   private static Context apiContext;
 
@@ -113,27 +116,37 @@ public class NfcApduRunner extends ApduRunner {
 
   @Override
   public RAPDU transmitCommand(CAPDU commandAPDU) throws  Exception {
-    if (nfcTag == null) {
-      throw new Exception(ERROR_MSG_NO_TAG);
+    Log.d("TAG","-1");
+    RAPDU res = null;
+    for (int i = 0 ; i < NUMBER_OF_RETRIES_ATTEMPTS ; i++) {
+      Log.d("TAG", String.valueOf(i));
+      try {
+        if (nfcTag == null) {
+          throw new Exception(ERROR_MSG_NO_TAG);
+        }
+        if (commandAPDU == null) {
+          throw new Exception(ERROR_MSG_APDU_EMPTY);
+        }
+        res = new RAPDU(transceive(commandAPDU.getBytes()));
+        lastSentAPDU = commandAPDU;
+        return res;
+      } catch (Exception e) {
+        Thread.sleep(RETRY_TIME_OUT);
+      }
     }
-    if (commandAPDU == null) {
-      throw new Exception(ERROR_MSG_APDU_EMPTY);
-    }
-    RAPDU res = new RAPDU(transceive(commandAPDU.getBytes()));
-    lastSentAPDU = commandAPDU;
-    return res;
+    throw new Exception(ERROR_NFC_CARD_WAS_NOT_CONNECTED);
   }
 
-  private byte[] transceive(byte[] apduCommandBytes) throws Exception{
+  private byte[] transceive(byte[] apduCommandBytes) throws Exception {
     connect();
     nfcTag.setTimeout(TIME_OUT);
     byte[] response;
     try {
-      long start = System.currentTimeMillis();
+     // long start = System.currentTimeMillis();
       response = nfcTag.transceive(apduCommandBytes);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "APDU = " + ByteArrayUtil.getInstance().hex(apduCommandBytes));
-      Log.d("TAG", "Time = " + String.valueOf(end - start) );
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "APDU = " + ByteArrayUtil.getInstance().hex(apduCommandBytes));
+      //Log.d("TAG", "Time = " + String.valueOf(end - start) );
     } catch (Exception e) {
         throw new Exception(ERROR_TRANSCEIVE + ", More details: " + e.getMessage());
     }

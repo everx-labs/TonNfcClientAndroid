@@ -110,11 +110,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @param callback
    * Clear keychain, i.e. remove all stored keys.
    */
-  public void resetKeyChain(final NfcCallback callback) {
+  public void resetKeyChain(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = resetKeyChainAndGetJson();
+          String json = resetKeyChainAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "resetKeyChain response : " + json);
         } catch (Exception e) {
@@ -129,16 +129,20 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Clear keychain, i.e. remove all stored keys.
    */
-  public String resetKeyChainAndGetJson() throws Exception {
+  public String resetKeyChainAndGetJson(Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       resetKeyChain();
       String json =  JSON_HELPER.createResponseJson(DONE_MSG);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -147,11 +151,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @param callback
    * Return list of pairs (keyHmac, keyLength) in json format.
    */
-  public void getKeyChainInfo(final NfcCallback callback) {
+  public void getKeyChainInfo(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getKeyChainInfoAndGetJson();
+          String json = getKeyChainInfoAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getKeyChainInfo response : " + json);
         } catch (Exception e) {
@@ -166,9 +170,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Return list of pairs (keyHmac, keyLength) in json format.
    */
-  public String getKeyChainInfoAndGetJson() throws Exception {
+  public String getKeyChainInfoAndGetJson(Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       int numOfKeys = getNumberOfKeys();
       int occupiedStorageSize = getOccupiedStorageSize();
       int freeStorageSize = getFreeStorageSize();
@@ -177,11 +183,13 @@ public final class CardKeyChainApi extends TonWalletApi {
       jsonResponse.put(OCCUPIED_SIZE_FIELD, occupiedStorageSize);
       jsonResponse.put(FREE_SIZE_FIELD, freeStorageSize);
       jsonResponse.put(STATUS_FIELD, SUCCESS_STATUS);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return jsonResponse.toString();
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -190,11 +198,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @param callback
    * Return number of keys in card keychain.
    */
-  public void getNumberOfKeys(final NfcCallback callback) {
+  public void getNumberOfKeys(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getNumberOfKeysAndGetJson();
+          String json = getNumberOfKeysAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getNumberOfKeys response : " + json);
         } catch (Exception e) {
@@ -209,16 +217,20 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Return number of keys in card keychain.
    */
-  public String getNumberOfKeysAndGetJson() throws Exception {
+  public String getNumberOfKeysAndGetJson(Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       int numOfKeys = getNumberOfKeys();
       String json = JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -228,11 +240,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @param callback
    * Checks if card's keychain stores a key with such keyHmac and if this hmac really corresponds to the key.
    */
-  public void checkKeyHmacConsistency(final String keyHmac, final NfcCallback callback) {
+  public void checkKeyHmacConsistency(final String keyHmac, final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = checkKeyHmacConsistencyAndGetJson(keyHmac);
+          String json = checkKeyHmacConsistencyAndGetJson(keyHmac, showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "checkKeyHmacConsistency response : " + json);
         } catch (Exception e) {
@@ -248,20 +260,24 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Checks if card's keychain stores a key with such keyHmac and if this hmac really corresponds to the key.
    */
-  public String checkKeyHmacConsistencyAndGetJson(String keyHmac) throws Exception {
+  public String checkKeyHmacConsistencyAndGetJson(String keyHmac, Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       if (!STR_HELPER.isHexString(keyHmac))
         throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
       if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
         throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
       checkKeyHmacConsistency(BYTE_ARR_HELPER.bytes(keyHmac));
       String json = JSON_HELPER.createResponseJson(DONE_MSG);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -272,11 +288,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * Check if there is enough free volume in card keychain to add new key of length = keySize.
    * If there is no enough space then it throws an exception
    */
-  public void checkAvailableVolForNewKey(final Short keySize, final NfcCallback callback) {
+  public void checkAvailableVolForNewKey(final Short keySize, final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = checkAvailableVolForNewKeyAndGetJson(keySize);
+          String json = checkAvailableVolForNewKeyAndGetJson(keySize, showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "checkAvailableVolForNewKey response : " + json);
         } catch (Exception e) {
@@ -293,18 +309,22 @@ public final class CardKeyChainApi extends TonWalletApi {
    * Check if there is enough free volume in card keychain to add new key of length = keySize.
    * If there is no enough space then it throws an exception
    */
-  public String checkAvailableVolForNewKeyAndGetJson(final Short keySize) throws Exception {
+  public String checkAvailableVolForNewKeyAndGetJson(final Short keySize, Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
       if (keySize <= 0 || keySize > MAX_KEY_SIZE_IN_KEYCHAIN)
         throw new Exception(ERROR_MSG_KEY_SIZE_INCORRECT);
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       checkAvailableVolForNewKey(keySize);
       String json = JSON_HELPER.createResponseJson(DONE_MSG);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -314,11 +334,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @param callback
    * Read index (inside internal applet storage) and length of key by its hmac
    */
-  public void getIndexAndLenOfKeyInKeyChain(final String keyHmac, final NfcCallback callback) {
+  public void getIndexAndLenOfKeyInKeyChain(final String keyHmac, final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getIndexAndLenOfKeyInKeyChainAndGetJson(keyHmac) ;
+          String json = getIndexAndLenOfKeyInKeyChainAndGetJson(keyHmac, showDialog) ;
           resolveJson(json, callback);
           Log.d(TAG, "getIndexAndLenOfKeyInKeyChain response : " + json);
         } catch (Exception e) {
@@ -334,20 +354,24 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Read index (inside internal applet storage) and length of key by its hmac
    */
-  public String getIndexAndLenOfKeyInKeyChainAndGetJson(String keyHmac)  throws Exception {
+  public String getIndexAndLenOfKeyInKeyChainAndGetJson(String keyHmac, Boolean... showDialog)  throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(keyHmac))
         throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
       if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
         throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String response = getIndexAndLenOfKeyInKeyChain(BYTE_ARR_HELPER.bytes(keyHmac)).toString();
       String json = JSON_HELPER.createResponseJson(response);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -356,11 +380,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @param callback
    * Returns the number of keys records packets that must be deleted to finish deleting of key.
    */
-  public void getDeleteKeyRecordNumOfPackets(final NfcCallback callback) {
+  public void getDeleteKeyRecordNumOfPackets(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getDeleteKeyRecordNumOfPacketsAndGetJson();
+          String json = getDeleteKeyRecordNumOfPacketsAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getDeleteKeyRecordNumOfPackets response : " + json);
         } catch (Exception e) {
@@ -375,16 +399,20 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Returns the number of keys records packets that must be deleted to finish deleting of key.
    */
-  public String getDeleteKeyRecordNumOfPacketsAndGetJson()  throws Exception {
+  public String getDeleteKeyRecordNumOfPacketsAndGetJson(Boolean... showDialog)  throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String numOfPackets = Integer.valueOf(getDeleteKeyRecordNumOfPackets()).toString();
       String json = JSON_HELPER.createResponseJson(numOfPackets);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -393,11 +421,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @param callback
    * Returns the number of keys chunks packets that must be deleted to finish deleting of key.
    */
-  public void getDeleteKeyChunkNumOfPackets(final NfcCallback callback) {
+  public void getDeleteKeyChunkNumOfPackets(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getDeleteKeyChunkNumOfPacketsAndGetJson();
+          String json = getDeleteKeyChunkNumOfPacketsAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getDeleteKeyChunkNumOfPackets response : " + json);
         } catch (Exception e) {
@@ -412,16 +440,20 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Returns the number of keys chunks packets that must be deleted to finish deleting of key.
    */
-  public String getDeleteKeyChunkNumOfPacketsAndGetJson() throws Exception {
+  public String getDeleteKeyChunkNumOfPacketsAndGetJson(Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String numOfPackets = Integer.valueOf(getDeleteKeyChunkNumOfPackets()).toString();
       String json =  JSON_HELPER.createResponseJson(numOfPackets);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -431,11 +463,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @param callback
    * Delete key from card keychain based on its hmac.
    */
-  public void deleteKeyFromKeyChain(final String keyHmac, final NfcCallback callback) {
+  public void deleteKeyFromKeyChain(final String keyHmac, final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = deleteKeyFromKeyChainAndGetJson(keyHmac);
+          String json = deleteKeyFromKeyChainAndGetJson(keyHmac, showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "deleteKeyFromKeyChain response (number of remained keys) : " + json);
         } catch (Exception e) {
@@ -451,20 +483,24 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Delete key from card keychain based on its hmac.
    */
-  public String deleteKeyFromKeyChainAndGetJson(String keyHmac) throws Exception {
+  public String deleteKeyFromKeyChainAndGetJson(String keyHmac, Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(keyHmac))
         throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
       if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
         throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       int numOfKeys = deleteKeyFromKeyChain(BYTE_ARR_HELPER.bytes(keyHmac));
       String json =  JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -474,11 +510,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * Finish the process of deleting key from card keychain.
    * It may be necessary if previous DELETE operation was occassionally interrupted (like card disconnection).
    */
-  public void finishDeleteKeyFromKeyChainAfterInterruption(final NfcCallback callback) {
+  public void finishDeleteKeyFromKeyChainAfterInterruption(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson();
+          String json = finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "finishDeleteKeyFromKeyChainAfterInterruption response (number of remained keys) : " + json);
         } catch (Exception e) {
@@ -494,16 +530,20 @@ public final class CardKeyChainApi extends TonWalletApi {
    * Finish the process of deleting key from card keychain.
    * It may be necessary if previous DELETE operation was occassionally interrupted (like card disconnection).
    */
-  public String finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson() throws Exception {
+  public String finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson(Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       int numOfKeys = finishDeleteKeyFromKeyChainAfterInterruption();
       String json =  JSON_HELPER.createResponseJson(Integer.valueOf(numOfKeys).toString());
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -512,11 +552,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @param callback
    * Return the volume of occupied size in card keychain (in bytes).
    */
-  public void getOccupiedStorageSize(final NfcCallback callback) {
+  public void getOccupiedStorageSize(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getOccupiedStorageSizeAndGetJson();
+          String json = getOccupiedStorageSizeAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getOccupiedStorageSize response : " + json);
         } catch (Exception e) {
@@ -531,16 +571,20 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Return the volume of occupied size in card keychain (in bytes).
    */
-  public String getOccupiedStorageSizeAndGetJson() throws Exception {
+  public String getOccupiedStorageSizeAndGetJson(Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String size = Integer.valueOf(getOccupiedStorageSize()).toString();
       String json =  JSON_HELPER.createResponseJson(size);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -549,11 +593,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @param callback
    * Return the volume of free size in card keychain (in bytes).
    */
-  public void getFreeStorageSize(final NfcCallback callback) {
+  public void getFreeStorageSize(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getFreeStorageSizeAndGetJson();
+          String json = getFreeStorageSizeAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getFreeStorageSize response : " + json);
         } catch (Exception e) {
@@ -568,16 +612,20 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Return the volume of free size in card keychain (in bytes).
    */
-  public String getFreeStorageSizeAndGetJson() throws Exception {
+  public String getFreeStorageSizeAndGetJson(Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String size = Integer.valueOf(getFreeStorageSize()).toString();
       String json =   JSON_HELPER.createResponseJson(size);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -587,11 +635,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @param callback
    * Read key from card keychain based on its hmac.
    */
-  public void getKeyFromKeyChain(final String keyHmac, final NfcCallback callback) {
+  public void getKeyFromKeyChain(final String keyHmac, final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json =  getKeyFromKeyChainAndGetJson(keyHmac);
+          String json =  getKeyFromKeyChainAndGetJson(keyHmac, showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getKey response : " + json);
         } catch (Exception e) {
@@ -607,20 +655,24 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Read key from card keychain based on its hmac.
    */
-  public String getKeyFromKeyChainAndGetJson(String keyHmac) throws Exception {
+  public String getKeyFromKeyChainAndGetJson(String keyHmac, Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(keyHmac))
         throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
       if (keyHmac.length() != 2 * HMAC_SHA_SIG_SIZE)
         throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String key = BYTE_ARR_HELPER.hex(getKeyFromKeyChain(BYTE_ARR_HELPER.bytes(keyHmac)));
       String json =   JSON_HELPER.createResponseJson(key);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -630,11 +682,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @param callback
    * Save new key into card keychain.
    */
-  public void addKeyIntoKeyChain(final String newKey, final NfcCallback callback) {
+  public void addKeyIntoKeyChain(final String newKey, final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json =  addKeyIntoKeyChainAndGetJson(newKey);
+          String json =  addKeyIntoKeyChainAndGetJson(newKey, showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "addKey response (hmac of new key) : " + json);
         } catch (Exception e) {
@@ -650,20 +702,24 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Save new key into card keychain.
    */
-  public String addKeyIntoKeyChainAndGetJson(String newKey) throws Exception {
+  public String addKeyIntoKeyChainAndGetJson(String newKey, Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(newKey))
         throw new Exception(ERROR_MSG_KEY_NOT_HEX);
       if (newKey.length() > 2 * MAX_KEY_SIZE_IN_KEYCHAIN)
         throw new Exception(ERROR_MSG_KEY_LEN_INCORRECT);
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String keyHmac = addKeyIntoKeyChain(BYTE_ARR_HELPER.bytes(newKey));
       String json =   JSON_HELPER.createResponseJson(keyHmac);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -674,11 +730,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @param callback
    * Replace existing key by new key. The length of new key must be equal to length of old key.
    */
-  public void changeKeyInKeyChain(final String newKey, final String oldKeyHMac, final NfcCallback callback) {
+  public void changeKeyInKeyChain(final String newKey, final String oldKeyHMac, final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json =  changeKeyInKeyChainAndGetJson(newKey, oldKeyHMac);
+          String json =  changeKeyInKeyChainAndGetJson(newKey, oldKeyHMac, showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "changeKey response (hmac of new key) : " + json);
         } catch (Exception e) {
@@ -695,9 +751,9 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Replace existing key by new key. The length of new key must be equal to length of old key.
    */
-  public String changeKeyInKeyChainAndGetJson(String newKey, String oldKeyHMac) throws Exception {
+  public String changeKeyInKeyChainAndGetJson(String newKey, String oldKeyHMac, Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(newKey))
         throw new Exception(ERROR_MSG_KEY_NOT_HEX);
       if (newKey.length() > 2 * MAX_KEY_SIZE_IN_KEYCHAIN)
@@ -706,13 +762,17 @@ public final class CardKeyChainApi extends TonWalletApi {
         throw new Exception(ERROR_MSG_KEY_HMAC_NOT_HEX);
       if (oldKeyHMac.length() != 2 * HMAC_SHA_SIG_SIZE)
         throw new Exception(ERROR_MSG_KEY_HMAC_LEN_INCORRECT);
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       String newKeyHmac = changeKeyInKeyChain(BYTE_ARR_HELPER.bytes(newKey), BYTE_ARR_HELPER.bytes(oldKeyHMac));
       String json = JSON_HELPER.createResponseJson(newKeyHmac);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -721,11 +781,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @param callback
    * Return list of pairs (keyHmac, keyLength) in json format.
    */
-  public void getKeyChainDataAboutAllKeys(final NfcCallback callback) {
+  public void getKeyChainDataAboutAllKeys(final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json =  getKeyChainDataAboutAllKeysAndGetJson();
+          String json =  getKeyChainDataAboutAllKeysAndGetJson(showDialog);
           resolveJson(json, callback);
           Log.d(TAG, " getKeyChainDataAboutAllKeys response : " + json);
         } catch (Exception e) {
@@ -740,9 +800,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Return list of pairs (keyHmac, keyLength) in json format.
    */
-  public String getKeyChainDataAboutAllKeysAndGetJson() throws Exception {
+  public String getKeyChainDataAboutAllKeysAndGetJson(Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       Map<String, Short> map = getAllHmacsOfKeysFromCard();
       JSONObject allKeysObj = new JSONObject();
       JSONArray jArray = new JSONArray();
@@ -754,11 +816,13 @@ public final class CardKeyChainApi extends TonWalletApi {
       }
       allKeysObj.put(KEYS_DATA_FIELD, jArray);
       allKeysObj.put(STATUS_FIELD, SUCCESS_STATUS);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return allKeysObj.toString();
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -768,11 +832,11 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @param callback
    * Get hmac of key in card keychain by its index.
    */
-  public void getHmac(final String index, final NfcCallback callback) {
+  public void getHmac(final String index, final NfcCallback callback, Boolean... showDialog) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json =  getHmacAndGetJson(index);
+          String json =  getHmacAndGetJson(index, showDialog);
           resolveJson(json, callback);
           Log.d(TAG, "getHmac response : " + json);
         } catch (Exception e) {
@@ -788,11 +852,13 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Get hmac of key in card keychain by its index.
    */
-  public String getHmacAndGetJson(String index) throws Exception {
+  public String getHmacAndGetJson(String index, Boolean... showDialog) throws Exception {
     try {
-      long start = System.currentTimeMillis();
+      //long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(index))
         throw new Exception(ERROR_MSG_KEY_INDEX_STRING_NOT_NUMERIC);
+      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
+      if (showDialogFlag) openInvitationDialog();
       short ind = parseIndex(index);
       if (ind < 0 || ind > MAX_NUMBER_OF_KEYS_IN_KEYCHAIN - 1)
         throw new Exception(ERROR_MSG_KEY_INDEX_VALUE_INCORRECT);
@@ -805,11 +871,13 @@ public final class CardKeyChainApi extends TonWalletApi {
       jObject.put(KEY_HMAC_FIELD, BYTE_ARR_HELPER.hex(mac));
       jObject.put(KEY_LENGTH_FIELD, len);
       jObject.put(STATUS_FIELD, SUCCESS_STATUS);
-      long end = System.currentTimeMillis();
-      Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      if (showDialogFlag) closeInvitationDialog();
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return jObject.toString();
     }
     catch (Exception e) {
+      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
