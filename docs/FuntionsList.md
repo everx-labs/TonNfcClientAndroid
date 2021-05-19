@@ -4,14 +4,14 @@ Here there is full functions list provided by TonNfcClientAndroid library to mak
 
 In [readme](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/README.md) (see section about NfcCallback) we said that for each card operation there was a pair of functions. One of them puts result/error message into callback, the second just returns the result/ throws an exception. For example, there is getSerialNumberAndGetJson() function returning json string and getSerialNumber(NfcCallback callback) returning void and putting the same json into callback. They do the same work.
 
-The majority of functions below has the last input parameter 'Boolean... showDialog'. It indicates if one wants to show invitation dialog for NFC card connection. If this parameter is not specified at all, the dialog will be shown.
+The majority of functions below has the last input parameter 'Boolean... showDialog'. It indicates if one wants to show invitation dialog for NFC card connection. If this parameter is not specified at all, the dialog will be shown by default.
 
 ## NFC related functions
 
 Here there are functions to check/change the state of your NFC hardware.  In TonNfcClientAndroid library there is a class NfcApi for this.
 
 - **checkIfNfcSupported(final NfcCallback callback),** <br/>
-  **checkIfNfcSupported(AndGetJson)**
+  **checkIfNfcSupportedAndGetJson()**
 
     Check if your Android device has NFC hardware. 
 
@@ -43,7 +43,8 @@ Here there are functions to check/change the state of your NFC hardware.  In Ton
 
 Here there are functions to call APDU commands of CoinManager. CoinManager is an additional software integrated into NFC TON Labs Security card. It is responsible for maintaining ed25519 seed, related PIN and it provides some auxiliary operations.  In TonNfcClientAndroid library there is a class CardCoinManagerApi providing all CoinManager functions.
 
-- **setDeviceLabel(String deviceLabel)**
+- **setDeviceLabel(final String deviceLabel, final NfcCallback callback, Boolean... showDialog), ** <br/>
+  **setDeviceLabelAndGetJson(String deviceLabel, Boolean... showDialog) **
 
     This function is used to set the device label. Now we do not use this device label stored in CoinManager.
 
@@ -55,7 +56,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
         {"message":"done","status":"ok"}
 
-- **getDeviceLabel()**
+- **getDeviceLabel(final NfcCallback callback, Boolean... showDialog), ** <br/>
+  **getDeviceLabelAndGetJson(Boolean... showDialog) **
 
     This function is used to get device label. Now we do not use this device label stored in CoinManager.
 
@@ -63,7 +65,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
         {"message":"005815A3942073A6ADC70C035780FDD09DF09AFEEA4173B92FE559C34DCA0550","status":"ok"}
 
-- **getSeVersion()**
+- **getSeVersion(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getSeVersionAndGetJson(Boolean... showDialog)**
 
     This function is used to get SE (secure element) version. 
 
@@ -71,7 +74,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
         {"message":"1008","status":"ok"}
 
-- **getCsn()**
+- **getCsn(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getCsnAndGetJson(Boolean... showDialog)*
 
     This function is used to get CSN (SEID).
 
@@ -79,7 +83,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
         {"message":"11223344556677881122334455667788","status":"ok"}
 
-- **getMaxPinTries()**
+- **getMaxPinTries(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getMaxPinTriesAndGetJson(Boolean... showDialog)**
 
     This function is used to get retry maximum times of PIN. 
 
@@ -87,7 +92,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
         {"message":"10","status":"ok"}
 
-- **getRemainingPinTries()**
+- **getRemainingPinTries(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getRemainingPinTriesAndGetJson(Boolean... showDialog)**
 
     This function is used to get remaining retry times of PIN.
 
@@ -95,7 +101,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
         {"message":"10","status":"ok"}
 
-- **getRootKeyStatus()**
+- **getRootKeyStatus(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getRootKeyStatusAndGetJson(Boolean... showDialog)**
 
     This function is used to get the status of seed for ed25519: is it generated or not.
 
@@ -104,7 +111,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
         a) If seed is present: {"message":"generated","status":"ok"}
         b) If seed is not present: {"message":"not generated","status":"ok"}
 
-- **resetWallet()**
+- **resetWallet(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **resetWalletsAndGetJson(Boolean... showDialog)**
 
     This function is used to reset the wallet state to the initial state. After resetting the wallet, the default PIN value would be 5555. The remaining retry for the PIN will be reset to MAX (default is 10). The seed for ed25519 will be erased. And after its calling any card operation (except of CoinManager stuff) will fail with 6F02 error. TON Labs wallet applet does not work without seed.
 
@@ -112,11 +120,13 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
         {"message":"done","status":"ok"}
 
-- **getAvailableMemory()**
+- **getAvailableMemory(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getAvailableMemoryAndGetJson(Boolean... showDialog)**
 
     This function is used to obtain the amount of memory of the specified type that is available to the applet. Note that implementation-dependent memory overhead structures may also use the same memory pool.
 
-- **getAppsList()**
+- **getAppsList(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getAppsListAndGetJson(Boolean... showDialog)**
 
     This function is used to get application list. It returns list of applets AIDs that were installed onto card.
 
@@ -126,7 +136,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
     _Note:_ Here 313132323333343435353636 is AID of our TON Labs wallet applet
 
-- **generateSeed(String pin)**
+- **generateSeed(final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **generateSeedAndGetJson(String pin, Boolean... showDialog)**
 
     This function is used to generate the seed for ed25519 with RNG.
 
@@ -141,7 +152,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
         If seed does not exist then: {"message":"done","status":"ok"}
         If seed already exists and you call generateSeed then it will throw a error.
 
-- **changePin(String oldPin, String newPin)**
+- **changePin(final String oldPin, final String newPin, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **changePinAndGetJson(String oldPin, String newPin, Boolean... showDialog)**
 
     This function is used to change device PIN.
 
