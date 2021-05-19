@@ -93,7 +93,7 @@ public final class CardCoinManagerApi extends TonWalletApi {
    * This function is used to set the device label. Now we do not use this device label stored in CoinManager.
    */
 
-  public String setDeviceLabelAndGetJson(String deviceLabel, Boolean... showDialog) throws Exception {
+  public String setDeviceLabelAndGetJson(final String deviceLabel, Boolean... showDialog) throws Exception {
     try {
       //long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(deviceLabel))
@@ -515,7 +515,7 @@ public final class CardCoinManagerApi extends TonWalletApi {
    * @throws Exception
    * This function is used to generate the seed for ed25519 with RNG.
    */
-  public String generateSeedAndGetJson(String pin, Boolean... showDialog) throws Exception {
+  public String generateSeedAndGetJson(final String pin, Boolean... showDialog) throws Exception {
     try {
       //long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(pin))

@@ -260,7 +260,7 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Checks if card's keychain stores a key with such keyHmac and if this hmac really corresponds to the key.
    */
-  public String checkKeyHmacConsistencyAndGetJson(String keyHmac, Boolean... showDialog) throws Exception {
+  public String checkKeyHmacConsistencyAndGetJson(final String keyHmac, Boolean... showDialog) throws Exception {
     try {
       //long start = System.currentTimeMillis();
       boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
@@ -354,7 +354,7 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Read index (inside internal applet storage) and length of key by its hmac
    */
-  public String getIndexAndLenOfKeyInKeyChainAndGetJson(String keyHmac, Boolean... showDialog)  throws Exception {
+  public String getIndexAndLenOfKeyInKeyChainAndGetJson(final String keyHmac, Boolean... showDialog)  throws Exception {
     try {
       //long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(keyHmac))
@@ -483,7 +483,7 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Delete key from card keychain based on its hmac.
    */
-  public String deleteKeyFromKeyChainAndGetJson(String keyHmac, Boolean... showDialog) throws Exception {
+  public String deleteKeyFromKeyChainAndGetJson(final String keyHmac, Boolean... showDialog) throws Exception {
     try {
       //long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(keyHmac))
@@ -655,7 +655,7 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Read key from card keychain based on its hmac.
    */
-  public String getKeyFromKeyChainAndGetJson(String keyHmac, Boolean... showDialog) throws Exception {
+  public String getKeyFromKeyChainAndGetJson(final String keyHmac, Boolean... showDialog) throws Exception {
     try {
       //long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(keyHmac))
@@ -702,7 +702,7 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Save new key into card keychain.
    */
-  public String addKeyIntoKeyChainAndGetJson(String newKey, Boolean... showDialog) throws Exception {
+  public String addKeyIntoKeyChainAndGetJson(final String newKey, Boolean... showDialog) throws Exception {
     try {
       //long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(newKey))
@@ -751,7 +751,7 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Replace existing key by new key. The length of new key must be equal to length of old key.
    */
-  public String changeKeyInKeyChainAndGetJson(String newKey, String oldKeyHMac, Boolean... showDialog) throws Exception {
+  public String changeKeyInKeyChainAndGetJson(final String newKey, final String oldKeyHMac, Boolean... showDialog) throws Exception {
     try {
       //long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(newKey))
@@ -852,7 +852,7 @@ public final class CardKeyChainApi extends TonWalletApi {
    * @throws Exception
    * Get hmac of key in card keychain by its index.
    */
-  public String getHmacAndGetJson(String index, Boolean... showDialog) throws Exception {
+  public String getHmacAndGetJson(final String index, Boolean... showDialog) throws Exception {
     try {
       //long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(index))

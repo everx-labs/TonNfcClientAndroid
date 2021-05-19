@@ -67,7 +67,7 @@ public final class CardCryptoApi extends TonWalletApi {
    * @throws Exception
    * Make pin verification.
    */
-  public String verifyPinAndGetJson(String pin,  Boolean... showDialog) throws Exception {
+  public String verifyPinAndGetJson(final String pin,  Boolean... showDialog) throws Exception {
     try {
       //long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(pin))
@@ -155,7 +155,7 @@ public final class CardCryptoApi extends TonWalletApi {
    * @throws Exception
    * Return public key for HD path m/44'/396'/0'/0'/index'.
    */
-  public String getPublicKeyAndGetJson(String index,  Boolean... showDialog) throws Exception {
+  public String getPublicKeyAndGetJson(final String index,  Boolean... showDialog) throws Exception {
     try {
       //long start = System.currentTimeMillis();
       if (!STR_HELPER.isNumericString(index))

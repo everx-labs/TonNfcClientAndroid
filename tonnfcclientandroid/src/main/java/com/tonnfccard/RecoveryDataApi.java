@@ -256,7 +256,7 @@ public final class RecoveryDataApi extends TonWalletApi {
    * @throws Exception
    * Save recovery data into applet.
    */
-  public String addRecoveryDataAndGetJson(String recoveryData, Boolean... showDialog) throws Exception {
+  public String addRecoveryDataAndGetJson(final String recoveryData, Boolean... showDialog) throws Exception {
     try {
       //long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(recoveryData))

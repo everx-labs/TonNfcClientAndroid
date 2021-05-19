@@ -356,7 +356,7 @@ public class TonWalletApi {
    * @param callback
    * Delete key for given serialNumber from Android keystore.
    */
-  public void deleteKeyForHmac(String serialNumber, NfcCallback callback) {
+  public void deleteKeyForHmac(final String serialNumber, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
         try {
@@ -376,7 +376,7 @@ public class TonWalletApi {
    * @throws Exception
    * Delete key for given serialNumber from Android keystore.
    */
-  public String deleteKeyForHmacAndGetJson(String serialNumber)  throws Exception {
+  public String deleteKeyForHmacAndGetJson(final String serialNumber)  throws Exception {
     try {
       if (!STR_HELPER.isNumericString(serialNumber))
         throw new Exception(ERROR_MSG_SERIAL_NUMBER_NOT_NUMERIC);
@@ -397,7 +397,7 @@ public class TonWalletApi {
    * @param callback
    * If you reinstalled app and lost HMAC SHA256 symmetric key for the card from your Android keystore, then create the key for your card using this function.
    */
-  public void createKeyForHmac(String password, String commonSecret, String serialNumber, NfcCallback callback) {
+  public void createKeyForHmac(final String password, final String commonSecret, final String serialNumber, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
         try {
@@ -419,7 +419,7 @@ public class TonWalletApi {
    * @throws Exception
    * If you reinstalled app and lost HMAC SHA256 symmetric key for the card from your Android keystore, then create the key for your card using this function.
    */
-  public String createKeyForHmacAndGetJson(String password, String commonSecret, String serialNumber) throws Exception {
+  public String createKeyForHmacAndGetJson(final String password, final String commonSecret, final String serialNumber) throws Exception {
     try {
       if (!STR_HELPER.isHexString(password))
         throw new Exception(ERROR_MSG_PASSWORD_NOT_HEX);
@@ -446,7 +446,7 @@ public class TonWalletApi {
    * @param callback
    * Check if key for given serialNumber exists in Android keystore.
    */
-  public void isKeyForHmacExist(String serialNumber, NfcCallback callback) {
+  public void isKeyForHmacExist(final String serialNumber, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
         try {
@@ -466,7 +466,7 @@ public class TonWalletApi {
    * @throws Exception
    * Check if key for given serialNumber exists in Android keystore.
    */
-  public String isKeyForHmacExistAndGetJson(String serialNumber) throws Exception {
+  public String isKeyForHmacExistAndGetJson(final String serialNumber) throws Exception {
     try {
       if (!STR_HELPER.isNumericString(serialNumber))
         throw new Exception(ERROR_MSG_SERIAL_NUMBER_NOT_NUMERIC);
@@ -485,7 +485,7 @@ public class TonWalletApi {
    * @param callback
    * Manually select new active card (it selects the serial number and correspondingly choose the appropriate key HMAC SHA256 from Android Keystore).
    */
-  public void selectKeyForHmac(String serialNumber, NfcCallback callback) {
+  public void selectKeyForHmac(final String serialNumber, final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
         try {
@@ -505,7 +505,7 @@ public class TonWalletApi {
    * @throws Exception
    * Manually select new active card (it selects the serial number and correspondingly choose the appropriate key HMAC SHA256 from Android Keystore).
    */
-  public String selectKeyForHmacAndGetJson(String serialNumber) throws Exception {
+  public String selectKeyForHmacAndGetJson(final String serialNumber) throws Exception {
     try {
       if (!STR_HELPER.isNumericString(serialNumber))
         throw new Exception(ERROR_MSG_SERIAL_NUMBER_NOT_NUMERIC);
@@ -523,7 +523,7 @@ public class TonWalletApi {
    * @param callback
    * Get serial number of currently active key (card). In fact this is a serialNumber of the card with which your app communicated last time.
    */
-  public void getCurrentSerialNumber(NfcCallback callback) {
+  public void getCurrentSerialNumber(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
         try {
@@ -546,7 +546,7 @@ public class TonWalletApi {
     return JSON_HELPER.createResponseJson(currentSerialNumber);
   }
 
-  public void setCurrentSerialNumber(String currentSerialNumber) {
+  public void setCurrentSerialNumber(final String currentSerialNumber) {
     TonWalletApi.currentSerialNumber = currentSerialNumber;
     HMAC_HELPER.setCurrentSerialNumber(currentSerialNumber);
   }
