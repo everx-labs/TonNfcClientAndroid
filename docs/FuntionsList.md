@@ -531,7 +531,8 @@ Here there are functions related to ed25519 signature.
 
 ### CardKeyChainApi functions
 
-- **resetKeyChain()**
+- **resetKeyChain(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **resetKeyChainAndGetJson(Boolean... showDialog)**
 
     Clear keychain, i.e. remove all stored keys.
 
@@ -539,7 +540,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"done","status":"ok"}
 
-- **getKeyChainDataAboutAllKeys()**
+- **getKeyChainDataAboutAllKeys(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getKeyChainDataAboutAllKeysAndGetJson(Boolean... showDialog)**
 
     Return list of pairs (keyHmac, keyLength)  in json format.
 
@@ -547,7 +549,8 @@ Here there are functions related to ed25519 signature.
 
         {"keysData":[{"hmac":"D7E0DFB66A2F72AAD7D66D897C805D307EE1F1CB8077D3B8CF1A942D6A5AC2FF","length":"6"},{"hmac":"D31D1D600F8E5B5951275B9C6DED079011FD852ABB62C14A2EECA2E6924452C0","length":"3"}],"status":"ok"}
 
-- **getKeyChainInfo()**
+- **getKeyChainInfo(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getKeyChainInfoAndGetJson(Boolean... showDialog)**
 
     Return json characterizing the state of keychain. 
 
@@ -555,7 +558,8 @@ Here there are functions related to ed25519 signature.
 
         {"numberOfKeys":0,"occupiedSize":0,"freeSize":32767,"status":"ok"}
 
-- **getNumberOfKeys()**
+- **getNumberOfKeys(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getNumberOfKeysAndGetJson(Boolean... showDialog)**
 
     Return number of keys in card keychain.
 
@@ -563,7 +567,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"1","status":"ok"}
 
-- **getOccupiedStorageSize()**
+- **getOccupiedStorageSize(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getOccupiedStorageSizeAndGetJson(Boolean... showDialog)**
 
     Return the volume of occupied size in card keychain (in bytes).
 
@@ -571,7 +576,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"0","status":"ok"}
 
-- **getFreeStorageSize()**
+- **getFreeStorageSize(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getFreeStorageSizeAndGetJson(Boolean... showDialog)**
 
     Return the volume of free size in card keychain (in bytes).
 
@@ -579,7 +585,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"32767","status":"ok"}
 
-- **getKeyFromKeyChain(String keyHmac)**
+- **getKeyFromKeyChain(final String keyHmac, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getKeyFromKeyChainAndGetJson(final String keyHmac, Boolean... showDialog)**
 
     Read key from card keychain based on its hmac.
 
@@ -591,7 +598,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"001122334455","status":"ok"}
 
-- **addKeyIntoKeyChain(String newKey)**
+- **addKeyIntoKeyChain(final String newKey, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **addKeyIntoKeyChainAndGetJson(final String newKey, Boolean... showDialog)**
 
     Save new key into card keychain.
 
@@ -605,7 +613,8 @@ Here there are functions related to ed25519 signature.
 
     where "message" contains hmac of newKey.
 
-- **deleteKeyFromKeyChain(String keyHmac)**
+- **deleteKeyFromKeyChain(final String keyHmac, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **deleteKeyFromKeyChainAndGetJson(final String keyHmac, Boolean... showDialog)**
 
     Delete key from card keychain based on its hmac.
 
@@ -619,7 +628,8 @@ Here there are functions related to ed25519 signature.
 
     where "message" field contains the number of remaining keys
 
-- **finishDeleteKeyFromKeyChainAfterInterruption()**
+- **finishDeleteKeyFromKeyChainAfterInterruption(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson(Boolean... showDialog)**
 
     Finish the process of deleting key from card keychain. It may be necessary if previous DELETE operation was occassionally interrupted (like card disconnection).
 
@@ -629,7 +639,8 @@ Here there are functions related to ed25519 signature.
 
     where "message" field contains the number of remaining keys
 
-- **changeKeyInKeyChain(String newKey, String oldKeyHmac)**
+- **changeKeyInKeyChain(final String newKey, final String oldKeyHmac, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **changeKeyInKeyChainAndGetJson(final String newKey, final String oldKeyHmac, Boolean... showDialog)**
 
     Replace existing key by new key. The length of new key must be equal to length of old key.
 
@@ -645,7 +656,8 @@ Here there are functions related to ed25519 signature.
 
     where "message" contains hmac of newKey.
 
-- **getIndexAndLenOfKeyInKeyChain(String keyHmac)**
+- **getIndexAndLenOfKeyInKeyChain(final String keyHmac, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getIndexAndLenOfKeyInKeyChainAndGetJson(final String keyHmac, Boolean... showDialog)**
 
     Read index (inside internal applet storage) and length of key by its hmac.
 
@@ -657,7 +669,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"{\"index\":1,\"length\":3}","status":"ok"}
 
-- **checkAvailableVolForNewKey(Short keySize)**
+- **checkAvailableVolForNewKey(final Short keySize, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **checkAvailableVolForNewKeyAndGetJson(final Short keySize, Boolean... showDialog)**
 
     Check if there is enough free volume in card keychain to add new key of length = keySize. If there is no enough space then it throws an exception
 
@@ -669,7 +682,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"done","status":"ok"}
 
-- **checkKeyHmacConsistency(String keyHmac)**
+- **checkKeyHmacConsistency(final String keyHmac, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **checkKeyHmacConsistencyAndGetJson(final String keyHmac, Boolean... showDialog)**
 
     Checks if card's keychain stores a key with such keyHmac and if this hmac really corresponds to the key.
 
@@ -677,7 +691,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"done","status":"ok"}
 
-- **getHmac(String index)**
+- **getHmac(final String index, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getHmacAndGetJson(final String index, Boolean... showDialog)**
 
     Get hmac of key in card keychain by its index. 
 
@@ -689,7 +704,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"EFBF24AC1563B34ADB0FFE0B0A53659E72E26765704C109C95346EEAA1D4BEAF","status":"ok"}
 
-- **getDeleteKeyRecordNumOfPackets()**
+- **getDeleteKeyRecordNumOfPackets(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getDeleteKeyRecordNumOfPacketsAndGetJson(Boolean... showDialog)**
 
     Returns the number of keys records packets that must be deleted to finish deleting of key.
 
@@ -697,7 +713,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"2","status":"ok"}
 
-- **getDeleteKeyChunkNumOfPackets()**
+- **getDeleteKeyChunkNumOfPackets(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **getDeleteKeyChunkNumOfPacketsAndGetJson(Boolean... showDialog)**
 
     Returns the number of keys chunks packets that must be deleted to finish deleting of key.
 
