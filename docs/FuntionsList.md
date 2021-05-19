@@ -10,7 +10,8 @@ The majority of functions below has the last input parameter 'Boolean... showDia
 
 Here there are functions to check/change the state of your NFC hardware.  In TonNfcClientAndroid library there is a class NfcApi for this.
 
-- **checkIfNfcSupported()**
+- **checkIfNfcSupported(final NfcCallback callback),** <br/>
+  **checkIfNfcSupported(AndGetJson)**
 
     Check if your Android device has NFC hardware. 
 
@@ -19,7 +20,8 @@ Here there are functions to check/change the state of your NFC hardware.  In Ton
         {"message":"true","status":"ok"}
         {"message":"false","status":"ok"}
 
-- **checkIfNfcEnabled()**
+- **checkIfNfcEnabled(final NfcCallback callback),** <br/>
+  **checkIfNfcEnabledAndGetJson(),** 
 
     Check if NFC option is turned on for your Android device.
 
@@ -29,7 +31,7 @@ Here there are functions to check/change the state of your NFC hardware.  In Ton
         {"message":"false","status":"ok"}
 
 - **openNfcSettings(final NfcCallback callback),** <br/>
-  **openNfcSettingsAndGetJson(final NfcCallback callback)**
+  **openNfcSettingsAndGetJson()**
 
     Open "Settings" panel to mantain NFC option.
 
