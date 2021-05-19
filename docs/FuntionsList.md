@@ -4,14 +4,16 @@ Here there is full functions list provided by TonNfcClientAndroid library to mak
 
 In [readme](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/README.md) (see section about NfcCallback) we said that for each card operation there was a pair of functions. One of them puts result/error message into callback, the second just returns the result/ throws an exception. For example, there is getSerialNumberAndGetJson() function returning json string and getSerialNumber(NfcCallback callback) returning void and putting the same json into callback. They do the same work.
 
+**Note:** All functions working with NfcCallback create their separate thread for card operation. Whereas functions returning json string does not create their own thread. So if one does not want to block thr UI, then they should be called in new thread.
+
 The majority of functions below has the last input parameter 'Boolean... showDialog'. It indicates if one wants to show invitation dialog for NFC card connection. If this parameter is not specified at all, the dialog will be shown by default.
 
 ## NFC related functions
 
 Here there are functions to check/change the state of your NFC hardware.  In TonNfcClientAndroid library there is a class NfcApi for this.
 
-- **checkIfNfcSupported(final NfcCallback callback),** <br/>
-  **checkIfNfcSupportedAndGetJson()**
+- **void checkIfNfcSupported(final NfcCallback callback),** <br/>
+  **String checkIfNfcSupportedAndGetJson()**
 
     Check if your Android device has NFC hardware. 
 
@@ -20,8 +22,8 @@ Here there are functions to check/change the state of your NFC hardware.  In Ton
         {"message":"true","status":"ok"}
         {"message":"false","status":"ok"}
 
-- **checkIfNfcEnabled(final NfcCallback callback),** <br/>
-  **checkIfNfcEnabledAndGetJson(),** 
+- **void checkIfNfcEnabled(final NfcCallback callback),** <br/>
+  **String checkIfNfcEnabledAndGetJson(),** 
 
     Check if NFC option is turned on for your Android device.
 
@@ -30,8 +32,8 @@ Here there are functions to check/change the state of your NFC hardware.  In Ton
         {"message":"true","status":"ok"}
         {"message":"false","status":"ok"}
 
-- **openNfcSettings(final NfcCallback callback),** <br/>
-  **openNfcSettingsAndGetJson()**
+- **void openNfcSettings(final NfcCallback callback),** <br/>
+  **String openNfcSettingsAndGetJson()**
 
     Open "Settings" panel to mantain NFC option.
 
@@ -43,8 +45,8 @@ Here there are functions to check/change the state of your NFC hardware.  In Ton
 
 Here there are functions to call APDU commands of CoinManager. CoinManager is an additional software integrated into NFC TON Labs Security card. It is responsible for maintaining ed25519 seed, related PIN and it provides some auxiliary operations.  In TonNfcClientAndroid library there is a class CardCoinManagerApi providing all CoinManager functions.
 
-- **setDeviceLabel(final String deviceLabel, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **setDeviceLabelAndGetJson(final String deviceLabel, Boolean... showDialog)**
+- **void setDeviceLabel(final String deviceLabel, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String setDeviceLabelAndGetJson(final String deviceLabel, Boolean... showDialog)**
 
     This function is used to set the device label. Now we do not use this device label stored in CoinManager.
 
@@ -56,8 +58,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
         {"message":"done","status":"ok"}
 
-- **getDeviceLabel(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getDeviceLabelAndGetJson(Boolean... showDialog)**
+- **void getDeviceLabel(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getDeviceLabelAndGetJson(Boolean... showDialog)**
 
     This function is used to get device label. Now we do not use this device label stored in CoinManager.
 
@@ -65,8 +67,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
         {"message":"005815A3942073A6ADC70C035780FDD09DF09AFEEA4173B92FE559C34DCA0550","status":"ok"}
 
-- **getSeVersion(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getSeVersionAndGetJson(Boolean... showDialog)**
+- **void getSeVersion(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getSeVersionAndGetJson(Boolean... showDialog)**
 
     This function is used to get SE (secure element) version. 
 
@@ -74,8 +76,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
         {"message":"1008","status":"ok"}
 
-- **getCsn(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getCsnAndGetJson(Boolean... showDialog)**
+- **void getCsn(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getCsnAndGetJson(Boolean... showDialog)**
 
     This function is used to get CSN (SEID).
 
@@ -83,8 +85,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
         {"message":"11223344556677881122334455667788","status":"ok"}
 
-- **getMaxPinTries(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getMaxPinTriesAndGetJson(Boolean... showDialog)**
+- **void getMaxPinTries(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getMaxPinTriesAndGetJson(Boolean... showDialog)**
 
     This function is used to get retry maximum times of PIN. 
 
@@ -92,8 +94,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
         {"message":"10","status":"ok"}
 
-- **getRemainingPinTries(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getRemainingPinTriesAndGetJson(Boolean... showDialog)**
+- **void getRemainingPinTries(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getRemainingPinTriesAndGetJson(Boolean... showDialog)**
 
     This function is used to get remaining retry times of PIN.
 
@@ -101,8 +103,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
         {"message":"10","status":"ok"}
 
-- **getRootKeyStatus(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getRootKeyStatusAndGetJson(Boolean... showDialog)**
+- **void getRootKeyStatus(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getRootKeyStatusAndGetJson(Boolean... showDialog)**
 
     This function is used to get the status of seed for ed25519: is it generated or not.
 
@@ -111,8 +113,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
         a) If seed is present: {"message":"generated","status":"ok"}
         b) If seed is not present: {"message":"not generated","status":"ok"}
 
-- **resetWallet(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **resetWalletsAndGetJson(Boolean... showDialog)**
+- **void resetWallet(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String resetWalletsAndGetJson(Boolean... showDialog)**
 
     This function is used to reset the wallet state to the initial state. After resetting the wallet, the default PIN value would be 5555. The remaining retry for the PIN will be reset to MAX (default is 10). The seed for ed25519 will be erased. And after its calling any card operation (except of CoinManager stuff) will fail with 6F02 error. TON Labs wallet applet does not work without seed.
 
@@ -120,13 +122,13 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
         {"message":"done","status":"ok"}
 
-- **getAvailableMemory(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getAvailableMemoryAndGetJson(Boolean... showDialog)**
+- **void getAvailableMemory(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getAvailableMemoryAndGetJson(Boolean... showDialog)**
 
     This function is used to obtain the amount of memory of the specified type that is available to the applet. Note that implementation-dependent memory overhead structures may also use the same memory pool.
 
-- **getAppsList(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getAppsListAndGetJson(Boolean... showDialog)**
+- **void getAppsList(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getAppsListAndGetJson(Boolean... showDialog)**
 
     This function is used to get application list. It returns list of applets AIDs that were installed onto card.
 
@@ -136,8 +138,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
     _Note:_ Here 313132323333343435353636 is AID of our TON Labs wallet applet
 
-- **generateSeed(final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **generateSeedAndGetJson(final String pin, Boolean... showDialog)**
+- **void generateSeed(final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String generateSeedAndGetJson(final String pin, Boolean... showDialog)**
 
     This function is used to generate the seed for ed25519 with RNG.
 
@@ -152,8 +154,8 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
         If seed does not exist then: {"message":"done","status":"ok"}
         If seed already exists and you call generateSeed then it will throw a error.
 
-- **changePin(final String oldPin, final String newPin, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **changePinAndGetJson(final String oldPin, final String newPin, Boolean... showDialog)**
+- **void changePin(final String oldPin, final String newPin, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String changePinAndGetJson(final String oldPin, final String newPin, Boolean... showDialog)**
 
     This function is used to change device PIN.
 
@@ -176,8 +178,8 @@ These functions are naturally divided into four groups. And there are respective
 
 #### Common functions
 
-- **getTonAppletState(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getTonAppletStateAndGetJson(Boolean... showDialog)**
+- **void getTonAppletState(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getTonAppletStateAndGetJson(Boolean... showDialog)**
 
     This function returns state of TON Labs wallet applet.
 
@@ -188,8 +190,8 @@ These functions are naturally divided into four groups. And there are respective
 
     _Note:_ Full list of applet states you may find in previous sections.
 
-- **getSerialNumber(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getSerialNumberAndGetJson(Boolean... showDialog)**
+- **void getSerialNumber(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getSerialNumberAndGetJson(Boolean... showDialog)**
 
     This function returns serial number (SN). It must be identical to SN printed on the card.
 
@@ -197,8 +199,8 @@ These functions are naturally divided into four groups. And there are respective
 
         {"message":"504394802433901126813236","status":"ok"}
 
-- **getSault(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getSaultAndGetJson(Boolean... showDialog)**
+- **void getSault(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getSaultAndGetJson(Boolean... showDialog)**
 
     This function returns fresh 32 bytes sault generated by the card. 
 
@@ -206,8 +208,8 @@ These functions are naturally divided into four groups. And there are respective
 
         {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
 
-- **disconnectCard(final NfcCallback callback),** <br/>
-  **disconnectCardAndGetJson()**
+- **void disconnectCard(final NfcCallback callback),** <br/>
+  **String disconnectCardAndGetJson()**
 
     Breaks NFC connection. 
 
@@ -217,8 +219,8 @@ These functions are naturally divided into four groups. And there are respective
 
 #### Functions to mantain keys for HMAC SHA256 
 
-- **selectKeyForHmac(final String serialNumber, final NfcCallback callback),** <br/>
-  **selectKeyForHmacAndGetJson(final String serialNumber)**
+- **void selectKeyForHmac(final String serialNumber, final NfcCallback callback),** <br/>
+  **String selectKeyForHmacAndGetJson(final String serialNumber)**
 
     Manually select new active card (it selects the serial number and correspondingly choose the appropriate key HMAC SHA256 from Android Keystore).
 
@@ -230,8 +232,8 @@ These functions are naturally divided into four groups. And there are respective
 
         {"message":"done","status":"ok"}
 
-- **createKeyForHmac(final String authenticationPassword, final String commonSecret, final String serialNumber, final NfcCallback callback),** <br/>
-  **createKeyForHmacAndGetJson(final String authenticationPassword, final String commonSecret, final String serialNumber)**
+- **void createKeyForHmac(final String authenticationPassword, final String commonSecret, final String serialNumber, final NfcCallback callback),** <br/>
+  **String createKeyForHmacAndGetJson(final String authenticationPassword, final String commonSecret, final String serialNumber)**
 
     If you reinstalled app and lost HMAC SHA256 symmetric key for the card from your Android keystore, then create the key for your card using this function.
 
@@ -252,8 +254,8 @@ These functions are naturally divided into four groups. And there are respective
 
         {"message":"done","status":"ok"}
 
-- **getCurrentSerialNumber(final NfcCallback callback),** <br/>
-  **getCurrentSerialNumberAndGetJson()** 
+- **void getCurrentSerialNumber(final NfcCallback callback),** <br/>
+  **String getCurrentSerialNumberAndGetJson()** 
 
     Get serial number of currently active key (card). In fact this is a serialNumber of the card with which your app communicated last time.
 
@@ -261,8 +263,8 @@ These functions are naturally divided into four groups. And there are respective
 
         {"message":"504394802433901126813236","status":"ok"}
 
-- **getAllSerialNumbers(final NfcCallback callback),** <br/>
-  **getAllSerialNumbersAndGetJson()** 
+- **void getAllSerialNumbers(final NfcCallback callback),** <br/>
+  **String getAllSerialNumbersAndGetJson()** 
 
     Get the list of card serial numbers for which we have keys in Android keystore.
 
@@ -270,8 +272,8 @@ These functions are naturally divided into four groups. And there are respective
 
         {"serial_number_field":["504394802433901126813236", "455324585319848551839771"],"status":"ok"}
 
-- **isKeyForHmacExist(final String serialNumber, final NfcCallback callback),** <br/>
-  **isKeyForHmacExistAndGetJson(final String serialNumber)**
+- **void isKeyForHmacExist(final String serialNumber, final NfcCallback callback),** <br/>
+  **String isKeyForHmacExistAndGetJson(final String serialNumber)**
 
     Check if key for given serialNumber exists in Android keystore.
 
@@ -283,8 +285,8 @@ These functions are naturally divided into four groups. And there are respective
 
         {"message":"true","status":"ok"}
 
-- **deleteKeyForHmac(final String serialNumber, final NfcCallback callback),** <br/>
-  **deleteKeyForHmacAndGetJson(final String serialNumber)**
+- **void deleteKeyForHmac(final String serialNumber, final NfcCallback callback),** <br/>
+  **String deleteKeyForHmacAndGetJson(final String serialNumber)**
 
     Delete key for given serialNumber from Android keystore.
 
@@ -300,8 +302,8 @@ These functions are naturally divided into four groups. And there are respective
 
 When user gets NFC TON Labs security card at the first time, the applet on the card is in a special state. It waits for user authentication. And the main functionality of applet is blocked for now. At this point you may call all functions from previous subsections. And also some special functions are available in CardActivationApi. They are necessary to complete card activation. 
 
-- **turnOnWallet(final String newPin, final String password, final String commonSecret, final String initialVector, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **turnOnWalletAndGetJson(final String newPin, final String password, final String commonSecret, final String initialVector, Boolean... showDialog)**
+- **void turnOnWallet(final String newPin, final String password, final String commonSecret, final String initialVector, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String turnOnWalletAndGetJson(final String newPin, final String password, final String commonSecret, final String initialVector, Boolean... showDialog)**
 
     This function makes TON Labs wallet applet activation. After its succesfull call applet will be in working personalized state (so getTonAppletState() will return {"message":"TonWalletApplet is personalized.","status":"ok"}).
 
@@ -322,8 +324,8 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 
         {"message":"TonWalletApplet is personalized.","status":"ok"}
         
-- **turnOnWallet(final String password, final String commonSecret, final String initialVector, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **turnOnWalletAndGetJson(final String password, final String commonSecret, final String initialVector, Boolean... showDialog)**
+- **void turnOnWallet(final String password, final String commonSecret, final String initialVector, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String turnOnWalletAndGetJson(final String password, final String commonSecret, final String initialVector, Boolean... showDialog)**
 
     This function makes TON Labs wallet applet activation. After its succesfull call applet will be in working personalized state (so getTonAppletState() will return {"message":"TonWalletApplet is personalized.","status":"ok"}). It uses default PIN '5555'.
 
@@ -342,8 +344,8 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 
         {"message":"TonWalletApplet is personalized.","status":"ok"}
 
-- **getHashOfEncryptedCommonSecret(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getHashOfEncryptedCommonSecretAndGetJson(Boolean... showDialog)**
+- **void getHashOfEncryptedCommonSecret(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getHashOfEncryptedCommonSecretAndGetJson(Boolean... showDialog)**
 
     Return SHA256 hash of encrypted common secret.
 
@@ -351,8 +353,8 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 
         {"message":"EFBF24AC1563B34ADB0FFE0B0A53659E72E26765704C109C95346EEAA1D4BEAF","status":"ok"}
 
-- **getHashOfEncryptedPassword(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getHashOfEncryptedPasswordAndGetJson(Boolean... showDialog)**
+- **void getHashOfEncryptedPassword(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getHashOfEncryptedPasswordAndGetJson(Boolean... showDialog)**
 
     Return SHA256 hash of encrypted password.
 
@@ -360,8 +362,8 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 
         {"message":"26D4B03C0C0E168DC33E48BBCEB457C21364658C9D487341827BBFFB4D8B38F3","status":"ok"}
         
-- **getHashes(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getHashesAndGetJson(Boolean... showDialog)**
+- **void getHashes(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getHashesAndGetJson(Boolean... showDialog)**
 
     Return SHA256 hashes of encrypted password and encrypted common secret.
 
@@ -373,8 +375,8 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 
 Here there are functions related to ed25519 signature.
 
-- **getPublicKeyForDefaultPath(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getPublicKeyForDefaultPathAndGetJson(Boolean... showDialog)**
+- **void getPublicKeyForDefaultPath(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getPublicKeyForDefaultPathAndGetJson(Boolean... showDialog)**
 
     Return public key for HD path m/44'/396'/0'/0'/0'
 
@@ -382,8 +384,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
 
-- **verifyPin(final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **verifyPinAndGetJson(final String pin, Boolean... showDialog)**
+- **void verifyPin(final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String verifyPinAndGetJson(final String pin, Boolean... showDialog)**
 
     Make pin verification.
 
@@ -395,8 +397,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"done","status":"ok"}
 
-- **signForDefaultHdPath(final String dataForSigning, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **signForDefaultHdPathAndGetJson(final String dataForSigning, Boolean... showDialog)**
+- **void signForDefaultHdPath(final String dataForSigning, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String signForDefaultHdPathAndGetJson(final String dataForSigning, Boolean... showDialog)**
 
     Make  data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
 
@@ -408,8 +410,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"2D6A2749DD5AF5BB356220BFA06A0C624D5814438F37983322BBAD762EFB4759CFA927E6735B7CD556196894F3CE077ADDD6B49447B8B325ADC494B82DC8B605","status":"ok"}
 
-- **sign(final String dataForSigning, final String index, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **signAndGetJson(final String dataForSigning, final String index, Boolean... showDialog)**
+- **void sign(final String dataForSigning, final String index, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String signAndGetJson(final String dataForSigning, final String index, Boolean... showDialog)**
 
     Make data signing by key for HD path m/44'/396'/0'/0'/index'. Prior to call this function you must call verifyPin.
 
@@ -423,8 +425,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"13FB836213B12BBD41209273F81BCDCF7C226947B18128F73E9A6E96C84B30C3288E51C622C045488981B6544D02D0940DE54D68A0A78BC2A5F9523B8757B904","status":"ok"}
 
-- **getPublicKey(final String index, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getPublicKeyAndGetJson(final String index, Boolean... showDialog)** 
+- **void getPublicKey(final String index, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getPublicKeyAndGetJson(final String index, Boolean... showDialog)** 
 
     Return public key for HD path m/44'/396'/0'/0'/index'.
 
@@ -436,8 +438,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
 
-- **verifyPinAndSignForDefaultHdPath(final String dataForSigning, final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **verifyPinAndSignForDefaultHdPathAndGetJson(final String dataForSigning, final String pin, Boolean... showDialog)**
+- **void verifyPinAndSignForDefaultHdPath(final String dataForSigning, final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String verifyPinAndSignForDefaultHdPathAndGetJson(final String dataForSigning, final String pin, Boolean... showDialog)**
 
     Make  pin verification data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
 
@@ -451,8 +453,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"2D6A2749DD5AF5BB356220BFA06A0C624D5814438F37983322BBAD762EFB4759CFA927E6735B7CD556196894F3CE077ADDD6B49447B8B325ADC494B82DC8B605","status":"ok"}
 
-- **verifyPinAndSign(final String dataForSigning, final String index, final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **verifyPinAndSignAndGetJson(final String dataForSigning, final String index, final String pin, Boolean... showDialog)**
+- **void verifyPinAndSign(final String dataForSigning, final String index, final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String verifyPinAndSignAndGetJson(final String dataForSigning, final String index, final String pin, Boolean... showDialog)**
 
     Make pin verification and data signing by key for HD path m/44'/396'/0'/0'/index'.
 
@@ -470,8 +472,8 @@ Here there are functions related to ed25519 signature.
 
 ### RecoveryDataApi functions
 
-- **getRecoveryDataLen(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getRecoveryDataLenAndGetJson(Boolean... showDialog)**
+- **void getRecoveryDataLen(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getRecoveryDataLenAndGetJson(Boolean... showDialog)**
 
     Read actual recovery data length.
 
@@ -479,8 +481,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"7","status":"ok"}
 
-- **getRecoveryDataHash(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getRecoveryDataHashAndGetJson(Boolean... showDialog)**
+- **void getRecoveryDataHash(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getRecoveryDataHashAndGetJson(Boolean... showDialog)**
 
     Read recovery data SHA256 hash.
 
@@ -488,8 +490,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
 
-- **getRecoveryData(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getRecoveryDataAndGetJson(Boolean... showDialog)**
+- **void getRecoveryData(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getRecoveryDataAndGetJson(Boolean... showDialog)**
 
     Read  recovery data from TON Wallet applet.
 
@@ -497,8 +499,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"00112233445566","status":"ok"}
 
-- **addRecoveryData(final String recoveryData, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **addRecoveryDataAndGetJson(final String recoveryData, Boolean... showDialog)**
+- **void addRecoveryData(final String recoveryData, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String addRecoveryDataAndGetJson(final String recoveryData, Boolean... showDialog)**
 
     Save recovery data into applet. 
 
@@ -510,8 +512,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"done","status":"ok"}
 
-- **isRecoveryDataSet(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **isRecoveryDataSetAndGetJson(Boolean... showDialog)**
+- **void isRecoveryDataSet(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String isRecoveryDataSetAndGetJson(Boolean... showDialog)**
 
     Return 'true'/'false' if recovery data exists/does not exist.
 
@@ -520,8 +522,8 @@ Here there are functions related to ed25519 signature.
         1) If we added recovery data, then: {"message":"true","status":"ok"}
         2) If we did not add recovery data, then: {"message":"false","status":"ok"}
 
-- **resetRecoveryData(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **resetRecoveryDataAndGetJson(Boolean... showDialog)**
+- **void resetRecoveryData(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String resetRecoveryDataAndGetJson(Boolean... showDialog)**
 
     Clear recovery data.
 
@@ -531,8 +533,8 @@ Here there are functions related to ed25519 signature.
 
 ### CardKeyChainApi functions
 
-- **resetKeyChain(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **resetKeyChainAndGetJson(Boolean... showDialog)**
+- **void resetKeyChain(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String resetKeyChainAndGetJson(Boolean... showDialog)**
 
     Clear keychain, i.e. remove all stored keys.
 
@@ -540,8 +542,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"done","status":"ok"}
 
-- **getKeyChainDataAboutAllKeys(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getKeyChainDataAboutAllKeysAndGetJson(Boolean... showDialog)**
+- **void getKeyChainDataAboutAllKeys(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getKeyChainDataAboutAllKeysAndGetJson(Boolean... showDialog)**
 
     Return list of pairs (keyHmac, keyLength)  in json format.
 
@@ -549,8 +551,8 @@ Here there are functions related to ed25519 signature.
 
         {"keysData":[{"hmac":"D7E0DFB66A2F72AAD7D66D897C805D307EE1F1CB8077D3B8CF1A942D6A5AC2FF","length":"6"},{"hmac":"D31D1D600F8E5B5951275B9C6DED079011FD852ABB62C14A2EECA2E6924452C0","length":"3"}],"status":"ok"}
 
-- **getKeyChainInfo(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getKeyChainInfoAndGetJson(Boolean... showDialog)**
+- **void getKeyChainInfo(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getKeyChainInfoAndGetJson(Boolean... showDialog)**
 
     Return json characterizing the state of keychain. 
 
@@ -558,8 +560,8 @@ Here there are functions related to ed25519 signature.
 
         {"numberOfKeys":0,"occupiedSize":0,"freeSize":32767,"status":"ok"}
 
-- **getNumberOfKeys(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getNumberOfKeysAndGetJson(Boolean... showDialog)**
+- **void getNumberOfKeys(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getNumberOfKeysAndGetJson(Boolean... showDialog)**
 
     Return number of keys in card keychain.
 
@@ -567,8 +569,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"1","status":"ok"}
 
-- **getOccupiedStorageSize(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getOccupiedStorageSizeAndGetJson(Boolean... showDialog)**
+- **void getOccupiedStorageSize(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getOccupiedStorageSizeAndGetJson(Boolean... showDialog)**
 
     Return the volume of occupied size in card keychain (in bytes).
 
@@ -576,8 +578,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"0","status":"ok"}
 
-- **getFreeStorageSize(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getFreeStorageSizeAndGetJson(Boolean... showDialog)**
+- **void getFreeStorageSize(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getFreeStorageSizeAndGetJson(Boolean... showDialog)**
 
     Return the volume of free size in card keychain (in bytes).
 
@@ -585,8 +587,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"32767","status":"ok"}
 
-- **getKeyFromKeyChain(final String keyHmac, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getKeyFromKeyChainAndGetJson(final String keyHmac, Boolean... showDialog)**
+- **void getKeyFromKeyChain(final String keyHmac, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getKeyFromKeyChainAndGetJson(final String keyHmac, Boolean... showDialog)**
 
     Read key from card keychain based on its hmac.
 
@@ -598,8 +600,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"001122334455","status":"ok"}
 
-- **addKeyIntoKeyChain(final String newKey, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **addKeyIntoKeyChainAndGetJson(final String newKey, Boolean... showDialog)**
+- **void addKeyIntoKeyChain(final String newKey, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String addKeyIntoKeyChainAndGetJson(final String newKey, Boolean... showDialog)**
 
     Save new key into card keychain.
 
@@ -613,8 +615,8 @@ Here there are functions related to ed25519 signature.
 
     where "message" contains hmac of newKey.
 
-- **deleteKeyFromKeyChain(final String keyHmac, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **deleteKeyFromKeyChainAndGetJson(final String keyHmac, Boolean... showDialog)**
+- **void deleteKeyFromKeyChain(final String keyHmac, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String deleteKeyFromKeyChainAndGetJson(final String keyHmac, Boolean... showDialog)**
 
     Delete key from card keychain based on its hmac.
 
@@ -628,8 +630,8 @@ Here there are functions related to ed25519 signature.
 
     where "message" field contains the number of remaining keys
 
-- **finishDeleteKeyFromKeyChainAfterInterruption(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson(Boolean... showDialog)**
+- **void finishDeleteKeyFromKeyChainAfterInterruption(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String finishDeleteKeyFromKeyChainAfterInterruptionAndGetJson(Boolean... showDialog)**
 
     Finish the process of deleting key from card keychain. It may be necessary if previous DELETE operation was occassionally interrupted (like card disconnection).
 
@@ -639,8 +641,8 @@ Here there are functions related to ed25519 signature.
 
     where "message" field contains the number of remaining keys
 
-- **changeKeyInKeyChain(final String newKey, final String oldKeyHmac, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **changeKeyInKeyChainAndGetJson(final String newKey, final String oldKeyHmac, Boolean... showDialog)**
+- **void changeKeyInKeyChain(final String newKey, final String oldKeyHmac, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String changeKeyInKeyChainAndGetJson(final String newKey, final String oldKeyHmac, Boolean... showDialog)**
 
     Replace existing key by new key. The length of new key must be equal to length of old key.
 
@@ -656,8 +658,8 @@ Here there are functions related to ed25519 signature.
 
     where "message" contains hmac of newKey.
 
-- **getIndexAndLenOfKeyInKeyChain(final String keyHmac, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getIndexAndLenOfKeyInKeyChainAndGetJson(final String keyHmac, Boolean... showDialog)**
+- **void getIndexAndLenOfKeyInKeyChain(final String keyHmac, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getIndexAndLenOfKeyInKeyChainAndGetJson(final String keyHmac, Boolean... showDialog)**
 
     Read index (inside internal applet storage) and length of key by its hmac.
 
@@ -669,8 +671,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"{\"index\":1,\"length\":3}","status":"ok"}
 
-- **checkAvailableVolForNewKey(final Short keySize, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **checkAvailableVolForNewKeyAndGetJson(final Short keySize, Boolean... showDialog)**
+- **void checkAvailableVolForNewKey(final Short keySize, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String checkAvailableVolForNewKeyAndGetJson(final Short keySize, Boolean... showDialog)**
 
     Check if there is enough free volume in card keychain to add new key of length = keySize. If there is no enough space then it throws an exception
 
@@ -682,8 +684,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"done","status":"ok"}
 
-- **checkKeyHmacConsistency(final String keyHmac, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **checkKeyHmacConsistencyAndGetJson(final String keyHmac, Boolean... showDialog)**
+- **void checkKeyHmacConsistency(final String keyHmac, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String checkKeyHmacConsistencyAndGetJson(final String keyHmac, Boolean... showDialog)**
 
     Checks if card's keychain stores a key with such keyHmac and if this hmac really corresponds to the key.
 
@@ -691,8 +693,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"done","status":"ok"}
 
-- **getHmac(final String index, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getHmacAndGetJson(final String index, Boolean... showDialog)**
+- **void getHmac(final String index, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getHmacAndGetJson(final String index, Boolean... showDialog)**
 
     Get hmac of key in card keychain by its index. 
 
@@ -704,8 +706,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"EFBF24AC1563B34ADB0FFE0B0A53659E72E26765704C109C95346EEAA1D4BEAF","status":"ok"}
 
-- **getDeleteKeyRecordNumOfPackets(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getDeleteKeyRecordNumOfPacketsAndGetJson(Boolean... showDialog)**
+- **void getDeleteKeyRecordNumOfPackets(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getDeleteKeyRecordNumOfPacketsAndGetJson(Boolean... showDialog)**
 
     Returns the number of keys records packets that must be deleted to finish deleting of key.
 
@@ -713,8 +715,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"2","status":"ok"}
 
-- **getDeleteKeyChunkNumOfPackets(final NfcCallback callback, Boolean... showDialog),** <br/>
-  **getDeleteKeyChunkNumOfPacketsAndGetJson(Boolean... showDialog)**
+- **void getDeleteKeyChunkNumOfPackets(final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getDeleteKeyChunkNumOfPacketsAndGetJson(Boolean... showDialog)**
 
     Returns the number of keys chunks packets that must be deleted to finish deleting of key.
 
