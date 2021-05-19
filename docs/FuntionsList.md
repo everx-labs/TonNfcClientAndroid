@@ -2,7 +2,9 @@
 
 Here there is full functions list provided by TonNfcClientAndroid library to make different requests to NFC TON Labs Security cards. 
 
-In [readme](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/README.md) (see section about NfcCallback) we said that for each card operation there was a pair of functions. One of them puts result/error message into callback, the second just returns the result/ throws an exception. For example, there is getSerialNumberAndGetJson() function returning json string and getSerialNumber(NfcCallback callback) returning void and putting the same json into callback. They do the same work. So for short we just give the full list of functions omitting "AndGetJson" suffix and argument NfcCallback callback. We provide only essential information about input data format requirements and possible responses.
+In [readme](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/README.md) (see section about NfcCallback) we said that for each card operation there was a pair of functions. One of them puts result/error message into callback, the second just returns the result/ throws an exception. For example, there is getSerialNumberAndGetJson() function returning json string and getSerialNumber(NfcCallback callback) returning void and putting the same json into callback. They do the same work.
+
+The majority of functions below has the last input parameter 'Boolean... showDialog'. It indicates if one wants to show invitation dialog for NFC card connection. If this parameter is not specified at all, the dialog will be shown.
 
 ## NFC related functions
 
@@ -26,7 +28,8 @@ Here there are functions to check/change the state of your NFC hardware.  In Ton
         {"message":"true","status":"ok"}
         {"message":"false","status":"ok"}
 
-- **openNfcSettings()**
+- **openNfcSettings(final NfcCallback callback)**
+  **openNfcSettingsAndGetJson(final NfcCallback callback)**
 
     Open "Settings" panel to mantain NFC option.
 
