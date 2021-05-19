@@ -29,6 +29,7 @@ Here there are functions to check/change the state of your NFC hardware.  In Ton
         {"message":"false","status":"ok"}
 
 - **openNfcSettings(final NfcCallback callback)**
+  
   **openNfcSettingsAndGetJson(final NfcCallback callback)**
 
     Open "Settings" panel to mantain NFC option.
