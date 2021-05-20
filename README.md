@@ -103,14 +103,18 @@ public void addListenerOnButton() {
 	button.setOnClickListener(new View.OnClickListener() {
 		@Override
             	public void onClick(View arg0) {
-			try {
-                    		String json = cardCoinManagerNfcApi.getMaxPinTriesAndGetJson();
-                    		Log.d("TAG", "Card response : " + json);
-                	}
-                	catch (Exception e) {
-                    		e.printStackTrace();
-                    		Log.e("TAG", "Error happened : " + e.getMessage());
-                	}
+			new Thread(new Runnable() {
+                   		public void run() {
+                        		try {
+                            			String response = cardCoinManagerNfcApi.getMaxPinTriesAndGetJson();
+                            			Log.d("TAG", "Card response : " + response);
+                        		}
+                        		catch (Exception e) {
+                            			e.printStackTrace();
+                            			Log.e("TAG", "Error happened : " + e.getMessage());
+                        		}
+                    		}
+                	}).start();
             	}
         });
 }
