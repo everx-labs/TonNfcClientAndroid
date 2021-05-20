@@ -11,6 +11,9 @@ import androidx.appcompat.app.AlertDialog;
 import com.tonnfccard.smartcard.ApduRunner;
 
 public class DialogHelper {
+
+    public static final String NFC_CARD_OPERATION_INTERRUPTED = "NFC Card operation was interrupted!";
+
     public static AlertDialog createInvitationDialog(Context activity, ApduRunner apduRunner){
         ImageView image = new ImageView(activity);
         image.setImageResource(R.drawable.sphone);
@@ -26,7 +29,7 @@ public class DialogHelper {
                     public void onClick(DialogInterface dialog, int which) {
                         try {
                             apduRunner.disconnectCard();
-                            Toast.makeText(activity, "NFC Card operation was interrupted!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, NFC_CARD_OPERATION_INTERRUPTED, Toast.LENGTH_SHORT).show();
                         }
                         catch (Exception e) {
                             e.printStackTrace();

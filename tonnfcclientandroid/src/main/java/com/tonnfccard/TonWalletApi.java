@@ -86,6 +86,9 @@ public class TonWalletApi {
   private final int FINISH_CARD_INVITATION_DIALOG = 1;
   private final int FINISH_CARD_INVITATION_DIALOG_WITH_FAIL = 2;
 
+  public static final String NFC_CARD_OPERATION_FINISHED = "NFC Card operation is finished!";
+  public static final String NFC_CARD_OPERATION_FALED = "NFC Card operation failed!";
+
   private final AlertDialog cardInvitationDialog;
   protected Handler mHandler = new Handler()
   {
@@ -106,7 +109,7 @@ public class TonWalletApi {
         try {
           Thread.sleep(500);
           cardInvitationDialog.dismiss();
-          Toast.makeText(activity, "NFC Card operation is finished!", Toast.LENGTH_SHORT).show();
+          Toast.makeText(activity, NFC_CARD_OPERATION_FINISHED, Toast.LENGTH_SHORT).show();
         }
         catch (Exception e){
           e.printStackTrace();
@@ -116,7 +119,7 @@ public class TonWalletApi {
         try {
           Thread.sleep(500);
           cardInvitationDialog.dismiss();
-          Toast.makeText(activity, "NFC Card operation failed!", Toast.LENGTH_SHORT).show();
+          Toast.makeText(activity, NFC_CARD_OPERATION_FALED, Toast.LENGTH_SHORT).show();
         }
         catch (Exception e){
           e.printStackTrace();
