@@ -216,7 +216,7 @@ After invitation dialog shows up you have 30 seconds to establish NFC connection
 
 ### Without invitation dialog
 
-There is an option not to use invitation dialogs. For this call any API function with additional last input Boolean argument 'false', for example: getMaxPinTriesAndGetJson(false). Such mode is convinient for testing when you call card operations one by one without any delay in the workflow. Here it's convinient to start with NFC card connection. After NFC connection is ready we can send APDU commands to the card. So you may call API functions. For above example push the button to make request getMaxPinTries after you connected the card. 
+There is an option not to use invitation dialogs. For this call any API function with additional last input Boolean argument 'false', for example: getMaxPinTriesAndGetJson(false). Such mode is convinient for testing when you call card operations one by one without any delay in the workflow. Here it's good practice to start with NFC card connection. After NFC connection is ready we can send APDU commands to the card. So you may call API functions. For above example push the button to make request getMaxPinTries after you connected the card. 
 
 Check your Logcat console in Android Studio. You must find the following output:
 
