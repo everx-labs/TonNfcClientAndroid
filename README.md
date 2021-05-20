@@ -210,6 +210,10 @@ You can test work with NFC card only on your Android device, not simulator. Ther
 
 You call the necessary function from TonNfcClientAndroid API (in the above example we call getMaxPinTriesAndGetJson by pressing the button). And it starts NFC session for you. On the screen you get an invitation dialog to connect the card. To establish the connection hold the card to the top of Android smartphone (field near the camera) as close as possible. Usually smartphone vibrates after establishing NFC connection. And if you use the above example, you must get the toast with the message "NFC hardware touched". It means that NFC connection is established. After that smartphone sends APDU commands to the card. 
 
+<p align="center">
+<img src="../master/docs/images/invitationDialog.png" width="200">
+</p>
+
 If you close invitation dialog by pressing 'Cancel' button it will stop NFC session and disconnect the card.
 
 After invitation dialog shows up you have 30 seconds to establish NFC connection. If you did not connect the card, the dialog will be closed after 30 seconds passed.
