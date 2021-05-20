@@ -575,8 +575,8 @@ To use you must override NfcRejecter and NfcResolver interfaces.
 For example let's look at operation getMaxPinTries. Previously we tried it already. There are two functions for it.
 
 ```java
-public String getMaxPinTriesAndGetJson() throws Exception
-public void getMaxPinTries(final NfcCallback callback)
+public String getMaxPinTriesAndGetJson(Boolean... showDialog) throws Exception
+public void getMaxPinTries(final NfcCallback callback, Boolean... showDialog)
 ```
 	
 Example of work with NfcCallback.
