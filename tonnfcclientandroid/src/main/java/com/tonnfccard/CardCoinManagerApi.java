@@ -69,6 +69,10 @@ public final class CardCoinManagerApi extends TonWalletApi {
     super(activity, apduRunner);
   }
 
+  public CardCoinManagerApi(NfcApduRunner apduRunner) {
+    super(apduRunner);
+  }
+
   /**
    * @param deviceLabel
    * @param callback

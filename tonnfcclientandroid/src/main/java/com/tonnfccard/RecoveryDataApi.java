@@ -40,6 +40,10 @@ public final class RecoveryDataApi extends TonWalletApi {
     super(activity, apduRunner);
   }
 
+  public RecoveryDataApi(NfcApduRunner apduRunner) {
+    super(apduRunner);
+  }
+
   /**
    * @param callback
    * Read actual recovery data length.

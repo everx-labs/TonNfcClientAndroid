@@ -109,6 +109,10 @@ public final class CardKeyChainApi extends TonWalletApi {
     super(activity, apduRunner);
   }
 
+  public CardKeyChainApi(NfcApduRunner apduRunner) {
+    super(apduRunner);
+  }
+
   /**
    * @param callback
    * Clear keychain, i.e. remove all stored keys.

@@ -47,6 +47,11 @@ public final class CardCryptoApi extends TonWalletApi {
     super(activity, apduRunner);
   }
 
+  public CardCryptoApi(NfcApduRunner apduRunner) {
+    super(apduRunner);
+  }
+
+
   /**
    * @param pin - security card PIN code
    * @param callback

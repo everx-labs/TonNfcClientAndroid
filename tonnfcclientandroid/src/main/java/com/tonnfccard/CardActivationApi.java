@@ -52,6 +52,10 @@ public final class CardActivationApi extends TonWalletApi {
   public static final String ECS_HASH_FIELD = "ecsHash";
   public static final String EP_HASH_FIELD = "epHash";
 
+  public CardActivationApi(NfcApduRunner apduRunner) {
+    super(apduRunner);
+  }
+
   public CardActivationApi(Context activity, NfcApduRunner apduRunner) {
     super(activity, apduRunner);
   }

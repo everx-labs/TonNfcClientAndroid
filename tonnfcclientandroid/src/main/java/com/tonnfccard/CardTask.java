@@ -33,17 +33,15 @@ public class CardTask extends AsyncTask<Void, Void, String> {
         this.cardArgs = cardArgs;
         this.cardOp = cardOp;
         this.tonWalletApi = tonWalletApi;
-        if (!showDialog) return;
-        System.out.println(tonWalletApi);
-        System.out.println(tonWalletApi.getActivity());
-        ImageView image = new ImageView(tonWalletApi.getActivity());
+        if (!showDialog || TonWalletApi.getActivity() == null) return;
+        ImageView image = new ImageView(TonWalletApi.getActivity());
         image.setImageResource(R.drawable.sphone);
-        AlertDialog.Builder builder = new AlertDialog.Builder(tonWalletApi.getActivity())
+        AlertDialog.Builder builder = new AlertDialog.Builder(TonWalletApi.getActivity())
                 .setTitle(READY_TO_SCAN_NFC)
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         cancel();
-                        Toast.makeText(tonWalletApi.getActivity(), NFC_CARD_OPERATION_INTERRUPTED, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TonWalletApi.getActivity(), NFC_CARD_OPERATION_INTERRUPTED, Toast.LENGTH_SHORT).show();
                         try {
                             tonWalletApi.getApduRunner().disconnectCard();
                         }
@@ -68,9 +66,7 @@ public class CardTask extends AsyncTask<Void, Void, String> {
         System.out.println("Start onPreExecute");
         if (alert != null) {
             alert.show();
-            System.out.println("LL");
         }
-        System.out.println("HERE");
     }
 
     @Override
@@ -96,6 +92,6 @@ public class CardTask extends AsyncTask<Void, Void, String> {
         if(nfcCallback != null && result != null) {
             tonWalletApi.resolveJson(result, nfcCallback);
         }
-        Toast.makeText(tonWalletApi.getActivity(), result != null ? NFC_CARD_OPERATION_FINISHED : NFC_CARD_OPERATION_FALED, Toast.LENGTH_SHORT).show();
+        Toast.makeText(TonWalletApi.getActivity(), result != null ? NFC_CARD_OPERATION_FINISHED : NFC_CARD_OPERATION_FALED, Toast.LENGTH_SHORT).show();
     }
 }

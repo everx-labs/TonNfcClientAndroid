@@ -65,11 +65,6 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SERIAL_NU
  */
 public class TonWalletApi {
   private static final String TAG = "TonWalletApi";
-  public static final String NFC_CARD_OPERATION_INTERRUPTED = "NFC Card operation was interrupted!";
-  public static final String NFC_CARD_OPERATION_FINISHED = "NFC Card operation is finished!";
-  public static final String NFC_CARD_OPERATION_FALED = "NFC Card operation failed!";
-  public static final String READY_TO_SCAN_NFC = "Ready to scan the card";
-
   protected static final StringHelper STR_HELPER = StringHelper.getInstance();
   protected static final JsonHelper JSON_HELPER = JsonHelper.getInstance();
   protected static final ByteArrayUtil BYTE_ARR_HELPER = ByteArrayUtil.getInstance();
@@ -84,15 +79,15 @@ public class TonWalletApi {
     this.apduRunner = apduRunner;
   }
 
-  public Context getActivity() {
+  public static Context getActivity() {
     return activity;
   }
 
-  public void setActivity(Context activity) {
-    this.activity = activity;
+  public static void setActivity(Context activity) {
+    TonWalletApi.activity = activity;
   }
 
-  protected Context activity;
+  protected static Context activity;
 
   protected NfcApduRunner apduRunner;
 
@@ -109,7 +104,11 @@ public class TonWalletApi {
   }
 
   TonWalletApi(Context activity, NfcApduRunner apduRunner) {
-    this.activity = activity;
+    TonWalletApi.activity = activity;
+    this.apduRunner = apduRunner;
+  }
+
+  TonWalletApi(NfcApduRunner apduRunner) {
     this.apduRunner = apduRunner;
   }
 
