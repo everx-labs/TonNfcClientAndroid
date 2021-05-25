@@ -86,7 +86,6 @@ public class CardTask extends AsyncTask<Void, Void, String> {
                 EXCEPTION_HELPER.handleException(e, nfcCallback, TAG);
             }
         }
-
         return json;
     }
 
