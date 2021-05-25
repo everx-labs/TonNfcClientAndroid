@@ -1,7 +1,13 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'maven-publish'
 
-group = 'com.github.tonlabs'
+
+//group = 'com.github.tonlabs'
+
+def artifactId = 'TonNfcClientAndroid'
+def groupId = 'com.github.tonlab'
+
 
 android {
     compileSdkVersion 29
@@ -12,9 +18,10 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
-        versionName "3.2.0"
+        versionName "3.2.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
+        multiDexEnabled true
 
     }
 
@@ -46,7 +53,6 @@ dependencies {
 
     testImplementation 'junit:junit:4.13'
     testImplementation "org.json:json:20180813"
-
     implementation 'androidx.test.ext:junit:1.1.2'
     implementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'androidx.test:runner:1.3.0'
@@ -64,6 +70,20 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
 
+}
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            library(MavenPublication) {
+                setGroupId groupId
+                setArtifactId artifactId
+                version android.defaultConfig.versionName
+
+                artifact bundleReleaseAar
+            }
+        }
+    }
 }
 
 

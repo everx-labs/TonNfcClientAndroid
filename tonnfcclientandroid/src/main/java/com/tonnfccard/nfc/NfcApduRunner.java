@@ -104,14 +104,20 @@ public class NfcApduRunner extends ApduRunner {
 
   @Override
   public void disconnectCard() throws Exception {
+    System.out.println("I AM HERE");
     if (nfcTag == null) {
       throw new Exception(ERROR_MSG_NO_TAG);
     }
+    System.out.println("I AM HERE1");
     try {
+      System.out.println("I AM HERE2");
       nfcTag.close();
+      System.out.println("I AM HERE3" + Thread.currentThread().getName());
     } catch (Exception e) {
+      System.out.println("I AM HERE4");
         throw new Exception(ERROR_MSG_NFC_DISCONNECT + ", more details: " + e.getMessage());
     }
+    System.out.println("I AM HERE35");
   }
 
   @Override

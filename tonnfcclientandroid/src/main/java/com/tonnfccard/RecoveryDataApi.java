@@ -4,9 +4,13 @@ import android.content.Context;
 import android.util.Log;
 
 import com.tonnfccard.callback.NfcCallback;
+import com.tonnfccard.helpers.CardApiInterface;
 import com.tonnfccard.nfc.NfcApduRunner;
 import com.tonnfccard.smartcard.ApduRunner;
 import com.tonnfccard.smartcard.RAPDU;
+
+import java.util.Collections;
+import java.util.List;
 
 import static com.tonnfccard.TonWalletConstants.*;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_IS_RECOVERY_DATA_SET_RESPONSE_LEN_INCORRECT;
@@ -40,18 +44,12 @@ public final class RecoveryDataApi extends TonWalletApi {
    * @param callback
    * Read actual recovery data length.
    */
+  private final CardApiInterface<List<String>> resetRecoveryData = list -> this.resetRecoveryDataAndGetJson();
+
   public void resetRecoveryData(final NfcCallback callback, Boolean... showDialog) {
-    new Thread(new Runnable() {
-      public void run() {
-        try {
-          String json =  resetRecoveryDataAndGetJson(showDialog);
-          resolveJson(json, callback);
-          Log.d(TAG, "resetRecoveryData response : " + json);
-        } catch (Exception e) {
-          EXCEPTION_HELPER.handleException(e, callback, TAG);
-        }
-      }
-    }).start();
+    boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : false;
+    CardTask cardTask = new CardTask(this, callback,  Collections.emptyList(), resetRecoveryData, showDialogFlag);
+    cardTask.execute();
   }
 
   /**
@@ -59,20 +57,16 @@ public final class RecoveryDataApi extends TonWalletApi {
    * @throws Exception
    * Read actual recovery data length.
    */
-  public String resetRecoveryDataAndGetJson(Boolean... showDialog) throws Exception {
+  public String resetRecoveryDataAndGetJson() throws Exception {
     try {
       //long start = System.currentTimeMillis();
-      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
-      if (showDialogFlag) openInvitationDialog();
       resetRecoveryData();
       String json = JSON_HELPER.createResponseJson(DONE_MSG);
-      if (showDialogFlag) closeInvitationDialog();
       //long end = System.currentTimeMillis();
       //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return  json;
     }
     catch (Exception e) {
-      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -85,18 +79,12 @@ public final class RecoveryDataApi extends TonWalletApi {
    * @param callback
    * Read recovery data SHA256 hash.
    */
+  private final CardApiInterface<List<String>> getRecoveryDataHash = list -> this.getRecoveryDataHashAndGetJson();
+
   public void getRecoveryDataHash(final NfcCallback callback, Boolean... showDialog) {
-    new Thread(new Runnable() {
-      public void run() {
-        try {
-          String json =  getRecoveryDataHashAndGetJson(showDialog);
-          resolveJson(json, callback);
-          Log.d(TAG, "getRecoveryDataHash response : " + json);
-        } catch (Exception e) {
-          EXCEPTION_HELPER.handleException(e, callback, TAG);
-        }
-      }
-    }).start();
+    boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : false;
+    CardTask cardTask = new CardTask(this, callback,  Collections.emptyList(), getRecoveryDataHash, showDialogFlag);
+    cardTask.execute();
   }
 
   /**
@@ -104,20 +92,16 @@ public final class RecoveryDataApi extends TonWalletApi {
    * @throws Exception
    * Read recovery data SHA256 hash.
    */
-  public String getRecoveryDataHashAndGetJson(Boolean... showDialog) throws Exception {
+  public String getRecoveryDataHashAndGetJson() throws Exception {
     try {
       //long start = System.currentTimeMillis();
-      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
-      if (showDialogFlag) openInvitationDialog();
       String response = BYTE_ARR_HELPER.hex(getRecoveryDataHash().getData());
       String json = JSON_HELPER.createResponseJson(response);
-      if (showDialogFlag) closeInvitationDialog();
       //long end = System.currentTimeMillis();
       //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
-      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -132,18 +116,12 @@ public final class RecoveryDataApi extends TonWalletApi {
    * @param callback
    * Read actual recovery data length.
    */
+  private final CardApiInterface<List<String>> getRecoveryDataLen = list -> this.getRecoveryDataLenAndGetJson();
+
   public void getRecoveryDataLen(final NfcCallback callback, Boolean... showDialog) {
-    new Thread(new Runnable() {
-      public void run() {
-        try {
-          String json =  getRecoveryDataLenAndGetJson(showDialog);
-          resolveJson(json, callback);
-          Log.d(TAG, "getRecoveryDataLen response : " + json);
-        } catch (Exception e) {
-          EXCEPTION_HELPER.handleException(e, callback, TAG);
-        }
-      }
-    }).start();
+    boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : false;
+    CardTask cardTask = new CardTask(this, callback,  Collections.emptyList(), getRecoveryDataLen, showDialogFlag);
+    cardTask.execute();
   }
 
   /**
@@ -151,20 +129,16 @@ public final class RecoveryDataApi extends TonWalletApi {
    * @throws Exception
    * Read actual recovery data length.
    */
-  public String getRecoveryDataLenAndGetJson(Boolean... showDialog) throws Exception {
+  public String getRecoveryDataLenAndGetJson() throws Exception {
     try {
       //long start = System.currentTimeMillis();
-      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
-      if (showDialogFlag) openInvitationDialog();
       String response = Integer.valueOf(getRecoveryDataLen()).toString();
       String json = JSON_HELPER.createResponseJson(response);
-      if (showDialogFlag) closeInvitationDialog();
       //long end = System.currentTimeMillis();
       //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
-      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -188,18 +162,12 @@ public final class RecoveryDataApi extends TonWalletApi {
    * @param callback
    * Return 'true'/'false' if recovery data exists/does not exist.
    */
+  private final CardApiInterface<List<String>> isRecoveryDataSet = list -> this.isRecoveryDataSetAndGetJson();
+
   public void isRecoveryDataSet(final NfcCallback callback, Boolean... showDialog) {
-    new Thread(new Runnable() {
-      public void run() {
-        try {
-          String json = isRecoveryDataSetAndGetJson(showDialog);
-          resolveJson(json, callback);
-          Log.d(TAG, "isRecoveryDataSet response : " + json);
-        } catch (Exception e) {
-          EXCEPTION_HELPER.handleException(e, callback, TAG);
-        }
-      }
-    }).start();
+    boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : false;
+    CardTask cardTask = new CardTask(this, callback,  Collections.emptyList(), isRecoveryDataSet, showDialogFlag);
+    cardTask.execute();
   }
 
   /**
@@ -207,20 +175,16 @@ public final class RecoveryDataApi extends TonWalletApi {
    * @throws Exception
    * Return 'true'/'false' if recovery data exists/does not exist.
    */
-  public String isRecoveryDataSetAndGetJson(Boolean... showDialog) throws Exception {
+  public String isRecoveryDataSetAndGetJson() throws Exception {
     try {
       //long start = System.currentTimeMillis();
-      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
-      if (showDialogFlag) openInvitationDialog();
       String response = isRecoveryDataSet().getData()[0] == 0 ? FALSE_MSG : TRUE_MSG;
       String json = JSON_HELPER.createResponseJson(response);
-      if (showDialogFlag) closeInvitationDialog();
       //long end = System.currentTimeMillis();
       //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
-      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -236,18 +200,12 @@ public final class RecoveryDataApi extends TonWalletApi {
    * @param callback
    * Save recovery data into applet.
    */
+  private final CardApiInterface<List<String>> addRecoveryData = list -> this.addRecoveryDataAndGetJson(list.get(0));
+
   public void addRecoveryData(final String recoveryData, final NfcCallback callback, Boolean... showDialog) {
-    new Thread(new Runnable() {
-      public void run() {
-        try {
-          String json = addRecoveryDataAndGetJson(recoveryData, showDialog);
-          resolveJson(json, callback);
-          Log.d(TAG, "addRecoveryData  response : " + json);
-        } catch (Exception e) {
-          EXCEPTION_HELPER.handleException(e, callback, TAG);
-        }
-      }
-    }).start();
+    boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : false;
+    CardTask cardTask = new CardTask(this, callback,  Collections.singletonList(recoveryData), addRecoveryData, showDialogFlag);
+    cardTask.execute();
   }
 
   /**
@@ -256,24 +214,20 @@ public final class RecoveryDataApi extends TonWalletApi {
    * @throws Exception
    * Save recovery data into applet.
    */
-  public String addRecoveryDataAndGetJson(final String recoveryData, Boolean... showDialog) throws Exception {
+  public String addRecoveryDataAndGetJson(final String recoveryData) throws Exception {
     try {
       //long start = System.currentTimeMillis();
       if (!STR_HELPER.isHexString(recoveryData))
         throw new Exception(ERROR_MSG_RECOVERY_DATA_NOT_HEX);
       if (recoveryData.length() > 2 * RECOVERY_DATA_MAX_SIZE)
         throw new Exception(ERROR_MSG_RECOVERY_DATA_LEN_INCORRECT);
-      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
-      if (showDialogFlag) openInvitationDialog();
       addRecoveryData(BYTE_ARR_HELPER.bytes(recoveryData));
       String json = JSON_HELPER.createResponseJson(DONE_MSG);
-      if (showDialogFlag) closeInvitationDialog();
      // long end = System.currentTimeMillis();
       //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
-      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -309,18 +263,12 @@ public final class RecoveryDataApi extends TonWalletApi {
    * @param callback
    * Read recovery data from TON Wallet applet.
    */
+  private final CardApiInterface<List<String>> getRecoveryData = list -> this.getRecoveryDataAndGetJson();
+
   public void getRecoveryData(final NfcCallback callback, Boolean... showDialog) {
-    new Thread(new Runnable() {
-      public void run() {
-        try {
-          String json = getRecoveryDataAndGetJson(showDialog);
-          resolveJson(json, callback);
-          Log.d(TAG, "getRecoveryData response : " + json);
-        } catch (Exception e) {
-          EXCEPTION_HELPER.handleException(e, callback, TAG);
-        }
-      }
-    }).start();
+    boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : false;
+    CardTask cardTask = new CardTask(this, callback,  Collections.emptyList(), getRecoveryData, showDialogFlag);
+    cardTask.execute();
   }
 
   /**
@@ -328,21 +276,17 @@ public final class RecoveryDataApi extends TonWalletApi {
    * @throws Exception
    * Read recovery data from TON Wallet applet.
    */
-  public String getRecoveryDataAndGetJson(Boolean... showDialog) throws Exception {
+  public String getRecoveryDataAndGetJson() throws Exception {
     try {
       //long start = System.currentTimeMillis();
-      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
-      if (showDialogFlag) openInvitationDialog();
       String response = BYTE_ARR_HELPER.hex(getRecoveryData());
       String json = JSON_HELPER.createResponseJson(response);
-      if (showDialogFlag) closeInvitationDialog();
       //long end = System.currentTimeMillis();
       //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
       e.printStackTrace();
-      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }

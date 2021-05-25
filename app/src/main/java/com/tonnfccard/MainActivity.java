@@ -8,11 +8,13 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tonnfccard.callback.NfcCallback;
@@ -38,6 +40,8 @@ import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 
+import org.riversun.promise.Func;
+import org.riversun.promise.Promise;
 public class MainActivity extends AppCompatActivity {
     private static final String DEFAULT_PIN = "5555";
 
@@ -69,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
     Button buttonGetMaxPinTries;
     Button buttonGetRemainingPinTries;
     Button buttonActivateCard;
-    Button buttonGetHashes;
     Button buttonPk;
     Button buttonSign;
     Button buttonTryKeychain;
@@ -79,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
     Button buttonCheckIfNfcEnabled;
     Button buttonOpenNfcSettings;
     Button buttonGetKeyChainDataAboutAllKeys;
+    Button buttonGetSerialNumber;
+    TextView textView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +102,10 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnCheckIfNfcEnabledButton();
         addListenerOnOpenNfcSettingsButton();
         addListenerOnGetKeyChainDataAboutAllKeysButton();
-        addListenerOnGetHashesButton();
+        addListenerOnActivateCardButton();
         addListenerOnGetRemainingPinTriesButton();
+        addListenerOnGetSerialNumberButton();
+        textView = findViewById(R.id.textView1);
         try {
             NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(MainActivity.this);
             cardCoinManagerNfcApi = new CardCoinManagerApi(MainActivity.this,  nfcApduRunner);
@@ -106,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
             cardKeyChainApi = new CardKeyChainApi(MainActivity.this,  nfcApduRunner);
             recoveryDataApi = new RecoveryDataApi(MainActivity.this,  nfcApduRunner);
             nfcApi = new NfcApi(MainActivity.this);
-
             kg = KeyGenerator.getInstance("AES");
             kg.init(AES_KEY_SIZE);
             key = kg.generateKey();
@@ -120,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         try {
-            Log.d("TAG", "Current thread 2 : " + Thread.currentThread().getName());
             if (cardActivationApi.setCardTag(intent)) {
                 Toast.makeText(this, "NFC hardware touched!", Toast.LENGTH_SHORT).show();
             }
@@ -137,7 +143,21 @@ public class MainActivity extends AppCompatActivity {
         buttonGetRemainingPinTries.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                cardCoinManagerNfcApi.getRemainingPinTries(new NfcCallback(System.out::println, System.out::println));
+                boolean showDialog = true;
+                cardCoinManagerNfcApi.getRemainingPinTries(new NfcCallback(System.out::println, System.out::println), showDialog);
+            }
+        });
+    }
+
+    public void addListenerOnGetSerialNumberButton() {
+
+        buttonGetSerialNumber = findViewById(R.id.getSerialNumber);
+
+        buttonGetSerialNumber.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                boolean showDialog = true;
+                cardActivationApi.getSerialNumber(new NfcCallback(System.out::println, System.out::println), showDialog);
             }
         });
     }
@@ -150,64 +170,66 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
+                boolean showDialog = true;
+                try {
+                    Func function1 = (action, data) -> {
+                        new Thread(() -> {
+                            System.out.println("Process-1");
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {}
+                            //Specify result value.(Any type can be specified)
+                            action.resolve("Result-1");
+                        }).start();
+                    };
 
-                new Thread(new Runnable() {
-                    public void run() {
-                        try {
-                            String status = cardCryptoApi.createKeyForHmacAndGetJson(PASSWORD, COMMON_SECRET, SERIAL_NUMBER);
-                            Log.d("TAG", "status : " + status);
+                    Promise.resolve("foo")
+                            .then(new Promise((action, data) -> {
+                                new Thread(() -> {
+                                    String newData = data + "bar";
+                                    action.resolve(newData);
+                                }).start();
+                            }))
+                            .then(new Promise((action, data) -> {
+                                System.out.println(data);
+                                action.resolve();
+                            }))
+                            .start();
+                    System.out.println("Promise in Java");
 
-                            Thread.sleep(5000);
 
-                            String response = cardKeyChainApi.resetKeyChainAndGetJson();
-                            Log.d("TAG", "resetKeyChain response : " + response);
+                   // String status = cardCryptoApi.createKeyForHmacAndGetJson(PASSWORD, COMMON_SECRET, SERIAL_NUMBER);
+                   // Log.d("TAG", "status : " + status);
 
-                            Thread.sleep(5000);
+                    cardKeyChainApi.resetKeyChain(new NfcCallback(System.out::println, System.out::println), showDialog);
 
-                            response = cardKeyChainApi.getKeyChainInfoAndGetJson();
-                            Log.d("TAG", "getKeyChainInfo response : " + response);
+                    System.out.println("BB");
+                    SystemClock.sleep(10000);
+                    System.out.println("AA");
+                    cardKeyChainApi.getKeyChainInfo(new NfcCallback(System.out::println, System.out::println), showDialog);
 
-                            Thread.sleep(5000);
+                    /*Thread.sleep(5000);
 
-                            String keyInHex = "001122334455";
-                            response = cardKeyChainApi.addKeyIntoKeyChainAndGetJson(keyInHex);
-                            Log.d("TAG", "addKeyIntoKeyChain response : " + response);
+                    String keyInHex = "001122334455";
+                    cardKeyChainApi.addKeyIntoKeyChain(keyInHex, new NfcCallback(System.out::println, System.out::println), showDialog);
 
-                            Thread.sleep(5000);
+                    Thread.sleep(5000);
 
-                            String keyHmac = extractMessage(response);
-                            Log.d("TAG", "keyHmac : " + response);
+                    keyInHex = "667788";
+                    cardKeyChainApi.addKeyIntoKeyChain(keyInHex, new NfcCallback(System.out::println, System.out::println), showDialog);
 
-                            keyInHex = "667788";
-                            response = cardKeyChainApi.addKeyIntoKeyChainAndGetJson(keyInHex);
-                            Log.d("TAG", "addKeyIntoKeyChain response : " + response);
+                    Thread.sleep(5000);
 
-                            Thread.sleep(5000);
+                    cardKeyChainApi.getKeyChainInfo(new NfcCallback(System.out::println, System.out::println), showDialog);
 
-                            keyHmac = extractMessage(response);
-                            Log.d("TAG", "keyHmac : " + response);
+                    Thread.sleep(5000);
 
-                            response = cardKeyChainApi.getKeyChainInfoAndGetJson();
-                            Log.d("TAG", "getKeyChainInfo response : " + response);
-
-                            Thread.sleep(5000);
-
-                            response = cardKeyChainApi.getIndexAndLenOfKeyInKeyChainAndGetJson(keyHmac);
-                            Log.d("TAG", "getIndexAndLenOfKeyInKeyChain : " + response);
-
-                            Thread.sleep(5000);
-
-                            response = cardKeyChainApi.getKeyChainDataAboutAllKeysAndGetJson();
-                            Log.d("TAG", "getKeyChainDataAboutAllKeys : " + response);
-
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace();
-                            Log.e("TAG", "Error happened : " + e.getMessage());
-                        }
-
-                    }
-                }).start();
+                    cardKeyChainApi.getKeyChainDataAboutAllKeys(new NfcCallback(System.out::println, System.out::println), showDialog);*/
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("TAG", "Error happened : " + e.getMessage());
+                }
 
             }
 
@@ -516,18 +538,8 @@ public class MainActivity extends AppCompatActivity {
         buttonGetMaxPinTries.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                new Thread(new Runnable() {
-                   public void run() {
-                        try {
-                            String response = cardCoinManagerNfcApi.getMaxPinTriesAndGetJson();
-                            Log.d("TAG", "Card response : " + response);
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace();
-                            Log.e("TAG", "Error happened : " + e.getMessage());
-                        }
-                    }
-                }).start();
+                boolean showDialog = true;
+                cardCoinManagerNfcApi.getMaxPinTries(new NfcCallback(System.out::println, System.out::println), showDialog);
             }
         });
     }
@@ -540,27 +552,22 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
-                new Thread(new Runnable() {
-                    public void run() {
-                        try {
-                            String status = cardCryptoApi.createKeyForHmacAndGetJson(PASSWORD, COMMON_SECRET, SERIAL_NUMBER);
-                            Log.d("TAG", "status : " + status);
+                try {
+                    String status = cardCryptoApi.createKeyForHmacAndGetJson(PASSWORD, COMMON_SECRET, SERIAL_NUMBER);
+                    Log.d("TAG", "status : " + status);
+                    boolean showDialog = true;
+                    String hdIndex = "234";
+                    String msg = "000011";
+                    //  String response = cardCryptoApi.verifyPinAndGetJson(DEFAULT_PIN);
+                    // response = cardCryptoApi.signAndGetJson(msg, hdIndex);
+                    // String response = cardCryptoApi.verifyPinAndSignForDefaultHdPathAndGetJson(msg, DEFAULT_PIN);
+                    cardCryptoApi.verifyPinAndSign(msg, hdIndex, DEFAULT_PIN, new NfcCallback(System.out::println, System.out::println), showDialog);
 
-                            String hdIndex = "234";
-                            String msg = "000011";
-                            //  String response = cardCryptoApi.verifyPinAndGetJson(DEFAULT_PIN);
-                            // response = cardCryptoApi.signAndGetJson(msg, hdIndex);
-                            // String response = cardCryptoApi.verifyPinAndSignForDefaultHdPathAndGetJson(msg, DEFAULT_PIN);
-                            String response = cardCryptoApi.verifyPinAndSignAndGetJson(msg, hdIndex, DEFAULT_PIN);
-                            Log.d("TAG", "Card response (ed25519 signature) : " + response);
-
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace();
-                            Log.e("TAG", "Error happened : " + e.getMessage());
-                        }
-                    }
-                }).start();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("TAG", "Error happened : " + e.getMessage());
+                }
             }
         });
 
@@ -574,23 +581,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
-
-                new Thread(new Runnable() {
-                    public void run() {
-                        try {
-                            String hdIndex = "1";
-                            //String response = cardCryptoApi.getTonAppletStateAndGetJson();
-                            String response = cardCryptoApi.getPublicKeyAndGetJson(hdIndex);
-                            Log.d("TAG", "Card response (ed25519 public key) : " + response);
-
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace();
-                            Log.e("TAG", "Error happened : " + e.getMessage());
-                        }
-
-                    }
-                }).start();
+                boolean showDialog = true;
+                String hdIndex = "1";
+                cardCryptoApi.getPublicKey(hdIndex, new NfcCallback(System.out::println, System.out::println), showDialog);
             }
         });
 
@@ -602,38 +595,6 @@ public class MainActivity extends AppCompatActivity {
         buttonActivateCard = findViewById(R.id.activateCard);
 
         buttonActivateCard.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                new Thread(new Runnable() {
-                    public void run() {
-                        try {
-                            String hdIndex = "1";
-                            //String response = cardCryptoApi.getTonAppletStateAndGetJson();
-                            String response = cardCryptoApi.getPublicKeyAndGetJson(hdIndex);
-                            Log.d("TAG", "Card response (ed25519 public key) : " + response);
-
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace();
-                            Log.e("TAG", "Error happened : " + e.getMessage());
-                        }
-
-                    }
-                }).start();
-
-
-
-            }
-
-        });
-    }
-
-    public void addListenerOnGetHashesButton() {
-
-        buttonGetHashes = findViewById(R.id.getHashes);
-
-        buttonGetHashes.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {

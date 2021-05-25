@@ -14,10 +14,14 @@ public class DialogHelper {
 
     public static final String NFC_CARD_OPERATION_INTERRUPTED = "NFC Card operation was interrupted!";
 
-    public static AlertDialog createInvitationDialog(Context activity, ApduRunner apduRunner){
+   // private Context activity;
+    //private ApduRunner apduRunner;
+    private final AlertDialog.Builder builder;
+
+    public DialogHelper(Context activity, ApduRunner apduRunner) {
         ImageView image = new ImageView(activity);
         image.setImageResource(R.drawable.sphone);
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity)
+        builder = new AlertDialog.Builder(activity)
                 .setTitle("Ready to scan the card")
                 // .setMessage("Hold your smartphone near the card.")
                 /* .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
@@ -38,7 +42,9 @@ public class DialogHelper {
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setView(image);
-        AlertDialog alert = builder.create();
-        return alert;
+    }
+
+    public AlertDialog createInvitationDialog(){
+        return builder.create();
     }
 }

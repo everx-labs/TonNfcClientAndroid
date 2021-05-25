@@ -1,17 +1,23 @@
 package com.tonnfccard;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.security.keystore.KeyProperties;
 import android.security.keystore.KeyProtection;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
 import com.tonnfccard.callback.NfcCallback;
+import com.tonnfccard.helpers.CardApiInterface;
 import com.tonnfccard.helpers.ExceptionHelper;
 import com.tonnfccard.helpers.JsonHelper;
 import com.tonnfccard.helpers.StringHelper;
@@ -24,13 +30,16 @@ import com.tonnfccard.utils.ByteArrayUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -56,6 +65,10 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SERIAL_NU
  */
 public class TonWalletApi {
   private static final String TAG = "TonWalletApi";
+  public static final String NFC_CARD_OPERATION_INTERRUPTED = "NFC Card operation was interrupted!";
+  public static final String NFC_CARD_OPERATION_FINISHED = "NFC Card operation is finished!";
+  public static final String NFC_CARD_OPERATION_FALED = "NFC Card operation failed!";
+  public static final String READY_TO_SCAN_NFC = "Ready to scan the card";
 
   protected static final StringHelper STR_HELPER = StringHelper.getInstance();
   protected static final JsonHelper JSON_HELPER = JsonHelper.getInstance();
@@ -71,8 +84,21 @@ public class TonWalletApi {
     this.apduRunner = apduRunner;
   }
 
+  public Context getActivity() {
+    return activity;
+  }
+
+  public void setActivity(Context activity) {
+    this.activity = activity;
+  }
+
   protected Context activity;
-  NfcApduRunner apduRunner;
+
+  protected NfcApduRunner apduRunner;
+
+  public NfcApduRunner getApduRunner() {
+    return apduRunner;
+  }
 
   static {
     try {
@@ -82,69 +108,9 @@ public class TonWalletApi {
     }
   }
 
-  private final int START_CARD_INVITATION_DIALOG = 0;
-  private final int FINISH_CARD_INVITATION_DIALOG = 1;
-  private final int FINISH_CARD_INVITATION_DIALOG_WITH_FAIL = 2;
-
-  public static final String NFC_CARD_OPERATION_FINISHED = "NFC Card operation is finished!";
-  public static final String NFC_CARD_OPERATION_FALED = "NFC Card operation failed!";
-
-  private final AlertDialog cardInvitationDialog;
-  protected Handler mHandler = new Handler()
-  {
-    public void handleMessage(Message msg)
-    {
-      System.out.println("msg.what = " + msg.what);
-      if (msg.what == START_CARD_INVITATION_DIALOG) {
-        cardInvitationDialog.show();
-        final Timer timer2 = new Timer();
-        timer2.schedule(new TimerTask() {
-          public void run() {
-            cardInvitationDialog.dismiss();
-            timer2.cancel(); //this will cancel the timer of the system
-          }
-        }, 35000);
-      }
-      else if (msg.what == FINISH_CARD_INVITATION_DIALOG) {
-        try {
-          Thread.sleep(500);
-          cardInvitationDialog.dismiss();
-          Toast.makeText(activity, NFC_CARD_OPERATION_FINISHED, Toast.LENGTH_SHORT).show();
-        }
-        catch (Exception e){
-          e.printStackTrace();
-        }
-      }
-      else if (msg.what == FINISH_CARD_INVITATION_DIALOG_WITH_FAIL) {
-        try {
-          Thread.sleep(500);
-          cardInvitationDialog.dismiss();
-          Toast.makeText(activity, NFC_CARD_OPERATION_FALED, Toast.LENGTH_SHORT).show();
-        }
-        catch (Exception e){
-          e.printStackTrace();
-        }
-      }
-
-    }
-  };
-
-  protected void openInvitationDialog() {
-    mHandler.sendEmptyMessage(START_CARD_INVITATION_DIALOG);
-  }
-
-  protected void closeInvitationDialog() {
-    mHandler.sendEmptyMessage(FINISH_CARD_INVITATION_DIALOG);
-  }
-
-  protected void closeInvitationDialogWithFail() {
-    mHandler.sendEmptyMessage(FINISH_CARD_INVITATION_DIALOG_WITH_FAIL);
-  }
-
   TonWalletApi(Context activity, NfcApduRunner apduRunner) {
     this.activity = activity;
     this.apduRunner = apduRunner;
-    cardInvitationDialog = DialogHelper.createInvitationDialog(activity, apduRunner);
   }
 
   public static void setHmacHelper(HmacHelper hmacHelper) {
@@ -192,18 +158,12 @@ public class TonWalletApi {
    * @param callback
    * This function returns serial number (SN). It must be identical to SN printed on the card.
    */
+  private final CardApiInterface<List<String>> getSerialNumber = list -> this.getSerialNumberAndGetJson();
+
   public void getSerialNumber(final NfcCallback callback, Boolean... showDialog) {
-    new Thread(new Runnable() {
-      public void run() {
-        try {
-          String json = getSerialNumberAndGetJson(showDialog);
-          resolveJson(json, callback);
-          Log.d(TAG, "getSerialNumber response : " + json);
-        } catch (Exception e) {
-            EXCEPTION_HELPER.handleException(e, callback, TAG);
-        }
-      }
-    }).start();
+    boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : false;
+    CardTask cardTask = new CardTask(this, callback,  Collections.emptyList(), getSerialNumber, showDialogFlag);
+    cardTask.execute();
   }
 
   /**
@@ -211,20 +171,16 @@ public class TonWalletApi {
    * @throws Exception
    * This function returns serial number (SN). It must be identical to SN printed on the card.
    */
-  public String getSerialNumberAndGetJson(Boolean... showDialog) throws Exception {
+  public String getSerialNumberAndGetJson() throws Exception {
     try {
       //long start = System.currentTimeMillis();
-      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
-      if (showDialogFlag) openInvitationDialog();
       String response = STR_HELPER.makeDigitalString(getSerialNumber());
       String json = JSON_HELPER.createResponseJson(response);
-      if (showDialogFlag) closeInvitationDialog();
       //long end = System.currentTimeMillis();
       //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
-      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -233,18 +189,12 @@ public class TonWalletApi {
    * @param callback
    * This function returns state of TON Labs wallet applet.
    */
+  private final CardApiInterface<List<String>> getTonAppletState = list -> this.getTonAppletStateAndGetJson();
+
   public void getTonAppletState(final NfcCallback callback, Boolean... showDialog) {
-    new Thread(new Runnable() {
-      public void run() {
-        try {
-          String json = getTonAppletStateAndGetJson(showDialog);
-          resolveJson(json, callback);
-          Log.d(TAG, "getTonAppletState response : " + json);
-        } catch (Exception e) {
-            EXCEPTION_HELPER.handleException(e, callback, TAG);
-        }
-      }
-    }).start();
+    boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : false;
+    CardTask cardTask = new CardTask(this, callback,  Collections.emptyList(), getTonAppletState, showDialogFlag);
+    cardTask.execute();
   }
 
   /**
@@ -252,20 +202,16 @@ public class TonWalletApi {
    * @throws Exception
    * This function returns state of TON Labs wallet applet.
    */
-  public String getTonAppletStateAndGetJson(Boolean... showDialog) throws Exception {
+  public String getTonAppletStateAndGetJson() throws Exception {
     try {
       //long start = System.currentTimeMillis();
-      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
-      if (showDialogFlag) openInvitationDialog();
       TonWalletAppletStates state = getTonAppletState();
       String json = JSON_HELPER.createResponseJson(state.getDescription());
-      if (showDialogFlag) closeInvitationDialog();
       //long end = System.currentTimeMillis();
       //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
-      closeInvitationDialogWithFail();
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -274,18 +220,12 @@ public class TonWalletApi {
    * @param callback
    * This function returns fresh 32 bytes sault generated by the card.
    */
-  public void getSault(NfcCallback callback, Boolean... showDialog) {
-    new Thread(new Runnable() {
-      public void run() {
-        try {
-          String json = getSaultAndGetJson(showDialog);
-          resolveJson(json, callback);
-          Log.d(TAG, "getSault response : " + json);
-        } catch (Exception e) {
-            EXCEPTION_HELPER.handleException(e, callback, TAG);
-        }
-      }
-    }).start();
+  private final CardApiInterface<List<String>> getSault = list -> this.getSaultAndGetJson();
+
+  public void getSault(final NfcCallback callback, Boolean... showDialog) {
+    boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : false;
+    CardTask cardTask = new CardTask(this, callback,  Collections.emptyList(), getSault, showDialogFlag);
+    cardTask.execute();
   }
 
   /**
@@ -293,19 +233,15 @@ public class TonWalletApi {
    * @throws Exception
    * This function returns fresh 32 bytes sault generated by the card.
    */
-  public String getSaultAndGetJson(Boolean... showDialog) throws Exception {
+  public String getSaultAndGetJson() throws Exception {
     try {
       //long start = System.currentTimeMillis();
-      boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : true;
-      if (showDialogFlag) openInvitationDialog();
       String json = JSON_HELPER.createResponseJson(getSaultHex());
-      if (showDialogFlag) closeInvitationDialog();
       //long end = System.currentTimeMillis();
       //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
     }
     catch (Exception e) {
-      closeInvitationDialogWithFail();
         throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
@@ -660,5 +596,18 @@ public class TonWalletApi {
   private RAPDU selectTonWalletAppletAndGetSault() throws Exception {
     return apduRunner.sendTonWalletAppletAPDU(GET_SAULT_APDU);
   }
-
 }
+
+/*public void getSerialNumber(final NfcCallback callback, Boolean... showDialog) {
+    new Thread(new Runnable() {
+      public void run() {
+        try {
+          String json = getSerialNumberAndGetJson(showDialog);
+          resolveJson(json, callback);
+          Log.d(TAG, "getSerialNumber response : " + json);
+        } catch (Exception e) {
+            EXCEPTION_HELPER.handleException(e, callback, TAG);
+        }
+      }
+    }).start();
+  }*/
