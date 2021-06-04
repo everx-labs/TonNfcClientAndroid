@@ -67,11 +67,11 @@ private CardCoinManagerApi cardCoinManagerNfcApi;
 @Override
 protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
-	setContentView(android.example.myapplication.R.layout.activity_main);
+	setContentView(R.layout.activity_main);
 	...
 	try {
-		NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
-		cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
+		NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(MainActivity.this);
+		cardCoinManagerNfcApi = new CardCoinManagerApi(MainActivity.this,  nfcApduRunner);
 	}
 	catch (Exception e) {
 		Log.e("TAG", "Error happened : " + e.getMessage());;
