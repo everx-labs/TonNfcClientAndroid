@@ -132,7 +132,7 @@ To get the full picture of how the simplest MainActivity may look like you may w
 
 ### Case of successful operation
 
-In the case of successful operation with the card any function of TonNfcClientAndroid library always returns json string with two fields "message" and "status". "status" will contain "ok". In the field "message" you will find an expected payload. So jsons may look like this.
+In the case of successful operation with the card any function of TonNfcClientAndroid library returns json string with two fields "message" and "status". "status" contains "ok". In the field "message" there's an expected payload. So jsons may look like this.
 
 ```
 {"message":"done","status":"ok"}
@@ -141,6 +141,8 @@ In the case of successful operation with the card any function of TonNfcClientAn
 {"message":"980133A56A59F3A59F174FD457EB97BE0E3BAD59E271E291C1859C74C795A83368FD8C7405BC37E1C4146F4D175CF36421BF6AD2AFF4329F5A6C6D772247ED03","status":"ok"}
 	etc.
 ```
+
+In some cases we put payload into fields with another titles. See functions _getHashes, getKeyChainInfo, getKeyChainDataAboutAllKeys_ in [here](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/docs/FuntionsList.md).
 
 ### Case of error
 
