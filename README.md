@@ -50,7 +50,8 @@ For this to work you must have an appropriate nfc_tech_filter.xml file in your x
 </resources>
 ```
 		
-To get the full picture of how AndroidManifest.xml should look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/ .
+To get the full picture of how AndroidManifest.xml should look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/.
+
 _Note:_ minSdkVersion now is 24 to use the library.
 
 ## Usage (Simple example)
