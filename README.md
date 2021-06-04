@@ -26,7 +26,7 @@ dependencies {
 }
 ```
 
-+ You must take care of AndroidManifest.xml. It must contain NFC permission and special intent filter. Add the following snippets.
++ Take care of AndroidManifest.xml. It must contain NFC permission and special intent filter. Add the following snippets.
 
 ```xml
 <uses-permission android:name="android.permission.NFC" />
