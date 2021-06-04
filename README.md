@@ -146,7 +146,7 @@ In some cases we put payload into fields with another titles. See functions _get
 
 ### Case of error
 
-If some error happened then functions of TonNfcClientAndroid library produce error messages wrapped into json strings of special format. The structure of json depends on the  error class. There are two main classes of errors.
+If some error happened then functions of TonNfcClientAndroid library produce error messages represented by json strings. The structure of json depends on the error class. There are two main classes of errors.
 
 #### Applet (card) errors
 
@@ -155,7 +155,7 @@ It is the case when applet (installed on the card) threw some error status word 
 {
 	"message":"Incorrect PIN (from Ton wallet applet).",
 	"status":"fail",
-	"errorCode":"6F07",
+	"code":"6F07",
 	"errorTypeId":0,
 	"errorType":"Applet fail: card operation error",
 	"cardInstruction":"VERIFY_PIN",
@@ -163,35 +163,33 @@ It is the case when applet (installed on the card) threw some error status word 
 }
 ```
 Here:
-+ *errorCode* — error status word (SW) produced by the card (applet)
++ *code* — error status word (SW) produced by the card (applet)
 
-+ *cardInstruction* — title of APDU command that failed
++ *cardInstruction* — title of failed APDU command 
 
-+ *errorTypeId* — id of error type ( it will always be zero here)
++ *errorTypeId* — id of error type (it will always be zero here)
 
 + *errorType* — description of error type 
 
-+ *message* — contains error message corresponding to errorCode thrown by the card.
++ *message* — contains error message corresponding to error code thrown by applet.
 
 + *apdu* — full text of failed APDU command in hex format
 
 #### Android errors
 
-It is the case when error happened in Android code itself. The basic examples: troubles with NFC connection or incorrect format of input data passed into TonNfcClientAndroid library from the outside world. The typical error json looks like this.
+It is the case when error happened in Android code itself. The basic examples: troubles with NFC connection or incorrect format of input data passed into TonNfcClientAndroid. The typical error json looks like this.
 
 ```
 {
 	"errorType": "Native code fail: incorrect format of input data",
 	"errorTypeId": "3",
-	"errorCode": "30006",
+	"code": "30006",
 	"message": "Pin must be a numeric string of length 4.",
 	"status": "fail"
 }
 ```	
 
 In this [document](https://github.com/tonlabs/TonNfcClientAndroid/blob/master/docs/ErrorList.md) you may find the full list of json error messages (and their full classification) that can be thrown by the library.
-
-_Note:_ In above snippet in the case of any exception happened during work of cardCoinManagerNfcApi.getMaxPinTriesAndGetJson() we will come into catch block. Message inside exception e is always in json format. 	
 
 ### String format
 
