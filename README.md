@@ -56,7 +56,7 @@ _Note:_ minSdkVersion now is 24 to use the library.
 
 ## Usage (Simple example)
 
-Let's suppose you want to work with NFC TON Labs security card in your MainActivity class. And you want to make a simple request to the card: return the maximum number of card's PIN tries. For this request there is a special APDU command supported by the card. And there is a corresponding function in TonNfcClientAndroid library sending it to the card and making postprocessing of card's response for you. To make it work you should add the following snippet.
+Let's suppose you want to work with NFC TON Labs security card in your MainActivity. And you want to make a simple request to the card: return the maximum number of card's PIN tries. For this request there is a special APDU command supported by the card. And there is a corresponding function in TonNfcClientAndroid library sending it to the card and making postprocessing of card's response for you. To make it work you should add the following snippet.
 
 ```java
 import com.tonnfccard.CardCoinManagerApi;
