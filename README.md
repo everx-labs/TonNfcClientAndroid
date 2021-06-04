@@ -205,7 +205,7 @@ Here B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A is a 32 by
 
 ## Test work with the card
 
-You can test work with NFC card only on your Android device, not simulator. There are two basic scenarios of work with the card for Android.
+You can work with NFC card only on your Android device, not simulator. There are two basic scenarios of work with the card for Android.
 
 ### With invitation dialog
 
