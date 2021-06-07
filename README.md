@@ -484,7 +484,71 @@ int num  =  Integer.parseInt(jObject.getString(NUMBER_OF_KEYS_FIELD));
 if (num != 0) {
 	throw  new Exception("Bad number of keys : " + num);
 }
-```	
+```
+
+We also give here another example using API functions working with callbacks. 
+
+```java
+import org.riversun.promise.Action;
+import org.riversun.promise.Promise;
+
+public NfcCallback createCallback(Action action){
+        return new NfcCallback((result) -> {
+            System.out.println(result);
+            textView.append("\n");
+            textView.append(String.valueOf(result));
+            action.resolve(result);
+        }, (error) -> {
+            System.out.println(error);
+            action.reject(error);
+        });
+}
+```
+
+```java
+Promise.resolve("start")
+.then(new Promise((action, data) -> {
+	runOnUiThread(() -> {
+		cardKeyChainApi.resetKeyChain(createCallback(action), showDialog);
+	});
+}))
+.then(new Promise((action, data) -> {
+	runOnUiThread(() -> {
+		System.out.println("resetKeyChain result = " + data);
+		cardKeyChainApi.getKeyChainInfo(createCallback(action), showDialog);
+	});
+}))
+.then(new Promise((action, data) -> {
+	runOnUiThread(() -> {
+		System.out.println("getKeyChainInfo result = " + data);
+		String keyInHex = "001122334455";
+		cardKeyChainApi.addKeyIntoKeyChain(keyInHex, createCallback(action), showDialog);
+	});
+}))
+.then(new Promise((action, data) -> {
+	runOnUiThread(() -> {
+		System.out.println("addKeyIntoKeyChain result = " + data);
+		String keyInHex = "667788";
+		cardKeyChainApi.addKeyIntoKeyChain(keyInHex, createCallback(action), showDialog);
+	});
+}))
+.then(new Promise((action, data) -> {
+	runOnUiThread(() -> {
+		System.out.println("addKeyIntoKeyChain result #2 = " + data);
+                cardKeyChainApi.getKeyChainInfo(createCallback(action), showDialog);
+	});
+}))
+.then(new Promise((action, data) -> {
+	runOnUiThread(() -> {
+        	System.out.println("getKeyChainInfo result = " + data);
+                cardKeyChainApi.getKeyChainDataAboutAllKeys(createCallback(action), showDialog);
+       	});
+}))
+.start();
+```
+
+In this example we create two keys in card's keychain and in the end read info about all keys added into keychain. Each API function creates AsyncTask. But since card operations must be done successively, we should organize a chain of AsyncTasks in which a new task is started only after the previous was finished. To achieve this we used _promises_ implemented in [library](https://github.com/riversun/java-promise).
+
 ## Recovery module
 
 This module is to store/maintain the data for recovering service: multisignature wallet address (hex string of length 64), TON Labs Surf public key (hex string of length 64) and part of card's activation data: authenticationPassword (hex string of length 256), commonSecret(hex string of length 64). This data will allow to recover access to multisignature wallet in the case when user has lost Android device with installed Surf application and also a seed phrase for Surf account. More details about recovery service can be found here.
