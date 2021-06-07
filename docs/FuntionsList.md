@@ -172,7 +172,7 @@ Here there are functions to call APDU commands of CoinManager. CoinManager is an
 
 TON Labs wallet applet is software developed by TON Labs team and integrated into NFC TON Labs Security card. It provides main card functionality. It takes seed for ed25519 signature from CoinManager entity.
 
-These functions are naturally divided into four groups. And there are respectively four classes in TonNfcClientAndroid library providing an API: CardActivationApi,  CardCryptoApi,  CardKeyChainApi, RecoveryDataApi. And there is a superclass TonWalletApi containing some common functions and functions to maintain keys for HMAC SHA256 signature (see section Protection against MITM).
+These functions are naturally divided into four groups. And there are respectively four classes in TonNfcClientAndroid library providing an API: CardActivationApi,  CardCryptoApi,  CardKeyChainApi, RecoveryDataApi. And there is a superclass TonWalletApi containing some common functions and functions to maintain keys for HMAC SHA256 signature (see section _Protection against MITM_ in readme).
 
 ### TonWalletApi functions
 
