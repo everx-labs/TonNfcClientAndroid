@@ -664,7 +664,7 @@ public final class CardKeyChainApi extends TonWalletApi {
         jObject.put(KEY_LENGTH_FIELD, map.get(hmac).toString());
         jArray.put(jObject);
       }
-      allKeysObj.put(KEYS_DATA_FIELD, jArray);
+      allKeysObj.put(MESSAGE_FIELD, jArray);
       allKeysObj.put(STATUS_FIELD, SUCCESS_STATUS);
       //long end = System.currentTimeMillis();
       //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );

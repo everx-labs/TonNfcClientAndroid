@@ -22,6 +22,8 @@ import com.tonnfccard.helpers.StringHelper;
 import com.tonnfccard.nfc.NfcApduRunner;
 import com.tonnfccard.utils.ByteArrayUtil;
 
+import static com.tonnfccard.CardActivationApi.ECS_HASH_FIELD;
+import static com.tonnfccard.CardActivationApi.EP_HASH_FIELD;
 import static com.tonnfccard.CardKeyChainApi.NUMBER_OF_KEYS_FIELD;
 import static com.tonnfccard.TonWalletConstants.MAX_KEY_SIZE_IN_KEYCHAIN;
 import static com.tonnfccard.TonWalletConstants.MESSAGE_FIELD;
@@ -52,10 +54,36 @@ public class MainActivity extends AppCompatActivity {
     private static final String SERIAL_NUMBER = "504394802433901126813236";
     private static final String COMMON_SECRET = "7256EFE7A77AFC7E9088266EF27A93CB01CD9432E0DB66D600745D506EE04AC4";
     private static final String IV = "1A550F4B413D0E971C28293F9183EA8A";
-    private static final String PASSWORD =  "F4B072E1DF2DB7CF6CD0CD681EC5CD2D071458D278E6546763CBB4860F8082FE14418C8A8A55E2106CBC6CB1174F4BA6D827A26A2D205F99B7E00401DA4C15ACC943274B92258114B5E11C16DA64484034F93771547FBE60DA70E273E6BD64F8A4201A9913B386BCA55B6678CFD7E7E68A646A7543E9E439DD5B60B9615079FE";
+    private static final String PASSWORD  = "F4B072E1DF2DB7CF6CD0CD681EC5CD2D071458D278E6546763CBB4860F8082FE14418C8A8A55E2106CBC6CB1174F4BA6D827A26A2D205F99B7E00401DA4C15ACC943274B92258114B5E11C16DA64484034F93771547FBE60DA70E273E6BD64F8A4201A9913B386BCA55B6678CFD7E7E68A646A7543E9E439DD5B60B9615079FE";
 
     private static final String SURF_PUBLIC_KEY = "B81F0E0E07416DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A";
     private static final String MULTISIG_ADDR = "A11F0E0E07416DAB6C320ECC6BF3DBA48A70121C5251CC31B1D8F8A1B36E0F2F";
+
+    /**
+     *
+     * {"CS":"855D821CD4678B002E3D6E69F07947D3A8C608245E4381C4324FC532C1915484",
+     * "P1":"3149765A6CFD52E3CFCFC8F77EFB1BBFE78BCA5F2378FC46A9C9EA5E9CE78B30060CE6ECF6372F9BC15B35F8B5B773DB577048EF848026609959D5B09FE6C5E52B2F61F4168FEE9E49F3C6A41CF2635D7F5862F9F403F1583A06B0B54BD652045A5E73EBF40CCE312E360891604CF77D7A7F9DF05325056B8212BB2297C04A1E",
+     * "ECS":"6254AA7054F285CD08E083459118E6D892553B04F465549178215A05A288A8D9",
+     * "H1":"F1B0B07121C4D20A0855336EDBBBF90E28C92521B87DCB118742FA19F652617A",
+     * "H2":"1F91610DC5588B746BC19D5083A3DD169D98FD08C6A837F2F67D7D636701C4BD",
+     * "SN":"647250988796071878800855",
+     * "H3":"C9E197ECB19C6930F2914A8B9F37BFB7B328F9CA98963447AAD4F3AFDFC8FBA7",
+     * "IV":"2FB8418BC77EC9BDB7CB706165339505",
+     * "B1":"EC208FC96DCE8E99CA5ACE7B3EB129ABEDDD3418EA90E7DD86694D036B3ABF40F28E2A29F256F1B5BB7E3EDA59E18C4FA75588AD4C66FD82BDD68297C91CC47FD255B0696A98559AA91F18F3450290DE78CA2530D5B31D28CB0152C5DB2ECC00B5D86BCE70FB7B53FE04E66C34A9CCA43F7C1639D0780E555177834C740B0C1B"},
+     */
+
+    /**
+     * {"CS":"7256EFE7A77AFC7E9088266EF27A93CB01CD9432E0DB66D600745D506EE04AC4",
+     * "P1":"F4B072E1DF2DB7CF6CD0CD681EC5CD2D071458D278E6546763CBB4860F8082FE14418C8A8A55E2106CBC6CB1174F4BA6D827A26A2D205F99B7E00401DA4C15ACC943274B92258114B5E11C16DA64484034F93771547FBE60DA70E273E6BD64F8A4201A9913B386BCA55B6678CFD7E7E68A646A7543E9E439DD5B60B9615079FE",
+     * "ECS":"71E872C73979904C17722CB2A5FA6B7A107DBA38924338F739A1C0E96D74BC33",
+     * "H1":"6F83BBEF900614F609DDBBB0CC014CC1ED19A30A40E5E171C5734901B8047705",
+     * "H2":"112716D2053C2828DC265B5DF14F85F203F8350DCB5774950901F3136108FA2C",
+     * "SN":"504394802433901126813236",
+     * "H3":"71106ED2161D12E5E59FA7FF298930F0F4BB398171A712CB26D947A0DAF5F0EF",
+     * "IV":"1A550F4B413D0E971C28293F9183EA8A",
+     * "B1":"7BF6D157F017189AE9904959878A851376BE01127582D675004790CFC194E6AC273D85F55B7050B08FC48F3142AA68974B9765D0799BB5804F6FD4A4BF38686D8E1AE548E60603D32DD85C57DADB146CDE4CFD30D0321DCD5A2B8010760E70A93E429FBC2A458FE84B63B35DB9902893E2C81CD53A2AA20E268A57D188F93D69"}
+     */
+
 
     private CardCoinManagerApi cardCoinManagerNfcApi;
     private CardActivationApi cardActivationApi;
@@ -462,11 +490,11 @@ public class MainActivity extends AppCompatActivity {
 
                             Thread.sleep(5000);
 
-                            String status = extractMessage(response);
+                            String status = extractMessage(response, MESSAGE_FIELD);
                             if (status.equals("true")) {
                                 response = recoveryDataApi.getRecoveryDataAndGetJson();
                                 Log.d("TAG", "getRecoveryData response : " + response);
-                                String encryptedRecoveryDataHex = extractMessage(response);
+                                String encryptedRecoveryDataHex = extractMessage(response, MESSAGE_FIELD);
 
                                 Log.d("TAG", "encryptedRecoveryDataHex : " + encryptedRecoveryDataHex);
 
@@ -529,7 +557,7 @@ public class MainActivity extends AppCompatActivity {
 
                             Thread.sleep(5000);
 
-                            String keyHmac = extractMessage(response);
+                            String keyHmac = extractMessage(response, MESSAGE_FIELD);
                             Log.d("TAG", "keyHmac : " + response);
 
                             response = cardKeyChainApi.getKeyChainInfoAndGetJson();
@@ -538,7 +566,7 @@ public class MainActivity extends AppCompatActivity {
                             Thread.sleep(5000);
 
                             response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(keyHmac);
-                            String keyFromCard = extractMessage(response);
+                            String keyFromCard = extractMessage(response, MESSAGE_FIELD);
                             Log.d("TAG", "keyFromCard : " + response);
 
                             Thread.sleep(5000);
@@ -552,7 +580,7 @@ public class MainActivity extends AppCompatActivity {
                             String newKeyInHex =  StringHelper.getInstance().randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN);
                             response = cardKeyChainApi.changeKeyInKeyChainAndGetJson(newKeyInHex, keyHmac);
                             Log.d("TAG", "changeKeyInKeyChain response : " + response);
-                            String newKeyHmac = extractMessage(response);
+                            String newKeyHmac = extractMessage(response, MESSAGE_FIELD);
 
                             Thread.sleep(5000);
 
@@ -562,7 +590,7 @@ public class MainActivity extends AppCompatActivity {
                             Thread.sleep(5000);
 
                             response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(newKeyHmac);
-                            String newKeyFromCard = extractMessage(response);
+                            String newKeyFromCard = extractMessage(response, MESSAGE_FIELD);
                             Log.d("TAG", "keyFromCard : " + response);
 
                             Thread.sleep(5000);
@@ -658,40 +686,26 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View arg0) {
                 new Thread(new Runnable() {
                     public void run() {
-
                         try {
-                            String seedStatus = extractMessage(cardCoinManagerNfcApi.getRootKeyStatusAndGetJson());
-
-                            Thread.sleep(5000);
-
+                            String seedStatus = extractMessage(cardCoinManagerNfcApi.getRootKeyStatusAndGetJson(), MESSAGE_FIELD);
                             if (seedStatus.equals(NOT_GENERATED_MSG)) {
                                 cardCoinManagerNfcApi.generateSeedAndGetJson(DEFAULT_PIN);
-                                Thread.sleep(5000);
                             }
 
-                            String appletState = extractMessage(cardActivationApi.getTonAppletStateAndGetJson());
-
-                            Thread.sleep(5000);
-
+                            String appletState = extractMessage(cardActivationApi.getTonAppletStateAndGetJson(), MESSAGE_FIELD);
                             if (!appletState.equals(WAITE_AUTHORIZATION_MSG)) {
-                                throw new Exception("Incorret applet state : " + appletState);
+                                throw new Exception("Incorrect applet state : " + appletState);
                             }
 
-                            String hashOfEncryptedCommonSecret = extractMessage(cardActivationApi.getHashOfEncryptedCommonSecretAndGetJson());
-
-                            Thread.sleep(5000);
-
-                            String hashOfEncryptedPassword = extractMessage(cardActivationApi.getHashOfEncryptedPasswordAndGetJson());
+                            String hashesJsonStr = cardActivationApi.getHashesAndGetJson();
+                            String hashOfEncryptedCommonSecret = extractMessage(hashesJsonStr, ECS_HASH_FIELD);
+                            String hashOfEncryptedPassword = extractMessage(hashesJsonStr, EP_HASH_FIELD);
 
                             Log.d("TAG", "hashOfEncryptedCommonSecret : " + hashOfEncryptedCommonSecret);
                             Log.d("TAG", "hashOfEncryptedPassword : " + hashOfEncryptedPassword);
 
-                            //  String newPin = "7777";
-
-                            Thread.sleep(5000);
-
-                            appletState = extractMessage(cardActivationApi.turnOnWalletAndGetJson(PASSWORD, COMMON_SECRET, IV));
-
+                            String newPin = "5555";
+                            appletState = extractMessage(cardActivationApi.turnOnWalletAndGetJson(newPin, PASSWORD, COMMON_SECRET, IV),  MESSAGE_FIELD);
                             Log.d("TAG", "Card response (state) : " + appletState);
 
                             if (!appletState.equals(PERSONALIZED_STATE_MSG)) {
@@ -709,9 +723,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private String extractMessage(String jsonStr) throws JSONException {
+    private String extractMessage(String jsonStr, String field) throws JSONException {
         JSONObject jObject = new JSONObject(jsonStr);
-        return jObject.getString(MESSAGE_FIELD);
+        return jObject.getString(field);
     }
 
 
