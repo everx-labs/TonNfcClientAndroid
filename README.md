@@ -225,7 +225,7 @@ You can work with NFC card only on your Android device, not simulator. There are
 
 ### With invitation dialog
 
-You call the necessary function from TonNfcClientAndroid API (in the above example we call getMaxPinTries with argument _showDialog == true_). It starts NFC session for you. On the screen you get an invitation dialog to connect the card. To establish the connection hold the card to the top of Android smartphone (field near the camera) as close as possible. Usually smartphone vibrates after establishing NFC connection. And if you use the above example, you must get the toast with the message "NFC hardware touched". It means that NFC connection is established. After that smartphone sends APDU commands to the card. 
+You call the necessary function from TonNfcClientAndroid API (in the above example we call getMaxPinTries with argument _showDialog = true_). It starts NFC session for you. On the screen you get an invitation dialog to connect the card. To establish the connection hold the card to the top of Android smartphone (field near the camera) as close as possible. Usually smartphone vibrates after establishing NFC connection. And if you use the above example, you must get the toast with the message "NFC hardware touched". It means that NFC connection is established. After that smartphone sends APDU commands to the card. 
 
 <p align="center">
 <img src="../master/docs/images/invitationDialog.png" width="200">
@@ -237,7 +237,7 @@ After invitation dialog shows up you have 30 seconds to establish NFC connection
 
 ### Without invitation dialog
 
-There is an option not to use invitation dialogs. Call any API function with argument _showDialog == false_ or use versions of API functions not working with callbacks, like _getMaxPinTriesAndGetJson_ in above example. Such mode is convinient for testing when you call card operations one by one without any delay in the workflow. Here it's a good practice to start with establishing NFC connection. After NFC connection is ready we can send APDU commands to the card. So you may call API functions. For above example push the button to make request getMaxPinTries after you connected the card. 
+There is an option not to use invitation dialogs. Call any API function with argument _showDialog = false_ or use versions of API functions not working with callbacks, like _getMaxPinTriesAndGetJson_ in above example. Such mode is convinient for testing when you call card operations one by one without any delay in the workflow. Here it's a good practice to start with establishing NFC connection. After NFC connection is ready we can send APDU commands to the card. So you may call API functions. For above example push the button to make request getMaxPinTries after you connected the card. 
 
 Check your Logcat console in Android Studio. 
 
