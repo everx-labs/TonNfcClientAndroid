@@ -171,7 +171,7 @@ Here:
 
 + *errorType* — description of error type 
 
-+ *message* — contains error message corresponding to error code thrown by applet.
++ *message* — error message corresponding to error code thrown by applet.
 
 + *apdu* — full text of failed APDU command in hex format
 
