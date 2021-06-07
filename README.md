@@ -655,7 +655,16 @@ else {
 
 ## About NfcCallback	
 
-For each card operation now there is a pair of functions. The first one returns json response or throws a exception containing json error message. The second function does the same work, but it puts json response/json error message into callback. For this we defined NfcCallback.
+For each card operation now there is a pair of functions in our API. For example let's look at operation getMaxPinTries. Previously we tried it already. There are two functions for it.
+
+```java
+public String getMaxPinTriesAndGetJson(Boolean... showDialog) throws Exception
+public void getMaxPinTries(final NfcCallback callback, Boolean... showDialog) 
+```
+
+1) The first one returns json response or throws a exception containing json error message. Call it inside new thread or AsyncTask. Otherwise your card operation will block the application. 
+
+2) The second function does the same work, but it creates AsyncTask. And all work with the card is done inside _doInBackground_ function. In the end it puts json response/json error message into callback. For this we defined NfcCallback.
 
 ```java
 public class NfcCallback {
@@ -679,14 +688,6 @@ public interface NfcResolver {
 
 To use you must override NfcRejecter and NfcResolver interfaces.
 
-For example let's look at operation getMaxPinTries. Previously we tried it already. There are two functions for it.
-
-```java
-public String getMaxPinTriesAndGetJson(Boolean... showDialog) throws Exception
-public void getMaxPinTries(final NfcCallback callback, Boolean... showDialog)
-```
-	
-Example of work with NfcCallback.
 ```java
 import com.facebook.react.bridge.Promise;
 ...
