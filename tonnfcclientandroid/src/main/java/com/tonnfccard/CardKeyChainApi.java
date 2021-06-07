@@ -682,9 +682,9 @@ public final class CardKeyChainApi extends TonWalletApi {
    */
   private final CardApiInterface<List<String>> getHmac = list -> this.getHmacAndGetJson(list.get(0));
 
-  public void getHmac(final String keyIndex, final NfcCallback callback, Boolean... showDialog) {
+  public void getHmac(final String index, final NfcCallback callback, Boolean... showDialog) {
     boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : false;
-    CardTask cardTask = new CardTask(this, callback,  Collections.singletonList(keyIndex), getHmac, showDialogFlag);
+    CardTask cardTask = new CardTask(this, callback,  Collections.singletonList(index), getHmac, showDialogFlag);
     cardTask.execute();
   }
 
