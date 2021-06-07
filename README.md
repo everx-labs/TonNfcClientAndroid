@@ -96,7 +96,7 @@ public void onNewIntent(Intent intent) {
 	}
 }
 ```
-+ Finally make the request to the card. In this example we send it after pressing the button. So the activity for the button may look as follows.
++ Finally make the request to the card. In this example we send it after pressing the button.
 
 ```java
 public void addListenerOnButton() {
