@@ -125,7 +125,22 @@ Here json variable contains the response from card wrapped into json of the foll
 ```		
 {"message":"10","status":"ok"}
 ```
-		
+
+Another way to make getMaxPinTries request looks like this.
+
+```java
+public void addListenerOnButton() {
+	button = (Button) findViewById(R.id.button);
+	button.setOnClickListener(new View.OnClickListener() {
+		@Override
+            	public void onClick(View arg0) {
+			boolean showDialog = ...; //false or true?
+                	cardCoinManagerNfcApi.getRemainingPinTries(new NfcCallback((result) -> textView.setText(String.valueOf(result)), System.out::println), showDialog);
+            	}
+        });
+}
+```
+
 To get the full picture of how the simplest MainActivity may look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/ .
 
 ## More about responses format
