@@ -376,7 +376,7 @@ Another situation is possible. Let's suppose you activated the card earlier. Aft
 cardCryptoApi.createKeyForHmacAndGetJson(authenticationPassword, commonSecret, serialNumber));
 ```
 
-You may work with multiple NFC TON Labs security cards. In this case in your Android keystore there is a bunch of keys. Each keys is marked by corresponding SN. And you can get the list of serial numbers for which you have the key in keystore
+You may work with multiple NFC TON Labs security cards. In this case in your Android keystore there is a bunch of keys. Each keys is marked by corresponding SN. And you can get the list of serial numbers for which you have the key in keystore.
 
 The list of operations protected by HMAC SHA256:
 
