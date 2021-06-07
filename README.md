@@ -320,7 +320,7 @@ if (seedStatus.equals(NOT_GENERATED_MSG)) {
 		
 String appletState = extractMessage(cardActivationApi.getTonAppletStateAndGetJson(), MESSAGE_FIELD);	
 if (!appletState.equals(WAITE_AUTHORIZATION_MSG)) {
-	throw new Exception("Incorret applet state : " + appletState);
+	throw new Exception("Incorrect applet state : " + appletState);
 }
 
 String hashesJsonStr = cardActivationApi.getHashesAndGetJson();
