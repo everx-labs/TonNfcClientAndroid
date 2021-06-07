@@ -306,7 +306,7 @@ protected void onCreate(Bundle savedInstanceState) {
 	
 private String extractMessage(String jsonStr, String field) throws JSONException { 
 	JSONObject jObject = new JSONObject(jsonStr);
-	return jObject.getString(MESSAGE_FIELD);
+	return jObject.getString(field);
 }
 ```
 	
@@ -326,8 +326,10 @@ if (!appletState.equals(WAITE_AUTHORIZATION_MSG)) {
 String hashesJsonStr = cardActivationApi.getHashesAndGetJson();
 String hashOfEncryptedCommonSecret = extractMessage(hashesJsonStr, ECS_HASH_FIELD);
 String hashOfEncryptedPassword = extractMessage(hashesJsonStr, EP_HASH_FIELD);
+Log.d("TAG", "hashOfEncryptedCommonSecret : " + hashOfEncryptedCommonSecret);
+Log.d("TAG", "hashOfEncryptedPassword : " + hashOfEncryptedPassword);
 
-String newPin = "7777";
+String newPin = "5555";
 appletState = extractMessage(cardActivationApi.turnOnWalletAndGetJson(newPin, PASSWORD, COMMON_SECRET, IV),  MESSAGE_FIELD);
 Log.d("TAG", "Card response (state) : " + appletState);
 		
