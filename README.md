@@ -343,7 +343,7 @@ if (!appletState.equals(PERSONALIZED_STATE_MSG)) {
 
 Applet installed onto NFC TON Labs security card may be in the one of the following states (modes):
 
-1. TonWalletApplet waits two-factor authorization.
+1. TonWalletApplet waits two-factor authentication.
 2. TonWalletApplet is personalized.
 3. TonWalletApplet is blocked.
 4. TonWalletApplet is personalized and waits finishing key deleting from keychain.
