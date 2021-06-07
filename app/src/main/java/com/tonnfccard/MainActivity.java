@@ -25,6 +25,7 @@ import static com.tonnfccard.TonWalletConstants.MAX_KEY_SIZE_IN_KEYCHAIN;
 import static com.tonnfccard.TonWalletConstants.MESSAGE_FIELD;
 import static com.tonnfccard.TonWalletConstants.NOT_GENERATED_MSG;
 import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE_MSG;
+import static com.tonnfccard.TonWalletConstants.TRUE_MSG;
 import static com.tonnfccard.TonWalletConstants.WAITE_AUTHENTICATION_MSG;
 
 import javax.crypto.Cipher;
@@ -35,6 +36,7 @@ import java.security.SecureRandom;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.riversun.promise.Action;
 import org.riversun.promise.Promise;
 
 import java.nio.charset.StandardCharsets;
@@ -54,32 +56,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String SURF_PUBLIC_KEY = "B81F0E0E07416DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A";
     private static final String MULTISIG_ADDR = "A11F0E0E07416DAB6C320ECC6BF3DBA48A70121C5251CC31B1D8F8A1B36E0F2F";
-
-    /**
-     *
-     * {"CS":"855D821CD4678B002E3D6E69F07947D3A8C608245E4381C4324FC532C1915484",
-     * "P1":"3149765A6CFD52E3CFCFC8F77EFB1BBFE78BCA5F2378FC46A9C9EA5E9CE78B30060CE6ECF6372F9BC15B35F8B5B773DB577048EF848026609959D5B09FE6C5E52B2F61F4168FEE9E49F3C6A41CF2635D7F5862F9F403F1583A06B0B54BD652045A5E73EBF40CCE312E360891604CF77D7A7F9DF05325056B8212BB2297C04A1E",
-     * "ECS":"6254AA7054F285CD08E083459118E6D892553B04F465549178215A05A288A8D9",
-     * "H1":"F1B0B07121C4D20A0855336EDBBBF90E28C92521B87DCB118742FA19F652617A",
-     * "H2":"1F91610DC5588B746BC19D5083A3DD169D98FD08C6A837F2F67D7D636701C4BD",
-     * "SN":"647250988796071878800855",
-     * "H3":"C9E197ECB19C6930F2914A8B9F37BFB7B328F9CA98963447AAD4F3AFDFC8FBA7",
-     * "IV":"2FB8418BC77EC9BDB7CB706165339505",
-     * "B1":"EC208FC96DCE8E99CA5ACE7B3EB129ABEDDD3418EA90E7DD86694D036B3ABF40F28E2A29F256F1B5BB7E3EDA59E18C4FA75588AD4C66FD82BDD68297C91CC47FD255B0696A98559AA91F18F3450290DE78CA2530D5B31D28CB0152C5DB2ECC00B5D86BCE70FB7B53FE04E66C34A9CCA43F7C1639D0780E555177834C740B0C1B"},
-     */
-
-    /**
-     * {"CS":"7256EFE7A77AFC7E9088266EF27A93CB01CD9432E0DB66D600745D506EE04AC4",
-     * "P1":"F4B072E1DF2DB7CF6CD0CD681EC5CD2D071458D278E6546763CBB4860F8082FE14418C8A8A55E2106CBC6CB1174F4BA6D827A26A2D205F99B7E00401DA4C15ACC943274B92258114B5E11C16DA64484034F93771547FBE60DA70E273E6BD64F8A4201A9913B386BCA55B6678CFD7E7E68A646A7543E9E439DD5B60B9615079FE",
-     * "ECS":"71E872C73979904C17722CB2A5FA6B7A107DBA38924338F739A1C0E96D74BC33",
-     * "H1":"6F83BBEF900614F609DDBBB0CC014CC1ED19A30A40E5E171C5734901B8047705",
-     * "H2":"112716D2053C2828DC265B5DF14F85F203F8350DCB5774950901F3136108FA2C",
-     * "SN":"504394802433901126813236",
-     * "H3":"71106ED2161D12E5E59FA7FF298930F0F4BB398171A712CB26D947A0DAF5F0EF",
-     * "IV":"1A550F4B413D0E971C28293F9183EA8A",
-     * "B1":"7BF6D157F017189AE9904959878A851376BE01127582D675004790CFC194E6AC273D85F55B7050B08FC48F3142AA68974B9765D0799BB5804F6FD4A4BF38686D8E1AE548E60603D32DD85C57DADB146CDE4CFD30D0321DCD5A2B8010760E70A93E429FBC2A458FE84B63B35DB9902893E2C81CD53A2AA20E268A57D188F93D69"}
-     */
-
 
     private CardCoinManagerApi cardCoinManagerNfcApi;
     private CardActivationApi cardActivationApi;
@@ -185,6 +161,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public NfcCallback createCallback(Action action){
+        return new NfcCallback((result) -> {
+            System.out.println(result);
+            textView.append("\n");
+            textView.append(String.valueOf(result));
+            action.resolve(result);
+        }, (error) -> {
+            System.out.println(error);
+            action.reject(error);
+        });
+    }
+
     public void addListenerOnGetKeyChainDataAboutAllKeysButton() {
 
         buttonGetKeyChainDataAboutAllKeys = findViewById(R.id.getKeyChainDataAboutAllKeys);
@@ -198,125 +186,42 @@ public class MainActivity extends AppCompatActivity {
                     Promise.resolve("start")
                             .then(new Promise((action, data) -> {
                                 runOnUiThread(() -> {
-                                    cardKeyChainApi.resetKeyChain(new NfcCallback((result) -> {
-                                        textView.setText(String.valueOf(result));
-                                        System.out.println(result);
-                                        action.resolve(result);
-                                    }, (error) -> {
-                                        System.out.println(error);
-                                        action.reject(error);
-                                    }), showDialog);
-                                    ;
+                                    cardKeyChainApi.resetKeyChain(createCallback(action), showDialog);
                                 });
                             }))
                             .then(new Promise((action, data) -> {
                                 runOnUiThread(() -> {
-                                    try {
-                                        Thread.sleep(5000);
-                                    }
-                                    catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
                                     System.out.println("resetKeyChain result = " + data);
-                                    cardKeyChainApi.getKeyChainInfo(new NfcCallback((result) -> {
-                                        System.out.println(result);
-                                        textView.append("\n");
-                                        textView.append(String.valueOf(result));
-                                        action.resolve(result);
-                                    }, (e) -> {
-                                        System.out.println(e);
-                                        action.reject(e);
-                                    }), showDialog);
+                                    cardKeyChainApi.getKeyChainInfo(createCallback(action), showDialog);
                                 });
                             }))
                             .then(new Promise((action, data) -> {
                                 runOnUiThread(() -> {
-                                    try {
-                                        Thread.sleep(5000);
-                                    }
-                                    catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
                                     System.out.println("getKeyChainInfo result = " + data);
                                     String keyInHex = "001122334455";
-                                    cardKeyChainApi.addKeyIntoKeyChain(keyInHex, new NfcCallback((result) -> {
-                                        System.out.println(result);
-                                        textView.append("\n");
-                                        textView.append(String.valueOf(result));
-                                        action.resolve(result);
-                                    }, (e) -> {
-                                        System.out.println(e);
-                                        action.reject(e);
-                                    }), showDialog);
-                                    ;
+                                    cardKeyChainApi.addKeyIntoKeyChain(keyInHex, createCallback(action), showDialog);
                                 });
                             }))
                             .then(new Promise((action, data) -> {
                                 runOnUiThread(() -> {
-                                    try {
-                                        Thread.sleep(5000);
-                                    }
-                                    catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
                                     System.out.println("addKeyIntoKeyChain result = " + data);
                                     String keyInHex = "667788";
-                                    cardKeyChainApi.addKeyIntoKeyChain(keyInHex, new NfcCallback((result) -> {
-                                        System.out.println(result);
-                                        textView.append("\n");
-                                        textView.append(String.valueOf(result));
-                                        action.resolve(result);
-                                    }, (e) -> {
-                                        System.out.println(e);
-                                        action.reject(e);
-                                    }), showDialog);
-                                    ;
+                                    cardKeyChainApi.addKeyIntoKeyChain(keyInHex, createCallback(action), showDialog);
                                 });
                             }))
                             .then(new Promise((action, data) -> {
                                 runOnUiThread(() -> {
-                                    try {
-                                        Thread.sleep(10000);
-                                    }
-                                    catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
                                     System.out.println("addKeyIntoKeyChain result #2 = " + data);
-                                    cardKeyChainApi.getKeyChainInfo(new NfcCallback((result) -> {
-                                        System.out.println(result);
-                                        textView.append("\n");
-                                        textView.append(String.valueOf(result));
-                                        action.resolve(result);
-                                    }, (e) -> {
-                                        System.out.println(e);
-                                        action.reject(e);
-                                    }), showDialog);
-                                    ;;
+                                    cardKeyChainApi.getKeyChainInfo(createCallback(action), showDialog);
                                 });
                             }))
                             .then(new Promise((action, data) -> {
                                 runOnUiThread(() -> {
-                                    try {
-                                        Thread.sleep(10000);
-                                    }
-                                    catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
                                     System.out.println("getKeyChainInfo result = " + data);
-                                    cardKeyChainApi.getKeyChainDataAboutAllKeys(new NfcCallback((result) -> {
-                                        System.out.println(result);
-                                        textView.append("\n");
-                                        textView.append(String.valueOf(result));
-                                        action.resolve(result);
-                                    }, (e) -> {
-                                        System.out.println(e);
-                                        action.reject(e);
-                                    }), showDialog);
-                                    ;
+                                    cardKeyChainApi.getKeyChainDataAboutAllKeys(createCallback(action), showDialog);
                                 });
                             }))
                             .start();
-
                 }
                 catch (Exception e) {
                     e.printStackTrace();
@@ -409,12 +314,8 @@ public class MainActivity extends AppCompatActivity {
                             String response = recoveryDataApi.resetRecoveryDataAndGetJson();
                             Log.d("TAG", "resetRecoveryData response : " + response);
 
-                            Thread.sleep(5000);
-
                             response = recoveryDataApi.isRecoveryDataSetAndGetJson();
                             Log.d("TAG", "isRecoveryDataSet response : " + response);
-
-                            Thread.sleep(5000);
 
                             JSONObject recoveryData = new JSONObject();
                             recoveryData.put("surfPublicKey", SURF_PUBLIC_KEY);
@@ -434,27 +335,19 @@ public class MainActivity extends AppCompatActivity {
                             byte[] encryptedRecoveryDataBytes = aesCtr.doFinal(recoveryDataBytes);
 
                             String encryptedRecoveryDataHex = ByteArrayUtil.getInstance().hex(encryptedRecoveryDataBytes);
-
                             Log.d("TAG", "encryptedRecoveryDataHex : " + encryptedRecoveryDataHex);
 
                             response = recoveryDataApi.addRecoveryDataAndGetJson(encryptedRecoveryDataHex );
                             Log.d("TAG", "addRecoveryData response : " + response);
 
-                            Thread.sleep(5000);
-
                             response = recoveryDataApi.isRecoveryDataSetAndGetJson();
                             Log.d("TAG", "isRecoveryDataSet response : " + response);
-
-                            Thread.sleep(5000);
 
                             response = recoveryDataApi.getRecoveryDataLenAndGetJson();
                             Log.d("TAG", "getRecoveryDataLen response : " + response);
 
-                            Thread.sleep(5000);
-
                             response = recoveryDataApi.getRecoveryDataHashAndGetJson();
                             Log.d("TAG", "getRecoveryDataHash response : " + response);
-
                         }
                         catch (Exception e) {
                             e.printStackTrace();
@@ -480,14 +373,11 @@ public class MainActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     public void run() {
                         try {
-
                             String response = recoveryDataApi.isRecoveryDataSetAndGetJson();
                             Log.d("TAG", "isRecoveryDataSet response : " + response);
 
-                            Thread.sleep(5000);
-
                             String status = extractMessage(response, MESSAGE_FIELD);
-                            if (status.equals("true")) {
+                            if (status.equals(TRUE_MSG)) {
                                 response = recoveryDataApi.getRecoveryDataAndGetJson();
                                 Log.d("TAG", "getRecoveryData response : " + response);
                                 String encryptedRecoveryDataHex = extractMessage(response, MESSAGE_FIELD);
@@ -507,7 +397,7 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d("TAG", "Got recoveryData from card : " + recoveryData);
                             }
                             else {
-                                Log.d("TAG", "Recovery data is no set yet.");
+                                Log.d("TAG", "Recovery data is not set yet.");
                             }
                         }
                         catch (Exception e) {
@@ -539,19 +429,13 @@ public class MainActivity extends AppCompatActivity {
                             String response = cardKeyChainApi.resetKeyChainAndGetJson();
                             Log.d("TAG", "resetKeyChain response : " + response);
 
-                            Thread.sleep(5000);
-
                             response = cardKeyChainApi.getKeyChainInfoAndGetJson();
                             Log.d("TAG", "getKeyChainInfo response : " + response);
 
-                            Thread.sleep(5000);
-
                             String keyInHex = StringHelper.getInstance().randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN);
+                            Log.d("TAG", "key to add :  : " + keyInHex .length());
                             response = cardKeyChainApi.addKeyIntoKeyChainAndGetJson(keyInHex);
                             Log.d("TAG", "addKeyIntoKeyChain response : " + response);
-                            Log.d("TAG", "addKeyIntoKeyChain response : " + keyInHex .length());
-
-                            Thread.sleep(5000);
 
                             String keyHmac = extractMessage(response, MESSAGE_FIELD);
                             Log.d("TAG", "keyHmac : " + response);
@@ -559,13 +443,10 @@ public class MainActivity extends AppCompatActivity {
                             response = cardKeyChainApi.getKeyChainInfoAndGetJson();
                             Log.d("TAG", "getKeyChainInfo response : " + response);
 
-                            Thread.sleep(5000);
-
                             response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(keyHmac);
                             String keyFromCard = extractMessage(response, MESSAGE_FIELD);
                             Log.d("TAG", "keyFromCard : " + response);
 
-                            Thread.sleep(5000);
 
                             if (!keyInHex.toLowerCase().equals(keyFromCard.toLowerCase())) {
                                 System.out.println(keyInHex);
@@ -574,22 +455,17 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             String newKeyInHex =  StringHelper.getInstance().randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN);
+                            Log.d("TAG", "new key :  : " +  newKeyInHex.length());
                             response = cardKeyChainApi.changeKeyInKeyChainAndGetJson(newKeyInHex, keyHmac);
                             Log.d("TAG", "changeKeyInKeyChain response : " + response);
                             String newKeyHmac = extractMessage(response, MESSAGE_FIELD);
 
-                            Thread.sleep(5000);
-
                             response = cardKeyChainApi.getKeyChainInfoAndGetJson();
                             Log.d("TAG", "getKeyChainInfo response : " + response);
-
-                            Thread.sleep(5000);
 
                             response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(newKeyHmac);
                             String newKeyFromCard = extractMessage(response, MESSAGE_FIELD);
                             Log.d("TAG", "keyFromCard : " + response);
-
-                            Thread.sleep(5000);
 
                             if (!newKeyInHex.toLowerCase().equals(newKeyFromCard.toLowerCase())) {
                                 throw  new Exception("Bad key from card : " + newKeyFromCard);
@@ -598,13 +474,11 @@ public class MainActivity extends AppCompatActivity {
                             response = cardKeyChainApi.deleteKeyFromKeyChainAndGetJson(newKeyHmac);
                             Log.d("TAG", "deleteKeyFromKeyChain response : " + response);
 
-                            Thread.sleep(5000);
-
                             response = cardKeyChainApi.getKeyChainInfoAndGetJson();
                             Log.d("TAG", "getKeyChainInfo response : " + response);
 
                             JSONObject jObject = new JSONObject(response);
-                            Integer num  =  Integer.parseInt(jObject.getString(NUMBER_OF_KEYS_FIELD));
+                            int num  =  Integer.parseInt(jObject.getString(NUMBER_OF_KEYS_FIELD));
 
                             if (num != 0) {
                                 throw  new Exception("Bad number of keys : " + num);
