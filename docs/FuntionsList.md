@@ -462,7 +462,7 @@ Here there are functions related to ed25519 signature.
 
         pin — numeric string of length 4, example: '5555'
 
-        index — numeric string of length > 0 and ≤ 10.
+        hdIndex — numeric string of length > 0 and ≤ 10.
 
         data — hex string of even length ≥ 2 and ≤ 356.
 
