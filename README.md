@@ -404,7 +404,7 @@ _Note:_ Functions signForDefaultHdPath, sign are protected by HMAC SHA256 signat
 
 Inside NFC TON Labs security card we implemented small flexible independent keychain. It allows to store some user's keys and secrets. The maximum number of keys is 1023, maximum key size — 8192 bytes and the total available volume of storage — 32767 bytes.
 
-Each key has its unique id. This is its HMAC SHA256 signature created using the key elaborated based on card activation data. So id is a hex a string of length 64.
+Each key has its unique id. This is its HMAC SHA256 signature created using the key elaborated based on card activation data (see the above section _Protection against MITM_). So id is a hex a string of length 64.
 
 The below snippet demonstrates the work with the keychain. We add one key, then retrieve it from the card. Then we replace it by a new key of the same key. At the end we delete the key.
 
