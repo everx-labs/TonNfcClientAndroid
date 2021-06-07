@@ -410,14 +410,14 @@ Here there are functions related to ed25519 signature.
 
         {"message":"2D6A2749DD5AF5BB356220BFA06A0C624D5814438F37983322BBAD762EFB4759CFA927E6735B7CD556196894F3CE077ADDD6B49447B8B325ADC494B82DC8B605","status":"ok"}
 
-- **void sign(final String dataForSigning, final String index, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **String signAndGetJson(final String dataForSigning, final String index, Boolean... showDialog)**
+- **void sign(final String dataForSigning, final String hdIndex, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String signAndGetJson(final String dataForSigning, final String hdIndex, Boolean... showDialog)**
 
     Make data signing by key for HD path m/44'/396'/0'/0'/index'. Prior to call this function you must call verifyPin.
 
     *Arguments requirements:*
 
-        index — numeric string of length > 0 and ≤ 10.
+        hdIndex — numeric string of length > 0 and ≤ 10.
 
         data — hex string of even length ≥ 2 and ≤ 356.
 
@@ -425,14 +425,14 @@ Here there are functions related to ed25519 signature.
 
         {"message":"13FB836213B12BBD41209273F81BCDCF7C226947B18128F73E9A6E96C84B30C3288E51C622C045488981B6544D02D0940DE54D68A0A78BC2A5F9523B8757B904","status":"ok"}
 
-- **void getPublicKey(final String index, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **String getPublicKeyAndGetJson(final String index, Boolean... showDialog)** 
+- **void getPublicKey(final String hdIndex, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String getPublicKeyAndGetJson(final String hdIndex, Boolean... showDialog)** 
 
     Return public key for HD path m/44'/396'/0'/0'/index'.
 
     *Arguments requirements:*
 
-        index — numeric string of length > 0 and ≤ 10.
+        hdIndex — numeric string of length > 0 and ≤ 10.
 
     *Exemplary response:*
 
@@ -453,8 +453,8 @@ Here there are functions related to ed25519 signature.
 
         {"message":"2D6A2749DD5AF5BB356220BFA06A0C624D5814438F37983322BBAD762EFB4759CFA927E6735B7CD556196894F3CE077ADDD6B49447B8B325ADC494B82DC8B605","status":"ok"}
 
-- **void verifyPinAndSign(final String dataForSigning, final String index, final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
-  **String verifyPinAndSignAndGetJson(final String dataForSigning, final String index, final String pin, Boolean... showDialog)**
+- **void verifyPinAndSign(final String dataForSigning, final String hdIndex, final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **String verifyPinAndSignAndGetJson(final String dataForSigning, final String hdIndex, final String pin, Boolean... showDialog)**
 
     Make pin verification and data signing by key for HD path m/44'/396'/0'/0'/index'.
 
