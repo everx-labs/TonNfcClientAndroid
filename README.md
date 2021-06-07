@@ -551,7 +551,7 @@ In this example we create two keys in card's keychain and in the end read info a
 
 ## Recovery module
 
-This module is to store/maintain the data for recovering service: multisignature wallet address (hex string of length 64), TON Labs Surf public key (hex string of length 64) and part of card's activation data: authenticationPassword (hex string of length 256), commonSecret(hex string of length 64). This data will allow to recover access to multisignature wallet in the case when user has lost Android device with installed Surf application and also a seed phrase for Surf account. More details about recovery service can be found here.
+This module is to store/maintain the data for recovering service: multisignature wallet address (hex string of length 64), TON Labs Surf public key (hex string of length 64) and part of card's activation data: authenticationPassword (hex string of length 256), commonSecret(hex string of length 64). This data will allow to recover access to multisignature wallet in the case when user has lost Android device with installed Surf application and also a seed phrase for Surf account.
 
 There is an snippet demonstrating the structure of recovery data and the way of adding it into NFC TON Labs security card.
 
@@ -574,9 +574,8 @@ private byte[] counter = new byte[AES_COUNTER_SIZE];
 @Override
 protected void onCreate(Bundle savedInstanceState) {
 	try {
-		Context activity = getApplicationContext();
-		NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(activity);
-		recoveryDataApi = new RecoveryDataApi(activity,  nfcApduRunner);
+		NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(MainActivity.this);
+		recoveryDataApi = new RecoveryDataApi(MainActivity.this,  nfcApduRunner);
 		kg = KeyGenerator.getInstance("AES");
 		kg.init(AES_KEY_SIZE);
 		key = kg.generateKey();
@@ -586,57 +585,71 @@ protected void onCreate(Bundle savedInstanceState) {
 	}
 }
 ```
-And use the following code to test recovery data adding (for example add it as button action).
+And use the following code to test recovery data adding.
 
 ```java
- try {
-        String response = recoveryDataApi.resetRecoveryDataAndGetJson();
-        Log.d("TAG", "resetRecoveryData response : " + response);
-	response = recoveryDataApi.isRecoveryDataSetAndGetJson();
-        Log.d("TAG", "isRecoveryDataSet response : " + response);
-        JSONObject recoveryData = new JSONObject();
-        recoveryData.put("surfPublicKey", SURF_PUBLIC_KEY);
-        recoveryData.put("multisigAddress", MULTISIG_ADDR);
-	recoveryData.put("p1", PASSWORD);
-        recoveryData.put("cs", COMMON_SECRET);
-	byte[] recoveryDataBytes = recoveryData.toString().getBytes(StandardCharsets.UTF_8);
-	Cipher aesCtr = Cipher.getInstance("AES/CTR/NoPadding");
-	sr.nextBytes(counter);
-	aesCtr.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(counter));
-	byte[] encryptedRecoveryDataBytes = aesCtr.doFinal(recoveryDataBytes);
-	String encryptedRecoveryDataHex = ByteArrayHelper.getInstance().hex(encryptedRecoveryDataBytes);
-	response = recoveryDataApi.addRecoveryDataAndGetJson(encryptedRecoveryDataHex );
-        Log.d("TAG", "addRecoveryData response : " + response);
-	response = recoveryDataApi.isRecoveryDataSetAndGetJson();
-        Log.d("TAG", "isRecoveryDataSet response : " + response);
- }
- catch (Exception e) {
-        Log.e("TAG", "Error happened : " + e.getMessage());
- }
- ```
+String response = recoveryDataApi.resetRecoveryDataAndGetJson();
+Log.d("TAG", "resetRecoveryData response : " + response);
+response = recoveryDataApi.isRecoveryDataSetAndGetJson();
+Log.d("TAG", "isRecoveryDataSet response : " + response);
+                            
+JSONObject recoveryData = new JSONObject();
+recoveryData.put("surfPublicKey", SURF_PUBLIC_KEY);
+recoveryData.put("multisigAddress", MULTISIG_ADDR);
+recoveryData.put("p1", PASSWORD);
+recoveryData.put("cs", COMMON_SECRET);
+
+Log.d("TAG", "recoveryData : " + recoveryData.toString());
+byte[] recoveryDataBytes = recoveryData.toString().getBytes(StandardCharsets.UTF_8);
+Log.d("TAG", "recoveryDataBytes length : " + recoveryDataBytes.length);
+
+Cipher aesCtr = Cipher.getInstance("AES/CTR/NoPadding");
+sr.nextBytes(counter);
+aesCtr.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(counter));
+
+byte[] encryptedRecoveryDataBytes = aesCtr.doFinal(recoveryDataBytes);
+
+String encryptedRecoveryDataHex = ByteArrayUtil.getInstance().hex(encryptedRecoveryDataBytes);
+Log.d("TAG", "encryptedRecoveryDataHex : " + encryptedRecoveryDataHex);
+
+response = recoveryDataApi.addRecoveryDataAndGetJson(encryptedRecoveryDataHex );
+Log.d("TAG", "addRecoveryData response : " + response);
+
+response = recoveryDataApi.isRecoveryDataSetAndGetJson();
+Log.d("TAG", "isRecoveryDataSet response : " + response);
+
+response = recoveryDataApi.getRecoveryDataLenAndGetJson();
+Log.d("TAG", "getRecoveryDataLen response : " + response);
+
+response = recoveryDataApi.getRecoveryDataHashAndGetJson();
+Log.d("TAG", "getRecoveryDataHash response : " + response);
+```
  
- There is a short code snippet demonstrating the way of getting recovery data from the card.
- ```java
- try {
-	String response = recoveryDataApi.isRecoveryDataSetAndGetJson();
-	Log.d("TAG", "isRecoveryDataSet response : " + response);
-	String status = extractMessage(response);
-	if (status.equals("false")) {
-		Log.d("TAG", "Recovery data is no set yet.");
-		return;
-	}
+There is a short code snippet to get recovery data from the card.
+```java
+String response = recoveryDataApi.isRecoveryDataSetAndGetJson();
+Log.d("TAG", "isRecoveryDataSet response : " + response);
+String status = extractMessage(response, MESSAGE_FIELD);
+if (status.equals(TRUE_MSG)) {
 	response = recoveryDataApi.getRecoveryDataAndGetJson();
-	Log.d("TAG", "getRecoveryData response : " + response);
-	String encryptedRecoveryDataHex = extractMessage(response);
-	byte[] encryptedRecoveryDataBytes = ByteArrayHelper.getInstance().bytes(encryptedRecoveryDataHex);	
-	Cipher aesCtr = Cipher.getInstance("AES/CTR/NoPadding");
-	aesCtr.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(counter));
-	byte[] recoveryDataBytes = aesCtr.doFinal(encryptedRecoveryDataBytes);
-	String recoveryData = new String(recoveryDataBytes, StandardCharsets.UTF_8);
-	Log.d("TAG", "Got recoveryData from card : " + recoveryData);
+        Log.d("TAG", "getRecoveryData response : " + response);
+        String encryptedRecoveryDataHex = extractMessage(response, MESSAGE_FIELD);
+	Log.d("TAG", "encryptedRecoveryDataHex : " + encryptedRecoveryDataHex);
+
+        byte[] encryptedRecoveryDataBytes = ByteArrayUtil.getInstance().bytes(encryptedRecoveryDataHex);
+        Log.d("TAG", "encryptedRecoveryDataBytes length : " + encryptedRecoveryDataBytes.length);
+
+        Cipher aesCtr = Cipher.getInstance("AES/CTR/NoPadding");
+        aesCtr.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(counter));
+
+        byte[] recoveryDataBytes = aesCtr.doFinal(encryptedRecoveryDataBytes);
+
+        String recoveryData = new String(recoveryDataBytes, StandardCharsets.UTF_8);
+
+        Log.d("TAG", "Got recoveryData from card : " + recoveryData);
 }
-catch (Exception e) {
-	Log.e("TAG", "Error happened : " + e.getMessage());
+else {
+	Log.d("TAG", "Recovery data is not set yet.");
 }
 ```
 
