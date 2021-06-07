@@ -389,8 +389,8 @@ The list of operations protected by HMAC SHA256:
 The basic functionality provided by NFC TON Labs security card is Ed25519 signature. You may request public key and request the signature for some message.
 
 ```java
-nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
-CardCryptoApi cardCryptoApi = new CardCryptoApi(getApplicationContext(), nfcApduRunner);
+nfcApduRunner = NfcApduRunner.getInstance(MainActivity.this);
+CardCryptoApi cardCryptoApi = new CardCryptoApi(MainActivity.this, nfcApduRunner);
 String hdInd = "1";
 String response = cardCryptoApi.getPublicKeyAndGetJson(hdInd);
 String msg = "A10D";
@@ -418,9 +418,8 @@ private CardKeyChainApi cardKeyChainApi;
 @Override
 protected void onCreate(Bundle savedInstanceState) {
 	try {
-		Context activity = getApplicationContext();
-		NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(activity);
-		cardKeyChainApi = new CardKeyChainApi(activity,  nfcApduRunner);
+		NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(MainActivity.this);
+		cardKeyChainApi = new CardKeyChainApi(MainActivity.this,  nfcApduRunner);
 	}
 	catch (Exception e) {
 		Log.e("TAG", "Error happened : " + e.getMessage());
@@ -428,52 +427,62 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-And use the following code to test work with keychain.
 ```java
-try {
-	String status = cardCryptoApi.createKeyForHmacAndGetJson(PASSWORD, COMMON_SECRET, SERIAL_NUMBER);
-        Log.d("TAG", "status : " + status);
-	String response = cardKeyChainApi.resetKeyChainAndGetJson();
-        Log.d("TAG", "resetKeyChain response : " + response);
-	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
-	Log.d("TAG", "getKeyChainInfo response : " + response);
-        String keyInHex = "001122334455";
-	response = cardKeyChainApi.addKeyIntoKeyChainAndGetJson(keyInHex);
-       	Log.d("TAG", "addKeyIntoKeyChain response : " + response);
-	String keyHmac = extractMessage(response);
-       	Log.d("TAG", "keyHmac : " + response);
-	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
-        Log.d("TAG", "getKeyChainInfo response : " + response);
-	response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(keyHmac);
-        String keyFromCard = extractMessage(response);
-        Log.d("TAG", "keyFromCard : " + response);
-	if (!keyInHex.equals(keyFromCard)) {
-		throw  new Exception("Bad key from card : " + keyFromCard);
-        }
-	String newKeyInHex = "00AA22334466";
-        response = cardKeyChainApi.changeKeyInKeyChainAndGetJson(newKeyInHex, keyHmac);
-        Log.d("TAG", "changeKeyInKeyChain response : " + response);
-        String newKeyHmac = extractMessage(response);
-	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
-        Log.d("TAG", "getKeyChainInfo response : " + response);
-	response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(newKeyHmac);
-        String newKeyFromCard = extractMessage(response);
-        Log.d("TAG", "keyFromCard : " + response);
-        if (!newKeyInHex.equals(newKeyFromCard)) {
-		throw  new Exception("Bad key from card : " + newKeyFromCard);
-        }
-        response = cardKeyChainApi.deleteKeyFromKeyChainAndGetJson(newKeyHmac);
-        Log.d("TAG", "deleteKeyFromKeyChain response : " + response);
-	response = cardKeyChainApi.getKeyChainInfoAndGetJson();
-        Log.d("TAG", "getKeyChainInfo response : " + response);
-	JSONObject jObject = new JSONObject(response);
-        Integer num  =  Integer.parseInt(jObject.getString(NUMBER_OF_KEYS_FIELD));	
-        if (num != 0) {
-		throw  new Exception("Bad number of keys : " + num);
-        }
+String status = cardCryptoApi.createKeyForHmacAndGetJson(PASSWORD, COMMON_SECRET, SERIAL_NUMBER);
+Log.d("TAG", "status : " + status);
+
+String response = cardKeyChainApi.resetKeyChainAndGetJson();
+Log.d("TAG", "resetKeyChain response : " + response);
+
+response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+Log.d("TAG", "getKeyChainInfo response : " + response);
+
+String keyInHex = StringHelper.getInstance().randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN);
+Log.d("TAG", "key to add :  : " + keyInHex .length());
+response = cardKeyChainApi.addKeyIntoKeyChainAndGetJson(keyInHex);
+Log.d("TAG", "addKeyIntoKeyChain response : " + response);
+String keyHmac = extractMessage(response, MESSAGE_FIELD);
+Log.d("TAG", "keyHmac : " + response);
+
+response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+Log.d("TAG", "getKeyChainInfo response : " + response);
+
+response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(keyHmac);
+String keyFromCard = extractMessage(response, MESSAGE_FIELD);
+Log.d("TAG", "keyFromCard : " + response);
+
+if (!keyInHex.toLowerCase().equals(keyFromCard.toLowerCase())) {
+	throw  new Exception("Bad key from card : " + keyFromCard);
 }
-catch (Exception e) {
-        Log.e("TAG", "Error happened : " + e.getMessage());
+
+String newKeyInHex =  StringHelper.getInstance().randomHexString(2 * MAX_KEY_SIZE_IN_KEYCHAIN);
+Log.d("TAG", "new key :  : " +  newKeyInHex.length());
+response = cardKeyChainApi.changeKeyInKeyChainAndGetJson(newKeyInHex, keyHmac);
+Log.d("TAG", "changeKeyInKeyChain response : " + response);
+String newKeyHmac = extractMessage(response, MESSAGE_FIELD);
+
+response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+Log.d("TAG", "getKeyChainInfo response : " + response);
+
+response = cardKeyChainApi.getKeyFromKeyChainAndGetJson(newKeyHmac);
+String newKeyFromCard = extractMessage(response, MESSAGE_FIELD);
+Log.d("TAG", "keyFromCard : " + response);
+
+if (!newKeyInHex.toLowerCase().equals(newKeyFromCard.toLowerCase())) {
+	throw  new Exception("Bad key from card : " + newKeyFromCard);
+}
+
+response = cardKeyChainApi.deleteKeyFromKeyChainAndGetJson(newKeyHmac);
+Log.d("TAG", "deleteKeyFromKeyChain response : " + response);
+
+response = cardKeyChainApi.getKeyChainInfoAndGetJson();
+Log.d("TAG", "getKeyChainInfo response : " + response);
+
+JSONObject jObject = new JSONObject(response);
+int num  =  Integer.parseInt(jObject.getString(NUMBER_OF_KEYS_FIELD));
+
+if (num != 0) {
+	throw  new Exception("Bad number of keys : " + num);
 }
 ```	
 ## Recovery module
