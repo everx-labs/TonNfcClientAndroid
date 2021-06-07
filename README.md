@@ -295,46 +295,44 @@ private static final String PASSWORD  = "F4B072E1DF2DB7CF6CD0CD681EC5CD2D071458D
 @Override
 protected void onCreate(Bundle savedInstanceState) {
 	try {
-		NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(getApplicationContext());
-		cardCoinManagerNfcApi = new CardCoinManagerApi(getApplicationContext(),  nfcApduRunner);
-		cardActivationApi = new CardActivationApi(getApplicationContext(),  nfcApduRunner);
+		NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(MainActivity.this);
+		cardCoinManagerNfcApi = new CardCoinManagerApi(MainActivity.this,  nfcApduRunner);
+		cardActivationApi = new CardActivationApi(MainActivity.this,  nfcApduRunner);
 	}
 	catch (Exception e) {
 	  	Log.e("TAG", e.getMessage());
 	}
 }
 	
-private String extractMessage(String jsonStr) throws JSONException { 
+private String extractMessage(String jsonStr, String field) throws JSONException { 
 	JSONObject jObject = new JSONObject(jsonStr);
 	return jObject.getString(MESSAGE_FIELD);
 }
 ```
 	
-And use the following code to start card activation (for example add it as button action).
+And use the following code to start card activation.
+
 ``` java    
-try {
-	String seedStatus = extractMessage(cardCoinManagerNfcApi.getRootKeyStatusAndGetJson());
-        if (seedStatus.equals(NOT_GENERATED_MSG)) {
-		cardCoinManagerNfcApi.generateSeedAndGetJson(DEFAULT_PIN); 
-	}
-		
-	String appletState = extractMessage(cardActivationApi.selectTonWalletAppletAndGetTonAppletStateAndGetJson());	
-	if (!appletState.equals(WAITE_AUTHORIZATION_MSG)) {
-		throw new Exception("Incorret applet state : " + appletState);
-	}
-	String hashOfEncryptedCommonSecret = extractMessage(cardActivationApi.getHashOfEncryptedCommonSecretAndGetJson());
-	String hashOfEncryptedPassword = extractMessage(cardActivationApi.getHashOfEncryptedPasswordAndGetJson());
-		
-	String newPin = "7777";
-	appletState = extractMessage(cardActivationApi.turnOnWalletAndGetJson(newPin, PASSWORD, COMMON_SECRET, IV));
-	Log.d("TAG", "Card response (state) : " + appletState);
-		
-	if (!appletState.equals(PERSONALIZED_STATE_MSG)) {
-		throw new Exception("Incorrect applet state after activation : " + appletState);
-	}
+String seedStatus = extractMessage(cardCoinManagerNfcApi.getRootKeyStatusAndGetJson(), MESSAGE_FIELD);
+if (seedStatus.equals(NOT_GENERATED_MSG)) {
+	cardCoinManagerNfcApi.generateSeedAndGetJson(DEFAULT_PIN); 
 }
-catch (Exception e) {
-	Log.e("TAG", "Error happened : " + e.getMessage());
+		
+String appletState = extractMessage(cardActivationApi.getTonAppletStateAndGetJson(), MESSAGE_FIELD);	
+if (!appletState.equals(WAITE_AUTHORIZATION_MSG)) {
+	throw new Exception("Incorret applet state : " + appletState);
+}
+
+String hashesJsonStr = cardActivationApi.getHashesAndGetJson();
+String hashOfEncryptedCommonSecret = extractMessage(hashesJsonStr, ECS_HASH_FIELD);
+String hashOfEncryptedPassword = extractMessage(hashesJsonStr, EP_HASH_FIELD);
+
+String newPin = "7777";
+appletState = extractMessage(cardActivationApi.turnOnWalletAndGetJson(newPin, PASSWORD, COMMON_SECRET, IV),  MESSAGE_FIELD);
+Log.d("TAG", "Card response (state) : " + appletState);
+		
+if (!appletState.equals(PERSONALIZED_STATE_MSG)) {
+	throw new Exception("Incorrect applet state after activation : " + appletState);
 }      
 ```	
 	
