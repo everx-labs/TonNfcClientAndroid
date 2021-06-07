@@ -33,7 +33,7 @@ public enum TonWalletAppletStates {
    * After finishing the production applet will be in WAITE_AUTHORIZATION_MODE. After getting the device the end user should complete the procedure of two-factor authorization
    * to make applet working. For this he must know unencrypted activation password, common secret and iv.
    */
-  WAITE_AUTHORIZATION_MODE (TonWalletConstants.WAITE_AUTHORIZATION_STATE, WAITE_AUTHORIZATION_MSG),
+  WAITE_AUTHORIZATION_MODE (TonWalletConstants.WAITE_AUTHORIZATION_STATE, WAITE_AUTHENTICATION_MSG),
 
   /**
    * In DELETE_KEY_FROM_KEYCHAIN_MODE all commands from PERSONALIZED state are available except of: CHECK_AVAILABLE_VOL_FOR_NEW_KEY,  ADD_KEY_CHUNK,  INITIATE_DELETE_KEY, INITIATE_CHANGE_OF_KEY, CHANGE_KEY_CHUNK.

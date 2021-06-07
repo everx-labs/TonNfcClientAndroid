@@ -1,14 +1,10 @@
 package com.tonnfccard;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -29,7 +25,7 @@ import static com.tonnfccard.TonWalletConstants.MAX_KEY_SIZE_IN_KEYCHAIN;
 import static com.tonnfccard.TonWalletConstants.MESSAGE_FIELD;
 import static com.tonnfccard.TonWalletConstants.NOT_GENERATED_MSG;
 import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE_MSG;
-import static com.tonnfccard.TonWalletConstants.WAITE_AUTHORIZATION_MSG;
+import static com.tonnfccard.TonWalletConstants.WAITE_AUTHENTICATION_MSG;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -693,7 +689,7 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             String appletState = extractMessage(cardActivationApi.getTonAppletStateAndGetJson(), MESSAGE_FIELD);
-                            if (!appletState.equals(WAITE_AUTHORIZATION_MSG)) {
+                            if (!appletState.equals(WAITE_AUTHENTICATION_MSG)) {
                                 throw new Exception("Incorrect applet state : " + appletState);
                             }
 
