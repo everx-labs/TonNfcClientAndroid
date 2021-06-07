@@ -140,8 +140,9 @@ public void addListenerOnButton() {
         });
 }
 ```
+Function _getRemainingPinTries_ (in contrast to _getMaxPinTriesAndGetJson_) creates AsyncTask to perform card operation. And it puts the result (or error message) into callback.
 
-To get the full picture of how the simplest MainActivity may look like you may walk through the exemplary app inside https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/ .
+To get the full picture of the simplest MainActivity you may look like at https://github.com/tonlabs/TonNfcClientAndroid/tree/master/app/ .
 
 ## More about responses format
 
