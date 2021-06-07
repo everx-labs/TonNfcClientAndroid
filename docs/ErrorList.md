@@ -1027,6 +1027,14 @@ Here there is a list of any troubles with NFC hardware and connection.
 "message": "Response from the card is too short. It must contain at least 2 bytes.",
 "status": "fail"
 }
+
+{
+"errorType": "Android code fail: NFC error",
+"errorTypeId": "2",
+"errorCode": "20007",
+"message": "After 30 seconds of waiting NFC card has not been connected yet.",
+"status": "fail"
+}
 ```
 
 ## INPUT_DATA_FORMAT_ERRORS
