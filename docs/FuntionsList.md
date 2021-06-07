@@ -188,7 +188,7 @@ These functions are naturally divided into four groups. And there are respective
         {"message":"TonWalletApplet waits two-factor authentication.","status":"ok"}
         {"message":"TonWalletApplet is personalized.","status":"ok"}
 
-    _Note:_ Full list of applet states you may find in previous sections.
+    _Note:_ Full list of applet states you may find in readme.
 
 - **void getSerialNumber(final NfcCallback callback, Boolean... showDialog),** <br/>
   **String getSerialNumberAndGetJson(Boolean... showDialog)**
