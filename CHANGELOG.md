@@ -61,4 +61,10 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Rework invitation dialogs using async tasks to make it stable for integration into react native .
+- Rework invitation dialogs using async tasks to make it stable for integration into react native.
+
+## [3.2.2] – 2021-06-08
+
+### Fixed
+
+- Some fixes around retries to connect NFC card, remove redundant error message.
