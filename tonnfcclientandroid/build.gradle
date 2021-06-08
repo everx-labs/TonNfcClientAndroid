@@ -3,10 +3,10 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'maven-publish'
 
 
-//group = 'com.github.tonlabs'
+group = 'com.github.tonlabs'
 
-def artifactId = 'TonNfcClientAndroid'
-def groupId = 'com.github.tonlab'
+//def artifactId = 'TonNfcClientAndroid'
+//def groupId = 'com.github.tonlab'
 
 
 android {
@@ -18,7 +18,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
-        versionName "3.2.5"
+        versionName "3.2.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
         multiDexEnabled true
