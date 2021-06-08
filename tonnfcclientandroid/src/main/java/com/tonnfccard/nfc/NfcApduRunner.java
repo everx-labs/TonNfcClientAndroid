@@ -27,7 +27,6 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_DISCONNECT
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_CONTEXT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_NFC;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_TAG;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_NFC_CARD_WAS_NOT_CONNECTED;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_TRANSCEIVE;
 import static com.tonnfccard.smartcard.RAPDU.MAX_LENGTH;
 
