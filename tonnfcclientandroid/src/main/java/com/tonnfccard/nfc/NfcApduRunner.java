@@ -47,6 +47,10 @@ public class NfcApduRunner extends ApduRunner {
   private IsoDep nfcTag = null;
   private CAPDU lastSentAPDU = null;
 
+  private int numberOfRetries = NUMBER_OF_RETRIES_ATTEMPTS;
+
+  private int retryTimeOut = RETRY_TIME_OUT;
+
   private NfcApduRunner(Context context) {
     super();
     apiContext = context;
@@ -56,6 +60,13 @@ public class NfcApduRunner extends ApduRunner {
     return lastSentAPDU;
   }
 
+  public void setNumberOfRetries(int numberOfRetries) {
+    this.numberOfRetries = numberOfRetries;
+  }
+
+  public void setRetryTimeOut(int retryTimeOut) {
+    this.retryTimeOut = retryTimeOut;
+  }
 
   public synchronized static NfcApduRunner getInstance(Context context) throws Exception{
     if (context == null) throw new Exception(ERROR_MSG_NO_CONTEXT);
@@ -104,27 +115,21 @@ public class NfcApduRunner extends ApduRunner {
 
   @Override
   public void disconnectCard() throws Exception {
-    System.out.println("I AM HERE");
     if (nfcTag == null) {
       throw new Exception(ERROR_MSG_NO_TAG);
     }
-    System.out.println("I AM HERE1");
     try {
-      System.out.println("I AM HERE2");
       nfcTag.close();
-      System.out.println("I AM HERE3" + Thread.currentThread().getName());
     } catch (Exception e) {
-      System.out.println("I AM HERE4");
         throw new Exception(ERROR_MSG_NFC_DISCONNECT + ", more details: " + e.getMessage());
     }
-    System.out.println("I AM HERE35");
   }
 
   @Override
   public RAPDU transmitCommand(CAPDU commandAPDU) throws  Exception {
     Log.d("TAG","-1");
-    RAPDU res = null;
-    for (int i = 0 ; i < NUMBER_OF_RETRIES_ATTEMPTS ; i++) {
+    String lastErrorMsg = "";
+    for (int i = 0 ; i < numberOfRetries ; i++) {
       Log.d("TAG", String.valueOf(i));
       try {
         if (nfcTag == null) {
@@ -133,14 +138,15 @@ public class NfcApduRunner extends ApduRunner {
         if (commandAPDU == null) {
           throw new Exception(ERROR_MSG_APDU_EMPTY);
         }
-        res = new RAPDU(transceive(commandAPDU.getBytes()));
+        RAPDU res = new RAPDU(transceive(commandAPDU.getBytes()));
         lastSentAPDU = commandAPDU;
         return res;
       } catch (Exception e) {
-        Thread.sleep(RETRY_TIME_OUT);
+        lastErrorMsg = e.getMessage();
+        Thread.sleep(retryTimeOut);
       }
     }
-    throw new Exception(ERROR_NFC_CARD_WAS_NOT_CONNECTED);
+    throw new Exception(lastErrorMsg);
   }
 
   private byte[] transceive(byte[] apduCommandBytes) throws Exception {

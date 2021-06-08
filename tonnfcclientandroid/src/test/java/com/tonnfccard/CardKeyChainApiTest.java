@@ -338,7 +338,7 @@ public class CardKeyChainApiTest {
             System.out.println(response);
             JSONObject obj = new JSONObject(response);
             assertEquals(obj.get(TonWalletConstants.STATUS_FIELD), SUCCESS_STATUS);
-            JSONArray arr = obj.getJSONArray(KEYS_DATA_FIELD);
+            JSONArray arr = obj.getJSONArray(MESSAGE_FIELD);
             System.out.println(arr);
             assertEquals(arr.getJSONObject(0).get(KEY_HMAC_FIELD), BYTE_ARRAY_HELPER.hex(hmac1));
             assertEquals(arr.getJSONObject(0).get(KEY_LENGTH_FIELD), Byte.valueOf(len1).toString());

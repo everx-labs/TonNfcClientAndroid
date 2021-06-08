@@ -74,6 +74,8 @@ public class NfcApduRunnerTest {
     public  void init() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
         nfcApduRunner = NfcApduRunner.getInstance(context);
+        nfcApduRunner.setNumberOfRetries(1);
+        nfcApduRunner.setRetryTimeOut(10);
     }
 
     @Test

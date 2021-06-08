@@ -263,6 +263,8 @@ public class CommonNfcApiTest {
     public  void init() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
         nfcApduRunner = NfcApduRunner.getInstance(context);
+        nfcApduRunner.setNumberOfRetries(1);
+        nfcApduRunner.setRetryTimeOut(10);
         recoveryDataApi = new RecoveryDataApi(context, nfcApduRunner);
         cardKeyChainApi = new CardKeyChainApi(context, nfcApduRunner);
         cardCryptoApi = new CardCryptoApi(context, nfcApduRunner);

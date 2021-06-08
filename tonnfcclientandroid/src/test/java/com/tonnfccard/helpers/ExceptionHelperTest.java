@@ -29,7 +29,7 @@ public class ExceptionHelperTest {
     public static final String ERR_MSG_GENERATED_AFTER_APPLET_FAIL = "{\n" +
             "\"errorType\": \"Applet fail: card operation error\",\n" +
             "\"errorTypeId\": \"0\",\n" +
-            "\"errorCode\": \"6E00\",\n" +
+            "\"сode\": \"6E00\",\n" +
             "\"message\": \"CLA value not supported.\",\n" +
             "\"cardInstruction\": \"GET_APP_INFO\",\n" +
             "\"apdu\": \"B0 C1 00 00 \",\n" +
