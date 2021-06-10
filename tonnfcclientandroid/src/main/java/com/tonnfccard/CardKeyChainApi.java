@@ -54,7 +54,6 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NEW_KEY_LEN_IN
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NUMBER_OF_KEYS_RESPONSE_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_OCCUPIED_SIZE_RESPONSE_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_SEND_CHUNK_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.TonWalletConstants.DATA_PORTION_MAX_SIZE;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.DELETE_KEY_CHUNK_LE;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.DELETE_KEY_RECORD_LE;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_DELETE_KEY_CHUNK_NUM_OF_PACKETS_LE;
@@ -96,13 +95,7 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getSendKeyChu
  */
 
 public final class CardKeyChainApi extends TonWalletApi {
-  public static final String KEY_INDEX_FIELD = "keyIndex";
-  public static final String KEY_LENGTH_FIELD = "length";
-  public static final String KEY_HMAC_FIELD = "hmac";
-  public static final String NUMBER_OF_KEYS_FIELD = "numberOfKeys";
-  public static final String OCCUPIED_SIZE_FIELD = "occupiedSize";
-  public static final String FREE_SIZE_FIELD = "freeSize";
-  public static final String KEYS_DATA_FIELD = "keysData";
+
   public static final String TAG = "CardKeyChainNfcApi";
 
   public CardKeyChainApi(Context activity, NfcApduRunner apduRunner) {

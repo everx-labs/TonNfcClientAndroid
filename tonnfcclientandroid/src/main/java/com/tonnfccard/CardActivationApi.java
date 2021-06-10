@@ -49,8 +49,7 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getVerifyPass
 
 public final class CardActivationApi extends TonWalletApi {
   private static final String TAG = "CardActivationNfcApi";
-  public static final String ECS_HASH_FIELD = "ecsHash";
-  public static final String EP_HASH_FIELD = "epHash";
+
 
   public CardActivationApi(NfcApduRunner apduRunner) {
     super(apduRunner);

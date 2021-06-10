@@ -18,12 +18,12 @@ import com.tonnfccard.helpers.StringHelper;
 import com.tonnfccard.nfc.NfcApduRunner;
 import com.tonnfccard.utils.ByteArrayUtil;
 
-import static com.tonnfccard.CardActivationApi.ECS_HASH_FIELD;
-import static com.tonnfccard.CardActivationApi.EP_HASH_FIELD;
-import static com.tonnfccard.CardKeyChainApi.NUMBER_OF_KEYS_FIELD;
+import static com.tonnfccard.TonWalletConstants.ECS_HASH_FIELD;
+import static com.tonnfccard.TonWalletConstants.EP_HASH_FIELD;
 import static com.tonnfccard.TonWalletConstants.MAX_KEY_SIZE_IN_KEYCHAIN;
 import static com.tonnfccard.TonWalletConstants.MESSAGE_FIELD;
 import static com.tonnfccard.TonWalletConstants.NOT_GENERATED_MSG;
+import static com.tonnfccard.TonWalletConstants.NUMBER_OF_KEYS_FIELD;
 import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE_MSG;
 import static com.tonnfccard.TonWalletConstants.TRUE_MSG;
 import static com.tonnfccard.TonWalletConstants.WAITE_AUTHENTICATION_MSG;

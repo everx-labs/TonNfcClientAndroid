@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import static com.tonnfccard.CardActivationApi.ECS_HASH_FIELD;
-import static com.tonnfccard.CardActivationApi.EP_HASH_FIELD;
 import static com.tonnfccard.NfcMockHelper.SW_SUCCESS;
 import static com.tonnfccard.NfcMockHelper.mockAndroidKeyStore;
 import static com.tonnfccard.NfcMockHelper.prepareNfcApduRunnerMock;
@@ -47,6 +45,8 @@ import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN;
 import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN_STR;
 import static com.tonnfccard.TonWalletConstants.DELETE_KEY_FROM_KEYCHAIN_STATE;
 import static com.tonnfccard.TonWalletConstants.DONE_MSG;
+import static com.tonnfccard.TonWalletConstants.ECS_HASH_FIELD;
+import static com.tonnfccard.TonWalletConstants.EP_HASH_FIELD;
 import static com.tonnfccard.TonWalletConstants.FALSE_MSG;
 import static com.tonnfccard.TonWalletConstants.INSTALLED_STATE;
 import static com.tonnfccard.TonWalletConstants.IV_SIZE;
