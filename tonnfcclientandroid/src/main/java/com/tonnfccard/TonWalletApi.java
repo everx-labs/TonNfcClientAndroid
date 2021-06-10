@@ -447,7 +447,7 @@ public class TonWalletApi {
    * @param callback
    * Get serial number of currently active key (card). In fact this is a serialNumber of the card with which your app communicated last time.
    */
-  public void getCurrentSerialNumberAndGetJson(final NfcCallback callback) {
+  public void getCurrentSerialNumber(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
         try {
