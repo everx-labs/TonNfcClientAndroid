@@ -265,7 +265,7 @@ public class TonWalletApi {
         for (final String sn : allSerialNumbers) {
           jArray.put(sn);
         }
-        allAliasesObj.put(SERIAl_NUMBERS_FIELD, jArray);
+        allAliasesObj.put(MESSAGE_FIELD, jArray);
         allAliasesObj.put(STATUS_FIELD, SUCCESS_STATUS);
         return allAliasesObj.toString();
       }

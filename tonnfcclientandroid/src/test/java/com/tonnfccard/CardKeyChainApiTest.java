@@ -67,7 +67,6 @@ import static com.tonnfccard.TonWalletConstants.PASSWORD_SIZE;
 import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE;
 import static com.tonnfccard.TonWalletConstants.PUBLIC_KEY_LEN;
 import static com.tonnfccard.TonWalletConstants.SAULT_LENGTH;
-import static com.tonnfccard.TonWalletConstants.SERIAl_NUMBERS_FIELD;
 import static com.tonnfccard.TonWalletConstants.SHA_HASH_SIZE;
 import static com.tonnfccard.TonWalletConstants.STATUS_FIELD;
 import static com.tonnfccard.TonWalletConstants.SUCCESS_STATUS;

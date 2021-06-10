@@ -34,7 +34,6 @@ import static com.tonnfccard.TonWalletConstants.FALSE_MSG;
 import static com.tonnfccard.TonWalletConstants.HMAC_KEYS_ARE_NOT_FOUND_MSG;
 import static com.tonnfccard.TonWalletConstants.PASSWORD_SIZE;
 import static com.tonnfccard.TonWalletConstants.SERIAL_NUMBER_SIZE;
-import static com.tonnfccard.TonWalletConstants.SERIAl_NUMBERS_FIELD;
 import static com.tonnfccard.TonWalletConstants.SUCCESS_STATUS;
 import static com.tonnfccard.TonWalletConstants.TRUE_MSG;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN;
@@ -221,7 +220,7 @@ public class TonWalletApiTest {
             System.out.println(response);
             JSONObject obj = new JSONObject(response);
             assertEquals(obj.get(TonWalletConstants.STATUS_FIELD), SUCCESS_STATUS);
-            JSONArray sns = obj.getJSONArray(SERIAl_NUMBERS_FIELD);
+            JSONArray sns = obj.getJSONArray(TonWalletConstants.MESSAGE_FIELD);
             assertEquals(sns.length(), 100);
             for (int i = 0 ; i < sns.length(); i++) {
                 assertTrue(serialNumbers.contains(sns.getString(i)));
@@ -253,7 +252,7 @@ public class TonWalletApiTest {
             System.out.println(response);
             JSONObject obj = new JSONObject(response);
             assertEquals(obj.get(TonWalletConstants.STATUS_FIELD), SUCCESS_STATUS);
-            JSONArray sns = obj.getJSONArray(SERIAl_NUMBERS_FIELD);
+            JSONArray sns = obj.getJSONArray(TonWalletConstants.MESSAGE_FIELD);
             assertEquals(sns.length(), 99);
             serialNumbers.remove(21);
             for (int i = 0 ; i < sns.length(); i++) {
