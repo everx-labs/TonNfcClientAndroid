@@ -1,7 +1,6 @@
 package com.tonnfccard;
 
 import android.content.Context;
-import android.security.keystore.KeyProperties;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -11,8 +10,6 @@ import com.tonnfccard.helpers.HmacHelper;
 import com.tonnfccard.helpers.JsonHelper;
 import com.tonnfccard.helpers.StringHelper;
 import com.tonnfccard.nfc.NfcApduRunner;
-import com.tonnfccard.smartcard.ErrorCodes;
-import com.tonnfccard.smartcard.RAPDU;
 import com.tonnfccard.utils.ByteArrayUtil;
 
 import org.json.JSONArray;
@@ -20,7 +17,6 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import java.security.KeyStore;
 import java.security.MessageDigest;
@@ -30,36 +26,18 @@ import java.util.List;
 import java.util.Random;
 
 import javax.crypto.Mac;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 import static com.tonnfccard.TonWalletConstants.COMMON_SECRET_SIZE;
-import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN;
-import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN_STR;
 import static com.tonnfccard.TonWalletConstants.DONE_MSG;
 import static com.tonnfccard.TonWalletConstants.EMPTY_SERIAL_NUMBER;
 import static com.tonnfccard.TonWalletConstants.FALSE_MSG;
-import static com.tonnfccard.TonWalletConstants.HMAC_KEYS_DOES_NOT_FOUND_MSG;
+import static com.tonnfccard.TonWalletConstants.HMAC_KEYS_ARE_NOT_FOUND_MSG;
 import static com.tonnfccard.TonWalletConstants.PASSWORD_SIZE;
-import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE;
-import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE_MSG;
 import static com.tonnfccard.TonWalletConstants.SERIAL_NUMBER_SIZE;
 import static com.tonnfccard.TonWalletConstants.SERIAl_NUMBERS_FIELD;
-import static com.tonnfccard.TonWalletConstants.STATUS_FIELD;
 import static com.tonnfccard.TonWalletConstants.SUCCESS_STATUS;
 import static com.tonnfccard.TonWalletConstants.TRUE_MSG;
-import static com.tonnfccard.TonWalletConstants.WAITE_AUTHORIZATION_STATE;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ERR_IS_NOT_SEC_KEY_ENTRY;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_DISCONNECT;
-import static com.tonnfccard.smartcard.CoinManagerApduCommands.RESET_WALLET_APDU;
-import static com.tonnfccard.smartcard.CoinManagerApduCommands.getChangePinAPDU;
-import static com.tonnfccard.smartcard.CoinManagerApduCommands.getGenerateSeedAPDU;
-import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_APP_INFO_APDU;
-import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU;
-import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_HASH_OF_ENCRYPTED_PASSWORD_APDU;
-import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SERIAL_NUMBER_APDU;
-import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getVerifyPasswordAPDU;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.*;
 
@@ -296,7 +274,7 @@ public class TonWalletApiTest {
         try {
             clearKeyStore();
             String response = tonWalletApi.getAllSerialNumbersAndGetJson();
-            assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(HMAC_KEYS_DOES_NOT_FOUND_MSG).toLowerCase());
+            assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(HMAC_KEYS_ARE_NOT_FOUND_MSG).toLowerCase());
         }
         catch (Exception e) {
             fail();

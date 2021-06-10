@@ -19,7 +19,7 @@ public final class TonWalletConstants {
     public static final String TRUE_MSG = "true";
     public static final String GENERATED_MSG = "generated";
     public static final String NOT_GENERATED_MSG = "not generated";
-    public static final String HMAC_KEYS_DOES_NOT_FOUND_MSG = "HMAC-SHA256 keys are not found in Android keystore.";
+    public static final String HMAC_KEYS_ARE_NOT_FOUND_MSG = "HMAC-SHA256 keys are not found.";
 
     /**
      * Applet states
@@ -128,6 +128,6 @@ public final class TonWalletConstants {
     public static final String MESSAGE_FIELD = "message";
     public static final String CARD_INSTRUCTION_FIELD = "cardInstruction";
     public static final String APDU_FIELD = "apdu";
-    public static final String SERIAl_NUMBERS_FIELD = "serial_number_field";
+    public static final String SERIAl_NUMBERS_FIELD = "serialNumbers";
 
 }

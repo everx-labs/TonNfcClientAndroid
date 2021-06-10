@@ -1,20 +1,10 @@
 package com.tonnfccard;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.security.keystore.KeyProperties;
 import android.security.keystore.KeyProtection;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.Toast;
-
-import androidx.appcompat.app.AlertDialog;
 
 import com.tonnfccard.callback.NfcCallback;
 import com.tonnfccard.helpers.CardApiInterface;
@@ -30,16 +20,12 @@ import com.tonnfccard.utils.ByteArrayUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.lang.ref.WeakReference;
 import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -272,7 +258,7 @@ public class TonWalletApi {
     try {
       List<String> allSerialNumbers = getAllSerialNumbers();
       if (allSerialNumbers.isEmpty()) {
-        return JSON_HELPER.createResponseJson(HMAC_KEYS_DOES_NOT_FOUND_MSG);
+        return JSON_HELPER.createResponseJson(HMAC_KEYS_ARE_NOT_FOUND_MSG);
       } else {
         JSONObject allAliasesObj = new JSONObject();
         JSONArray jArray = new JSONArray();
