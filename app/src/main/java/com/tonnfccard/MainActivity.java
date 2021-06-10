@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
     Button buttonOpenNfcSettings;
     Button buttonGetKeyChainDataAboutAllKeys;
     Button buttonGetSerialNumber;
+    Button buttonCreateKeyForHmac;
+    Button buttonGetAllSerialNumbers;
     TextView textView;
 
 
@@ -104,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnActivateCardButton();
         addListenerOnGetRemainingPinTriesButton();
         addListenerOnGetSerialNumberButton();
+        addListenerOnGetAllSerialNumbersButton();
+        addListenerOnCreateKeyForHmacButton();
         textView = findViewById(R.id.textView1);
         try {
             NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(MainActivity.this);
@@ -134,6 +138,34 @@ public class MainActivity extends AppCompatActivity {
             Log.e("TAG", "Error happened : " + e.getMessage());
         }
     }
+
+    public void addListenerOnGetAllSerialNumbersButton() {
+
+        buttonGetAllSerialNumbers = findViewById(R.id.getAllSerialNumbers);
+
+        buttonGetAllSerialNumbers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                boolean showDialog = true;
+                cardActivationApi.getAllSerialNumbers(new NfcCallback((result) -> textView.setText(String.valueOf(result)), System.out::println));
+            }
+        });
+    }
+
+    public void addListenerOnCreateKeyForHmacButton() {
+
+        buttonCreateKeyForHmac = findViewById(R.id.createKeyForHmac);
+
+        buttonCreateKeyForHmac.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                boolean showDialog = true;
+                cardActivationApi.createKeyForHmac(PASSWORD, COMMON_SECRET, SERIAL_NUMBER, new NfcCallback((result) -> textView.setText(String.valueOf(result)), System.out::println));
+            }
+        });
+    }
+
+
 
     public void addListenerOnGetRemainingPinTriesButton() {
 

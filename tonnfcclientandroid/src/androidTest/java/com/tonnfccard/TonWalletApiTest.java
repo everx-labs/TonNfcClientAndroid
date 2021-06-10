@@ -83,7 +83,7 @@ public class TonWalletApiTest {
             String keyAlias = HmacHelper.HMAC_KEY_ALIAS + sn;
             keyStore.load(null);
             assertTrue(keyStore.containsAlias(keyAlias));
-            response = tonWalletApi.getCurrentSerialNumber();
+            response = tonWalletApi.getCurrentSerialNumberAndGetJson();
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(sn).toLowerCase());
             byte[] data = new byte[20];
             random.nextBytes(data);
@@ -112,7 +112,7 @@ public class TonWalletApiTest {
             String response = tonWalletApi.isKeyForHmacExistAndGetJson(sn);
             System.out.println(response);
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(TRUE_MSG).toLowerCase());
-            response = tonWalletApi.getCurrentSerialNumber();
+            response = tonWalletApi.getCurrentSerialNumberAndGetJson();
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(sn).toLowerCase());
         }
         catch (Exception e) {
@@ -159,7 +159,7 @@ public class TonWalletApiTest {
             response = tonWalletApi.isKeyForHmacExistAndGetJson(sn);
             System.out.println(response);
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(FALSE_MSG).toLowerCase());
-            response = tonWalletApi.getCurrentSerialNumber();
+            response = tonWalletApi.getCurrentSerialNumberAndGetJson();
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(EMPTY_SERIAL_NUMBER).toLowerCase());
         }
         catch (Exception e) {
@@ -185,7 +185,7 @@ public class TonWalletApiTest {
             response = tonWalletApi.isKeyForHmacExistAndGetJson(serialNumbers.get(43));
             System.out.println(response);
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(FALSE_MSG).toLowerCase());
-            response = tonWalletApi.getCurrentSerialNumber();
+            response = tonWalletApi.getCurrentSerialNumberAndGetJson();
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(serialNumbers.get(serialNumbers.size() - 1)).toLowerCase());
             int counter = 0;
             final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
@@ -225,7 +225,7 @@ public class TonWalletApiTest {
             for (int i = 0 ; i < sns.length(); i++) {
                 assertTrue(serialNumbers.contains(sns.getString(i)));
             }
-            response = tonWalletApi.getCurrentSerialNumber();
+            response = tonWalletApi.getCurrentSerialNumberAndGetJson();
             System.out.println(response);
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(serialNumbers.get(serialNumbers.size() - 1)).toLowerCase());
         }
@@ -258,7 +258,7 @@ public class TonWalletApiTest {
             for (int i = 0 ; i < sns.length(); i++) {
                 assertTrue(serialNumbers.contains(sns.getString(i)));
             }
-            response = tonWalletApi.getCurrentSerialNumber();
+            response = tonWalletApi.getCurrentSerialNumberAndGetJson();
             System.out.println(response);
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(serialNumbers.get(serialNumbers.size() - 1)).toLowerCase());
         }
@@ -311,7 +311,7 @@ public class TonWalletApiTest {
             response = tonWalletApi.isKeyForHmacExistAndGetJson(serialNumbers.get(56));
             System.out.println(response);
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(TRUE_MSG).toLowerCase());
-            response = tonWalletApi.getCurrentSerialNumber();
+            response = tonWalletApi.getCurrentSerialNumberAndGetJson();
             assertEquals(response.toLowerCase(), JSON_HELPER.createResponseJson(serialNumbers.get(56)).toLowerCase());
             int counter = 0;
             final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");

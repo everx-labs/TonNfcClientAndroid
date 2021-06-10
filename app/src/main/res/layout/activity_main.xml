@@ -4,91 +4,122 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
-
-    <Button
-        android:id="@+id/getMaxPinTries"
+    <ScrollView
+        android:id="@+id/scrollView1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:baselineAligned="false"
-        android:text="Get max PIN tries" />
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:fillViewport="true">
 
-    <Button
-        android:id="@+id/getRemainingPinTries"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Get remaining PIN tries" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical"
+            android:scrollbars="vertical">
 
-    <Button
-        android:id="@+id/activateCard"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Activate card" />
 
-    <Button
-        android:id="@+id/getPk"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Get ed25519 public key" />
+            <Button
+                android:id="@+id/getMaxPinTries"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:text="Get max PIN tries" />
 
-    <Button
-        android:id="@+id/sign"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Get ed25519 signature" />
+            <Button
+                android:id="@+id/getRemainingPinTries"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Get remaining PIN tries" />
 
-    <Button
-        android:id="@+id/testKeychain"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="testKeychain" />
+            <Button
+                android:id="@+id/activateCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Activate card" />
 
-    <Button
-        android:id="@+id/getKeyChainDataAboutAllKeys"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="getKeyChainDataAboutAllKeys" />
+            <Button
+                android:id="@+id/getPk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Get ed25519 public key" />
 
-    <Button
-        android:id="@+id/addRecoveryData"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="addRecoveryData" />
+            <Button
+                android:id="@+id/sign"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Get ed25519 signature" />
 
-    <Button
-        android:id="@+id/getRecoveryData"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="getRecovery" />
+            <Button
+                android:id="@+id/testKeychain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="testKeychain" />
 
-    <Button
-        android:id="@+id/checkIfNfcSupported"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="checkIfNfcSupported" />
+            <Button
+                android:id="@+id/getKeyChainDataAboutAllKeys"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="getKeyChainDataAboutAllKeys" />
 
-    <Button
-        android:id="@+id/checkIfNfcEnabled"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="checkIfNfcEnabled" />
+            <Button
+                android:id="@+id/addRecoveryData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="addRecoveryData" />
 
-    <Button
-        android:id="@+id/openNfcSettings"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="openNfcSettings" />
+            <Button
+                android:id="@+id/getRecoveryData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="getRecovery" />
 
-    <Button
-        android:id="@+id/getSerialNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="getSerialNumber" />
+            <Button
+                android:id="@+id/checkIfNfcSupported"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="checkIfNfcSupported" />
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TextView" />
+            <Button
+                android:id="@+id/checkIfNfcEnabled"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="checkIfNfcEnabled" />
+
+            <Button
+                android:id="@+id/openNfcSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="openNfcSettings" />
+
+            <Button
+                android:id="@+id/getSerialNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="getSerialNumber" />
+
+            <Button
+                android:id="@+id/createKeyForHmac"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="createKeyForHmac" />
+
+            <Button
+                android:id="@+id/getAllSerialNumbers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="getAllSerialNumbers" />
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
 
 </LinearLayout>
 

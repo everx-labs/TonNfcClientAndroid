@@ -447,11 +447,11 @@ public class TonWalletApi {
    * @param callback
    * Get serial number of currently active key (card). In fact this is a serialNumber of the card with which your app communicated last time.
    */
-  public void getCurrentSerialNumber(final NfcCallback callback) {
+  public void getCurrentSerialNumberAndGetJson(final NfcCallback callback) {
     new Thread(new Runnable() {
       public void run() {
         try {
-          String json = getCurrentSerialNumber();
+          String json = getCurrentSerialNumberAndGetJson();
           resolveJson(json, callback);
           Log.d(TAG, "getCurrentSerialNumber response : " + json);
         } catch (Exception e) {
@@ -466,7 +466,7 @@ public class TonWalletApi {
    * @throws Exception
    * Get serial number of currently active key (card). In fact this is a serialNumber of the card with which your app communicated last time.
    */
-  public String getCurrentSerialNumber() throws Exception {
+  public String getCurrentSerialNumberAndGetJson() throws Exception {
     return JSON_HELPER.createResponseJson(currentSerialNumber);
   }
 
@@ -582,17 +582,3 @@ public class TonWalletApi {
     return apduRunner.sendTonWalletAppletAPDU(GET_SAULT_APDU);
   }
 }
-
-/*public void getSerialNumber(final NfcCallback callback, Boolean... showDialog) {
-    new Thread(new Runnable() {
-      public void run() {
-        try {
-          String json = getSerialNumberAndGetJson(showDialog);
-          resolveJson(json, callback);
-          Log.d(TAG, "getSerialNumber response : " + json);
-        } catch (Exception e) {
-            EXCEPTION_HELPER.handleException(e, callback, TAG);
-        }
-      }
-    }).start();
-  }*/
