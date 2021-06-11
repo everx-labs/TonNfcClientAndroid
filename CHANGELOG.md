@@ -68,3 +68,11 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - Some fixes around retries to connect NFC card, remove redundant error message.
+
+## [3.2.3] – 2021-06-10
+
+### Fixed
+
+- serialNumberField -> message
+- change HMAC_KEYS_ARE_NOT_FOUND_MSG value
+- move some json fields names into TonWalletConstants
