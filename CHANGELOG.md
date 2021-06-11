@@ -76,3 +76,9 @@ All notable changes to this project will be documented in this file.
 - serialNumberField -> message
 - change HMAC_KEYS_ARE_NOT_FOUND_MSG value
 - move some json fields names into TonWalletConstants
+
+## [3.2.4] – 2021-06-10
+
+### Fixed
+
+- fix getCurrentSerialNumber function name
