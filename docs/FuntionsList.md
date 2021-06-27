@@ -270,7 +270,7 @@ These functions are naturally divided into four groups. And there are respective
 
     *Exemplary response:*
 
-        {"serial_number_field":["504394802433901126813236", "455324585319848551839771"],"status":"ok"}
+        {"message":["504394802433901126813236", "455324585319848551839771"],"status":"ok"}
 
 - **void isKeyForHmacExist(final String serialNumber, final NfcCallback callback),** <br/>
   **String isKeyForHmacExistAndGetJson(final String serialNumber)**
