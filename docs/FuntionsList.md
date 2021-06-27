@@ -270,7 +270,7 @@ These functions are naturally divided into four groups. And there are respective
 
     *Exemplary response:*
 
-        {"serial_number_field":["504394802433901126813236", "455324585319848551839771"],"status":"ok"}
+        {"message":["504394802433901126813236", "455324585319848551839771"],"status":"ok"}
 
 - **void isKeyForHmacExist(final String serialNumber, final NfcCallback callback),** <br/>
   **String isKeyForHmacExistAndGetJson(final String serialNumber)**
@@ -549,7 +549,7 @@ Here there are functions related to ed25519 signature.
 
     *Exemplary response:*
 
-        {"keysData":[{"hmac":"D7E0DFB66A2F72AAD7D66D897C805D307EE1F1CB8077D3B8CF1A942D6A5AC2FF","length":"6"},{"hmac":"D31D1D600F8E5B5951275B9C6DED079011FD852ABB62C14A2EECA2E6924452C0","length":"3"}],"status":"ok"}
+        {"message":[{"hmac":"D7E0DFB66A2F72AAD7D66D897C805D307EE1F1CB8077D3B8CF1A942D6A5AC2FF","length":"6"},{"hmac":"D31D1D600F8E5B5951275B9C6DED079011FD852ABB62C14A2EECA2E6924452C0","length":"3"}],"status":"ok"}
 
 - **void getKeyChainInfo(final NfcCallback callback, Boolean... showDialog),** <br/>
   **String getKeyChainInfoAndGetJson(Boolean... showDialog)**
@@ -607,7 +607,7 @@ Here there are functions related to ed25519 signature.
 
     *Arguments requirements:*
 
-        neyKey — hex string of even length ≥ 2 and ≤ 16384.
+        newKey — hex string of even length ≥ 2 and ≤ 16384.
 
     *Response:*
 
