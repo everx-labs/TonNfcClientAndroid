@@ -38,9 +38,10 @@ public class ResponsesConstants {
   public static final String CARD_RESPONSE_DATA_ERROR_TYPE_ID = "4";
   public static final String IMPROPER_APPLET_STATE_ERROR_TYPE_ID = "5";
   public static final String HMAC_KEY_ERROR_TYPE_ID = "6";
+  public static final String WRONG_CARD_ERROR_TYPE_ID = "7";
 
   public static final List<String>  ERROR_TYPE_IDS = Arrays.asList(CARD_ERROR_TYPE_ID, ANDROID_INTERNAL_ERROR_TYPE_ID, ANDROID_NFC_ERROR_TYPE_ID, INPUT_DATA_FORMAT_ERROR_TYPE_ID, CARD_RESPONSE_DATA_ERROR_TYPE_ID,
-    IMPROPER_APPLET_STATE_ERROR_TYPE_ID, HMAC_KEY_ERROR_TYPE_ID);
+    IMPROPER_APPLET_STATE_ERROR_TYPE_ID, HMAC_KEY_ERROR_TYPE_ID, WRONG_CARD_ERROR_TYPE_ID);
 
   public static final String CARD_ERROR_TYPE_MSG = "Applet fail: card operation error";
   public static final String ANDROID_INTERNAL_ERROR_TYPE_MSG = "Android code fail: internal error";
@@ -49,9 +50,10 @@ public class ResponsesConstants {
   public static final String CARD_RESPONSE_DATA_ERROR_TYPE_MSG = "Native code fail: incorrect response from card";
   public static final String IMPROPER_APPLET_STATE_ERROR_TYPE_MSG = "Native code fail: improper applet state";
   public static final String HMAC_KEY_ERROR_TYPE_MSG = "Native code fail: hmac key issue";
+  public static final String WRONG_CARD_ERROR_TYPE_MSG = "Native code fail: wrong card";
 
   public static final List<String> ERROR_TYPE_MSGS = Arrays.asList(CARD_ERROR_TYPE_MSG, ANDROID_INTERNAL_ERROR_TYPE_MSG, ANDROID_NFC_ERROR_TYPE_MSG, INPUT_DATA_FORMAT_ERROR_TYPE_MSG, CARD_RESPONSE_DATA_ERROR_TYPE_MSG,
-    IMPROPER_APPLET_STATE_ERROR_TYPE_MSG, HMAC_KEY_ERROR_TYPE_MSG);
+    IMPROPER_APPLET_STATE_ERROR_TYPE_MSG, HMAC_KEY_ERROR_TYPE_MSG, WRONG_CARD_ERROR_TYPE_MSG);
 
   private static Map<String, String> errorTypeIdToErrorTypeMsgMap = new HashMap<>();
 
@@ -362,15 +364,22 @@ public class ResponsesConstants {
 
 
   /**
-   * IMPROPER_APPLET_STATE_ERROR_TYPE_ID = 6
+   * HMAC_KEY_ERROR_TYPE_ID = 6
    */
   public static final String ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN  = "Key for hmac signing for specified serial number does not exist.";
   public static final String ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET = "Current serial number is not set. Can not select key for hmac.";
 
-  public static final List<String>  HMAC_KEY_ERRORS = Arrays.asList(ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN, ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET);
+  public static final List<String> HMAC_KEY_ERRORS = Arrays.asList(ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN, ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET);
 
-  public static final List<List<String>>  ALL_NATIVE_ERROR_MESSAGES = Arrays.asList(ANDROID_INTERNAL_ERRORS, ANDROID_NFC_ERRORS, INPUT_DATA_FORMAT_ERRORS, CARD_RESPONSE_DATA_ERRORS, IMPROPER_APPLET_STATE_ERRORS, HMAC_KEY_ERRORS);
+  /**
+   * WRONG_CARD_ERROR_TYPE_ID = 7
+   */
 
+  public static final String ERROR_MSG_CARD_HAVE_INCORRECT_SN  = "You try to use security card with incorrect serial number. ";
+
+  public static final List<String> WRONG_CARD_ERRORS = Arrays.asList(ERROR_MSG_CARD_HAVE_INCORRECT_SN);
+
+  public static final List<List<String>> ALL_NATIVE_ERROR_MESSAGES = Arrays.asList(ANDROID_INTERNAL_ERRORS, ANDROID_NFC_ERRORS, INPUT_DATA_FORMAT_ERRORS, CARD_RESPONSE_DATA_ERRORS, IMPROPER_APPLET_STATE_ERRORS, HMAC_KEY_ERRORS, WRONG_CARD_ERRORS);
 
   private static Map<List<String>, String> errorMsgsToErrorTypeIdMap = new HashMap<>();
   private static Map<String, String> errorMsgToErrorCodeMap = new LinkedHashMap<>();

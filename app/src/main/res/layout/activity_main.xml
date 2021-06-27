@@ -27,6 +27,12 @@
                 android:text="Get max PIN tries" />
 
             <Button
+                android:id="@+id/chrckSNAndGetpk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Check SN and get PK for default hd path" />
+
+            <Button
                 android:id="@+id/getRemainingPinTries"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

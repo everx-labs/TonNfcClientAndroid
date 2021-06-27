@@ -84,8 +84,8 @@ public class MainActivity extends AppCompatActivity {
     Button buttonGetSerialNumber;
     Button buttonCreateKeyForHmac;
     Button buttonGetAllSerialNumbers;
+    Button buttonCheckSnANdGetPkForDefaultHdPath;
     TextView textView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnGetSerialNumberButton();
         addListenerOnGetAllSerialNumbersButton();
         addListenerOnCreateKeyForHmacButton();
+        addListenerOnCheckSnAndGetPkForDefaultHdPathButton();
         textView = findViewById(R.id.textView1);
         try {
             NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(MainActivity.this);
@@ -137,6 +138,18 @@ public class MainActivity extends AppCompatActivity {
         catch (Exception e) {
             Log.e("TAG", "Error happened : " + e.getMessage());
         }
+    }
+
+    public void addListenerOnCheckSnAndGetPkForDefaultHdPathButton() {
+        buttonCheckSnANdGetPkForDefaultHdPath = findViewById(R.id.chrckSNAndGetpk);
+        buttonCheckSnANdGetPkForDefaultHdPath.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                boolean showDialog = true;
+                String sn = "929526125066377952749605";
+                cardCryptoApi.checkSerialNumberAndGetPublicKeyForDefaultPath(sn, new NfcCallback((result) -> textView.setText(String.valueOf(result)), System.out::println), showDialog);
+            }
+        });
     }
 
     public void addListenerOnGetAllSerialNumbersButton() {
