@@ -83,7 +83,7 @@ All notable changes to this project will be documented in this file.
 
 - fix getCurrentSerialNumber function name
 
-## [3.2.5] – 2021-06-28
+## [3.3.0] – 2021-06-28
 
 ### New
 
