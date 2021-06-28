@@ -33,6 +33,42 @@
                 android:text="Check SN and get PK for default hd path" />
 
             <Button
+                android:id="@+id/chrckSNAndGetpk2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Check SN and get PK" />
+
+            <Button
+                android:id="@+id/checkSnAndSign"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="check sn and sign for default path" />
+
+            <Button
+                android:id="@+id/checkSnAndSign2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="check sn and sign" />
+
+            <Button
+                android:id="@+id/verifyPin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="verify pin" />
+
+            <Button
+                android:id="@+id/button7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="check sn and sign for def path (not verify pin)" />
+
+            <Button
+                android:id="@+id/button8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="check sn and sign (not verify pin)" />
+
+            <Button
                 android:id="@+id/getRemainingPinTries"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

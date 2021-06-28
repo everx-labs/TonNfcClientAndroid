@@ -85,12 +85,18 @@ public class MainActivity extends AppCompatActivity {
     Button buttonCreateKeyForHmac;
     Button buttonGetAllSerialNumbers;
     Button buttonCheckSnANdGetPkForDefaultHdPath;
+    Button buttonCheckSnANdGetPk;
+    Button buttonCheckSnANdSignForDefaultHdPath;
+    Button buttonCheckSnANdSign;
+    Button buttonCheckSnANdSignForDefaultHdPath2;
+    Button buttonCheckSnANdSign2;
+    Button buttonVerifyPin;
     TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("TAG", "Current thread 1 : " + Thread.currentThread().getName());
+       // Log.d("TAG", "Current thread 1 : " + Thread.currentThread().getName());
         setContentView(R.layout.activity_main);
         addListenerOnGetMaxPinTriesButton();
         addListenerOnActivateCardButton();
@@ -109,6 +115,12 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnGetAllSerialNumbersButton();
         addListenerOnCreateKeyForHmacButton();
         addListenerOnCheckSnAndGetPkForDefaultHdPathButton();
+        addListenerOnCheckSnAndGetPkButton();
+        addListenerOnCheckSnAndSignForDefaultHdPathButton();
+        addListenerOnCheckSnAndSignButton();
+        addListenerOnCheckSnAndSignForDefaultHdPathButton2();
+        addListenerOnCheckSnAndSignButton2();
+        addListenerOnVerifyPinButton();
         textView = findViewById(R.id.textView1);
         try {
             NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(MainActivity.this);
@@ -140,6 +152,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void addListenerOnVerifyPinButton() {
+        buttonVerifyPin = findViewById(R.id.verifyPin);
+        buttonVerifyPin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                boolean showDialog = true;
+                String pin = "5555";
+                cardCryptoApi.verifyPin(pin, new NfcCallback((result) -> textView.setText(String.valueOf(result)), System.out::println), showDialog);
+            }
+        });
+    }
+
     public void addListenerOnCheckSnAndGetPkForDefaultHdPathButton() {
         buttonCheckSnANdGetPkForDefaultHdPath = findViewById(R.id.chrckSNAndGetpk);
         buttonCheckSnANdGetPkForDefaultHdPath.setOnClickListener(new View.OnClickListener() {
@@ -151,6 +175,76 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void addListenerOnCheckSnAndGetPkButton() {
+        buttonCheckSnANdGetPk = findViewById(R.id.chrckSNAndGetpk2);
+        buttonCheckSnANdGetPk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                boolean showDialog = true;
+                String sn = "929526125066377952749605";
+                String hdIndex = "1";
+                cardCryptoApi.checkSerialNumberAndGetPublicKey(sn,hdIndex,  new NfcCallback((result) -> textView.setText(String.valueOf(result)), System.out::println), showDialog);
+            }
+        });
+    }
+
+    public void addListenerOnCheckSnAndSignForDefaultHdPathButton() {
+        buttonCheckSnANdSignForDefaultHdPath = findViewById(R.id.checkSnAndSign);
+        buttonCheckSnANdSignForDefaultHdPath.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                boolean showDialog = true;
+                String sn = "504394802433901126813236";
+                String data = "11";
+                String pin = "5555";
+                cardCryptoApi.checkSerialNumberAndVerifyPinAndSignForDefaultHdPath(sn, data, pin,  new NfcCallback((result) -> textView.setText(String.valueOf(result)), System.out::println), showDialog);
+            }
+        });
+    }
+
+    public void addListenerOnCheckSnAndSignButton() {
+        buttonCheckSnANdSign = findViewById(R.id.checkSnAndSign2);
+        buttonCheckSnANdSign.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                boolean showDialog = true;
+                String sn = "504394802433901126813236";
+                String data = "11";
+                String hdIndex = "2";
+                String pin = "5555";
+                cardCryptoApi.checkSerialNumberAndVerifyPinAndSign(sn, data, hdIndex, pin,  new NfcCallback((result) -> textView.setText(String.valueOf(result)), System.out::println), showDialog);
+            }
+        });
+    }
+
+    public void addListenerOnCheckSnAndSignForDefaultHdPathButton2() {
+        buttonCheckSnANdSignForDefaultHdPath2 = findViewById(R.id.button7);
+        buttonCheckSnANdSignForDefaultHdPath2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                boolean showDialog = true;
+                String sn = "504394802433901126813236";
+                String data = "11";
+                cardCryptoApi.checkSerialNumberAndSignForDefaultHdPath(sn, data, new NfcCallback((result) -> textView.setText(String.valueOf(result)), System.out::println), showDialog);
+            }
+        });
+    }
+
+    public void addListenerOnCheckSnAndSignButton2() {
+        buttonCheckSnANdSign2 = findViewById(R.id.button8);
+        buttonCheckSnANdSign2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                boolean showDialog = true;
+                String sn = "504394802433901126813236";
+                String data = "11";
+                String hdIndex = "2";
+                cardCryptoApi.checkSerialNumberAndSign(sn, data, hdIndex, new NfcCallback((result) -> textView.setText(String.valueOf(result)), System.out::println), showDialog);
+            }
+        });
+    }
+
 
     public void addListenerOnGetAllSerialNumbersButton() {
 
