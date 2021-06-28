@@ -147,7 +147,7 @@ public final class CardCryptoApi extends TonWalletApi {
   /**
    * @param hdIndex
    * @param callback
-   * Put public key for HD path m/44'/396'/0'/0'/index' into callback.
+   * Put public key for HD path m/44'/396'/0'/0'/hdIndex' into callback.
    */
   private final CardApiInterface<List<String>> getPublicKey = list -> this.getPublicKeyAndGetJson(list.get(0));
 
@@ -265,9 +265,9 @@ public final class CardCryptoApi extends TonWalletApi {
 
   /**
    * @param dataForSigning
-   * @param index
+   * @param hdIndex
    * @param callback
-   * Make data signing by key for HD path m/44'/396'/0'/0'/index' and put into callback. Prior to call this function you must call verifyPin.
+   * Make data signing by key for HD path m/44'/396'/0'/0'/hdIndex' and put into callback. Prior to call this function you must call verifyPin.
    */
   private final CardApiInterface<List<String>> sign = list -> this.signAndGetJson(list.get(0), list.get(1));
 
@@ -298,7 +298,7 @@ public final class CardCryptoApi extends TonWalletApi {
    * @param dataForSigning
    * @param hdIndex
    * @param callback
-   * Make data signing by key for HD path m/44'/396'/0'/0'/index' and put into callback if serialNumber == serialNumberFomCard. Prior to call this function you must call verifyPin.
+   * Make data signing by key for HD path m/44'/396'/0'/0'/hdIndex' and put into callback if serialNumber == serialNumberFomCard. Prior to call this function you must call verifyPin.
    */
   private final CardApiInterface<List<String>> checkSerialNumberAndSign = list -> this.checkSerialNumberAndSignAndGetJson(list.get(0), list.get(1), list.get(2));
 
@@ -393,10 +393,10 @@ public final class CardCryptoApi extends TonWalletApi {
 
   /**
    * @param dataForSigning
-   * @param index
+   * @param hdIndex
    * @param pin
    * @param callback
-   * Make pin verification and data signing by key for HD path m/44'/396'/0'/0'/index'. Put signature into callback.
+   * Make pin verification and data signing by key for HD path m/44'/396'/0'/0'/hdIndex'. Put signature into callback.
    */
   private final CardApiInterface<List<String>> verifyPinAndSign = list -> this.verifyPinAndSignAndGetJson(list.get(0), list.get(1), list.get(2));
 
@@ -426,10 +426,10 @@ public final class CardCryptoApi extends TonWalletApi {
   /**
    * @param serialNumber
    * @param dataForSigning
-   * @param index
+   * @param hdIndex
    * @param pin
    * @param callback
-   * Make pin verification and data signing by key for HD path m/44'/396'/0'/0'/index' if serialNumber == serialNumberFomCard. Put signature into callback.
+   * Make pin verification and data signing by key for HD path m/44'/396'/0'/0'/hdIndex' if serialNumber == serialNumberFomCard. Put signature into callback.
    */
   private final CardApiInterface<List<String>> checkSerialNumberAndVerifyPinAndSign = list -> this.checkSerialNumberAndVerifyPinAndSignAndGetJson(list.get(0), list.get(1), list.get(2), list.get(3));
 
