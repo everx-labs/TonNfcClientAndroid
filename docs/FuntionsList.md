@@ -387,12 +387,12 @@ Here there are functions related to ed25519 signature.
 - **public void checkSerialNumberAndGetPublicKeyForDefaultPath(final String serialNumber, final NfcCallback callback, Boolean... showDialog),** <br/>
   **public String checkSerialNumberAndGetPublicKeyForDefaultPathAndGetJson(final String serialNumber)**
   
+    Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then return public key for HD path m/44'/396'/0'/0'/0'. Else reject the card.
+  
     *Arguments requirements:*
 
         serialNumber — numeric string of length 24, example: "50439480243390112681323"
-  
-    Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then return public key for HD path m/44'/396'/0'/0'/0'. Else reject the card.
-
+ 
     *Exemplary response:*
 
         {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
@@ -413,12 +413,27 @@ Here there are functions related to ed25519 signature.
 - **void signForDefaultHdPath(final String dataForSigning, final NfcCallback callback, Boolean... showDialog),** <br/>
   **String signForDefaultHdPathAndGetJson(final String dataForSigning, Boolean... showDialog)**
 
-    Make  data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
+    Make data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
 
     *Arguments requirements:*
 
-        data — hex string of even length ≥ 2 and ≤ 378.
+        dataForSigning — hex string of even length ≥ 2 and ≤ 378.
 
+    *Exemplary response:*
+
+        {"message":"2D6A2749DD5AF5BB356220BFA06A0C624D5814438F37983322BBAD762EFB4759CFA927E6735B7CD556196894F3CE077ADDD6B49447B8B325ADC494B82DC8B605","status":"ok"}
+        
+- **public void checkSerialNumberAndSignForDefaultHdPath(final String serialNumber, final String dataForSigning, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **public String checkSerialNumberAndSignForDefaultHdPathAndGetJson(final String serialNumber, final String dataForSigning)**
+  
+    Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then make data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
+  
+    *Arguments requirements:*
+
+        serialNumber — numeric string of length 24, example: "50439480243390112681323".
+        
+        dataForSigning — hex string of even length ≥ 2 and ≤ 378.
+       
     *Exemplary response:*
 
         {"message":"2D6A2749DD5AF5BB356220BFA06A0C624D5814438F37983322BBAD762EFB4759CFA927E6735B7CD556196894F3CE077ADDD6B49447B8B325ADC494B82DC8B605","status":"ok"}
@@ -426,17 +441,34 @@ Here there are functions related to ed25519 signature.
 - **void sign(final String dataForSigning, final String hdIndex, final NfcCallback callback, Boolean... showDialog),** <br/>
   **String signAndGetJson(final String dataForSigning, final String hdIndex, Boolean... showDialog)**
 
-    Make data signing by key for HD path m/44'/396'/0'/0'/index'. Prior to call this function you must call verifyPin.
+    Make data signing by key for HD path m/44'/396'/0'/0'/hdIndex'. Prior to call this function you must call verifyPin.
 
     *Arguments requirements:*
 
-        hdIndex — numeric string of length > 0 and ≤ 10.
+       hdIndex — numeric string of length > 0 and ≤ 10.
 
-        data — hex string of even length ≥ 2 and ≤ 356.
+       dataForSigning — hex string of even length ≥ 2 and ≤ 356.
 
     *Exemplary response:*
 
         {"message":"13FB836213B12BBD41209273F81BCDCF7C226947B18128F73E9A6E96C84B30C3288E51C622C045488981B6544D02D0940DE54D68A0A78BC2A5F9523B8757B904","status":"ok"}
+        
+- **public void checkSerialNumberAndSign(final String serialNumber, final String dataForSigning, final String hdIndex, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **public String checkSerialNumberAndSignAndGetJson(final String serialNumber, final String dataForSigning, final String hdIndex)**
+  
+    Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then make data signing by key for HD path m/44'/396'/0'/0'/hdIndex'. Prior to call this function you must call verifyPin.
+  
+   *Arguments requirements:*
+
+       serialNumber — numeric string of length 24, example: "50439480243390112681323".
+       
+       hdIndex — numeric string of length > 0 and ≤ 10.
+
+       dataForSigning — hex string of even length ≥ 2 and ≤ 356.
+       
+    *Exemplary response:*
+
+     {"message":"13FB836213B12BBD41209273F81BCDCF7C226947B18128F73E9A6E96C84B30C3288E51C622C045488981B6544D02D0940DE54D68A0A78BC2A5F9523B8757B904","status":"ok"}   
 
 - **void getPublicKey(final String hdIndex, final NfcCallback callback, Boolean... showDialog),** <br/>
   **String getPublicKeyAndGetJson(final String hdIndex, Boolean... showDialog)** 
@@ -454,33 +486,50 @@ Here there are functions related to ed25519 signature.
 - **public void checkSerialNumberAndGetPublicKey(final String serialNumber, final String hdIndex, final NfcCallback callback, Boolean... showDialog),**  <br/>
   **public String checkSerialNumberAndGetPublicKeyAndGetJson(final String serialNumber, final String hdIndex)**
   
+    Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then return public key for HD path m/44'/396'/0'/0'/hdIndex'. Else reject the card.
+  
     *Arguments requirements:*
 
-        serialNumber — numeric string of length 24, example: "50439480243390112681323"
+        serialNumber — numeric string of length 24, example: "50439480243390112681323".
         
         hdIndex — numeric string of length > 0 and ≤ 10.
-  
-     Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then return public key for HD path m/44'/396'/0'/0'/hdIndex'. Else reject the card.
-
+ 
 - **void verifyPinAndSignForDefaultHdPath(final String dataForSigning, final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
   **String verifyPinAndSignForDefaultHdPathAndGetJson(final String dataForSigning, final String pin, Boolean... showDialog)**
 
-    Make  pin verification data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
+    Make pin verification and data signing by key for HD path m/44'/396'/0'/0'/0'. 
 
     *Arguments requirements:*
 
         pin — numeric string of length 4, example: '5555'
 
-        data — hex string of even length ≥ 2 and ≤ 378.
+        dataForSigning — hex string of even length ≥ 2 and ≤ 378.
 
     *Exemplary response:*
 
         {"message":"2D6A2749DD5AF5BB356220BFA06A0C624D5814438F37983322BBAD762EFB4759CFA927E6735B7CD556196894F3CE077ADDD6B49447B8B325ADC494B82DC8B605","status":"ok"}
+        
+- **public void checkSerialNumberAndVerifyPinAndSignForDefaultHdPath(final String serialNumber, final String dataForSigning, final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **public String checkSerialNumberAndVerifyPinAndSignForDefaultHdPathAndGetJson(final String serialNumber, final String dataForSigning, final String pin)**  
+  
+    Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then make  pin verification and data signing by key for HD path m/44'/396'/0'/0'/0'.
+    
+    *Arguments requirements:*
+    
+        serialNumber — numeric string of length 24, example: "50439480243390112681323".
+
+        pin — numeric string of length 4, example: '5555'
+
+        dataForSigning — hex string of even length ≥ 2 and ≤ 378.
+        
+    *Exemplary response:*
+
+        {"message":"2D6A2749DD5AF5BB356220BFA06A0C624D5814438F37983322BBAD762EFB4759CFA927E6735B7CD556196894F3CE077ADDD6B49447B8B325ADC494B82DC8B605","status":"ok"}     
 
 - **void verifyPinAndSign(final String dataForSigning, final String hdIndex, final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
   **String verifyPinAndSignAndGetJson(final String dataForSigning, final String hdIndex, final String pin, Boolean... showDialog)**
 
-    Make pin verification and data signing by key for HD path m/44'/396'/0'/0'/index'.
+    Make pin verification and data signing by key for HD path m/44'/396'/0'/0'/hdIndex'.
 
     *Arguments requirements:*
 
@@ -488,11 +537,30 @@ Here there are functions related to ed25519 signature.
 
         hdIndex — numeric string of length > 0 and ≤ 10.
 
-        data — hex string of even length ≥ 2 and ≤ 356.
+        dataForSigning — hex string of even length ≥ 2 and ≤ 356.
 
     *Exemplary response:*
 
         {"message":"13FB836213B12BBD41209273F81BCDCF7C226947B18128F73E9A6E96C84B30C3288E51C622C045488981B6544D02D0940DE54D68A0A78BC2A5F9523B8757B904","status":"ok"}
+        
+- **public void checkSerialNumberAndVerifyPinAndSign(final String serialNumber, final String dataForSigning, final String hdIndex, final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
+**public String checkSerialNumberAndVerifyPinAndSignAndGetJson(final String serialNumber, final String dataForSigning, final String hdIndex, final String pin)**
+
+   Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then make pin verification and data signing by key for HD path m/44'/396'/0'/0'/hdIndex'.
+   
+   *Arguments requirements:*
+   
+        serialNumber — numeric string of length 24, example: "50439480243390112681323".
+
+        pin — numeric string of length 4, example: '5555'.
+
+        hdIndex — numeric string of length > 0 and ≤ 10.
+
+        dataForSigning — hex string of even length ≥ 2 and ≤ 356.
+        
+   *Exemplary response:*
+
+        {"message":"13FB836213B12BBD41209273F81BCDCF7C226947B18128F73E9A6E96C84B30C3288E51C622C045488981B6544D02D0940DE54D68A0A78BC2A5F9523B8757B904","status":"ok"}      
 
 ### RecoveryDataApi functions
 
