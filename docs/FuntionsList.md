@@ -391,7 +391,7 @@ Here there are functions related to ed25519 signature.
   
     *Arguments requirements:*
 
-        serialNumber — numeric string of length 24, example: "50439480243390112681323"
+        serialNumber — numeric string of length 24, example: "50439480243390112681323".
  
     *Exemplary response:*
 
@@ -426,7 +426,7 @@ Here there are functions related to ed25519 signature.
 - **public void checkSerialNumberAndSignForDefaultHdPath(final String serialNumber, final String dataForSigning, final NfcCallback callback, Boolean... showDialog),** <br/>
   **public String checkSerialNumberAndSignForDefaultHdPathAndGetJson(final String serialNumber, final String dataForSigning)**
   
-    Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then make data signing by key for HD path m/44'/396'/0'/0'/0'. Prior to call this function you must call verifyPin.
+    Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then make data signing by key for HD path m/44'/396'/0'/0'/0'. Else reject the card. Prior to call this function you must call verifyPin. 
   
     *Arguments requirements:*
 
@@ -456,7 +456,7 @@ Here there are functions related to ed25519 signature.
 - **public void checkSerialNumberAndSign(final String serialNumber, final String dataForSigning, final String hdIndex, final NfcCallback callback, Boolean... showDialog),** <br/>
   **public String checkSerialNumberAndSignAndGetJson(final String serialNumber, final String dataForSigning, final String hdIndex)**
   
-    Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then make data signing by key for HD path m/44'/396'/0'/0'/hdIndex'. Prior to call this function you must call verifyPin.
+    Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then make data signing by key for HD path m/44'/396'/0'/0'/hdIndex'. Else reject the card. Prior to call this function you must call verifyPin.
   
    *Arguments requirements:*
 
@@ -512,7 +512,7 @@ Here there are functions related to ed25519 signature.
 - **public void checkSerialNumberAndVerifyPinAndSignForDefaultHdPath(final String serialNumber, final String dataForSigning, final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
   **public String checkSerialNumberAndVerifyPinAndSignForDefaultHdPathAndGetJson(final String serialNumber, final String dataForSigning, final String pin)**  
   
-    Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then make  pin verification and data signing by key for HD path m/44'/396'/0'/0'/0'.
+    Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then make  pin verification and data signing by key for HD path m/44'/396'/0'/0'/0'. Else reject the card.
     
     *Arguments requirements:*
     
@@ -546,7 +546,7 @@ Here there are functions related to ed25519 signature.
 - **public void checkSerialNumberAndVerifyPinAndSign(final String serialNumber, final String dataForSigning, final String hdIndex, final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
 **public String checkSerialNumberAndVerifyPinAndSignAndGetJson(final String serialNumber, final String dataForSigning, final String hdIndex, final String pin)**
 
-   Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then make pin verification and data signing by key for HD path m/44'/396'/0'/0'/hdIndex'.
+   Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then make pin verification and data signing by key for HD path m/44'/396'/0'/0'/hdIndex'. Else reject the card.
    
    *Arguments requirements:*
    
