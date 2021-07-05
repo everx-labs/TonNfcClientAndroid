@@ -378,7 +378,20 @@ Here there are functions related to ed25519 signature.
 - **void getPublicKeyForDefaultPath(final NfcCallback callback, Boolean... showDialog),** <br/>
   **String getPublicKeyForDefaultPathAndGetJson(Boolean... showDialog)**
 
-    Return public key for HD path m/44'/396'/0'/0'/0'
+    Return public key for HD path m/44'/396'/0'/0'/0'.
+
+    *Exemplary response:*
+
+        {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
+        
+- **public void checkSerialNumberAndGetPublicKeyForDefaultPath(final String serialNumber, final NfcCallback callback, Boolean... showDialog),** <br/>
+  **public String checkSerialNumberAndGetPublicKeyForDefaultPathAndGetJson(final String serialNumber)**
+  
+    *Arguments requirements:*
+
+        serialNumber — numeric string of length 24, example: "50439480243390112681323"
+  
+    Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then return public key for HD path m/44'/396'/0'/0'/0'. Else reject the card.
 
     *Exemplary response:*
 
@@ -428,7 +441,7 @@ Here there are functions related to ed25519 signature.
 - **void getPublicKey(final String hdIndex, final NfcCallback callback, Boolean... showDialog),** <br/>
   **String getPublicKeyAndGetJson(final String hdIndex, Boolean... showDialog)** 
 
-    Return public key for HD path m/44'/396'/0'/0'/index'.
+    Return public key for HD path m/44'/396'/0'/0'/hdIndex'.
 
     *Arguments requirements:*
 
@@ -437,6 +450,17 @@ Here there are functions related to ed25519 signature.
     *Exemplary response:*
 
         {"message":"B81F0E0E07316DAB6C320ECC6BF3DBA48A70101C5251CC31B1D8F831B36E9F2A","status":"ok"}
+        
+- **public void checkSerialNumberAndGetPublicKey(final String serialNumber, final String hdIndex, final NfcCallback callback, Boolean... showDialog),**  <br/>
+  **public String checkSerialNumberAndGetPublicKeyAndGetJson(final String serialNumber, final String hdIndex)**
+  
+    *Arguments requirements:*
+
+        serialNumber — numeric string of length 24, example: "50439480243390112681323"
+        
+        hdIndex — numeric string of length > 0 and ≤ 10.
+  
+     Read serial number of currently connected security card and compare it with serialNumber argument. If they are identical then return public key for HD path m/44'/396'/0'/0'/hdIndex'. Else reject the card.
 
 - **void verifyPinAndSignForDefaultHdPath(final String dataForSigning, final String pin, final NfcCallback callback, Boolean... showDialog),** <br/>
   **String verifyPinAndSignForDefaultHdPathAndGetJson(final String dataForSigning, final String pin, Boolean... showDialog)**
