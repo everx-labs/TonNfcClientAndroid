@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
     Button buttonCheckSnANdSign2;
     Button buttonVerifyPin;
     Button buttonGetHashes;
+    Button buttonSignTwice;
     TextView textView;
 
     @Override
@@ -135,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnCheckSnAndSignButton2();
         addListenerOnVerifyPinButton();
         addListenerOnGetHashesButton();
+        addListenerOnSignTwiceButton();
         textView = findViewById(R.id.textView1);
         try {
             NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(MainActivity.this);
@@ -174,6 +176,25 @@ public class MainActivity extends AppCompatActivity {
                 boolean showDialog = true;
                 String pin = "5555";
                 cardCryptoApi.verifyPin(pin, new NfcCallback((result) -> textView.setText(String.valueOf(result)), System.out::println), showDialog);
+            }
+        });
+    }
+
+    public void addListenerOnSignTwiceButton() {
+        buttonSignTwice = findViewById(R.id.signTwice);
+        buttonSignTwice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                boolean showDialog = true;
+                String sn = "504394802433901126813236";
+                String data = "11";
+                String hdIndex = "2";
+                String pin = "5555";
+                System.out.println("HERE1");
+                cardCryptoApi.checkSerialNumberAndVerifyPinAndSign(sn, data, hdIndex, pin,  new NfcCallback((result) -> textView.setText(String.valueOf(result)), System.out::println), showDialog);
+                System.out.println("HERE2");
+                cardCryptoApi.checkSerialNumberAndVerifyPinAndSign(sn, data, hdIndex, pin,  new NfcCallback((result) -> textView.setText(String.valueOf(result)), System.out::println), showDialog);
+                System.out.println("HERE3");
             }
         });
     }

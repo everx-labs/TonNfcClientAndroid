@@ -13,6 +13,9 @@ import com.tonnfccard.helpers.ExceptionHelper;
 
 import java.util.List;
 
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_HMAC_NOT_HEX;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_NFC_CONNECTION_INTERRUPTED;
+
 public class CardTask extends AsyncTask<Void, Void, String> {
     private static final String TAG = "CardTask";
     public static final String NFC_CARD_OPERATION_INTERRUPTED = "NFC Card operation was interrupted!";
@@ -44,9 +47,11 @@ public class CardTask extends AsyncTask<Void, Void, String> {
                         Toast.makeText(TonWalletApi.getActivity(), NFC_CARD_OPERATION_INTERRUPTED, Toast.LENGTH_SHORT).show();
                         try {
                             tonWalletApi.getApduRunner().disconnectCard();
+                            throw new Exception(ERROR_NFC_CONNECTION_INTERRUPTED);
                         }
                         catch (Exception e) {
                             e.printStackTrace();
+                            EXCEPTION_HELPER.handleException(e, nfcCallback, TAG);
                         }
 
                     }
