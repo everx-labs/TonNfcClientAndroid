@@ -374,7 +374,7 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 - **void generateSeedAndGetHashes(final NfcCallback callback, Boolean... showDialog),** <br/>
   **String generateSeedAndGetHashesAndGetJson(Boolean... showDialog)**
 
-    enerate seed and return SHA256 hashes of encrypted password and encrypted common secret.
+    Generate seed and return SHA256 hashes of encrypted password and encrypted common secret.
 
     *Exemplary responses:*
 
