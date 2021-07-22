@@ -22,6 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import static com.tonnfccard.TonWalletConstants.*;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHORIZATION;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APPLET_IS_NOT_PERSONALIZED;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_COMMON_SECRET_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_COMMON_SECRET_NOT_HEX;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_HASH_OF_ENCRYPTED_COMMON_SECRET_RESPONSE_INCORRECT;
@@ -34,6 +35,8 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PASSWORD_LEN_I
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PASSWORD_NOT_HEX;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_FORMAT_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_LEN_INCORRECT;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_ROOT_KEY_STATUS_APDU;
+import static com.tonnfccard.smartcard.CoinManagerApduCommands.POSITIVE_ROOT_KEY_STATUS;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.RESET_WALLET_APDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.getChangePinAPDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.getGenerateSeedAPDU;
@@ -108,8 +111,10 @@ public final class CardActivationApi extends TonWalletApi {
         throw new Exception(ERROR_MSG_INITIAL_VECTOR_NOT_HEX);
       if (initialVector.length() != 2 * IV_SIZE)
         throw new Exception(ERROR_MSG_INITIAL_VECTOR_LEN_INCORRECT);
-      TonWalletAppletStates state = turnOnWallet(BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(newPin)), BYTE_ARR_HELPER.bytes(password), BYTE_ARR_HELPER.bytes(commonSecret), BYTE_ARR_HELPER.bytes(initialVector));
-      String json = JSON_HELPER.createResponseJson(state.getDescription());
+      TonWalletAppletStates appletState = turnOnWallet(BYTE_ARR_HELPER.bytes(STR_HELPER.pinToHex(newPin)), BYTE_ARR_HELPER.bytes(password), BYTE_ARR_HELPER.bytes(commonSecret), BYTE_ARR_HELPER.bytes(initialVector));
+      if (appletState != TonWalletAppletStates.PERSONALIZED)
+        throw new Exception(ERROR_MSG_APPLET_IS_NOT_PERSONALIZED + appletState.getDescription());
+      String json = JSON_HELPER.createResponseJson(appletState.getDescription());
       //long end = System.currentTimeMillis();
       //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
       return json;
@@ -246,6 +251,53 @@ public final class CardActivationApi extends TonWalletApi {
       throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
     }
   }
+
+
+  /**
+   * @param callback
+   * Generate seed and return SHA256 hashes of encrypted password and encrypted common secret.
+   */
+  private final CardApiInterface<List<String>> generateSeedAndGetHashes = list -> this.generateSeedAndGetHashesAndGetJson();
+
+  public void generateSeedAndGetHashes(final NfcCallback callback, Boolean... showDialog) {
+    boolean showDialogFlag = showDialog.length > 0 ? showDialog[0] : false;
+    CardTask cardTask = new CardTask(this, callback,  Collections.emptyList(), generateSeedAndGetHashes, showDialogFlag);
+    cardTask.execute();
+  }
+
+  /**
+   * @return
+   * @throws Exception
+   * Generate seed and return SHA256 hashes of encrypted password and encrypted common secret.
+   */
+  public String generateSeedAndGetHashesAndGetJson() throws Exception {
+    try {
+      //long start = System.currentTimeMillis();
+      String response = BYTE_ARR_HELPER.hex(apduRunner.sendCoinManagerAppletAPDU(GET_ROOT_KEY_STATUS_APDU).getData()).equals(POSITIVE_ROOT_KEY_STATUS) ? GENERATED_MSG : NOT_GENERATED_MSG;
+      if (response.equals(NOT_GENERATED_MSG)) {
+        apduRunner.sendAPDU(RESET_WALLET_APDU); //to reset pin just in case
+        apduRunner.sendAPDU(getGenerateSeedAPDU(DEFAULT_PIN));
+      }
+      TonWalletAppletStates appletState = getTonAppletState();
+      if (appletState != TonWalletAppletStates.WAITE_AUTHORIZATION_MODE)
+        throw new Exception(ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHORIZATION + appletState.getDescription());
+      String ecsHash = BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetHashOfEncryptedCommonSecret().getData());
+      String epHash = BYTE_ARR_HELPER.hex(getHashOfEncryptedPassword().getData());
+      JSONObject jsonResponse = new JSONObject();
+      jsonResponse.put(ECS_HASH_FIELD, ecsHash);
+      jsonResponse.put(EP_HASH_FIELD, epHash);
+      jsonResponse.put(STATUS_FIELD, SUCCESS_STATUS);
+      //long end = System.currentTimeMillis();
+      //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
+      return jsonResponse.toString();
+    }
+    catch (Exception e) {
+      throw new Exception(EXCEPTION_HELPER.makeFinalErrMsg(e), e);
+    }
+  }
+
+
+
 
   private RAPDU getHashOfEncryptedCommonSecret() throws Exception {
     RAPDU rapdu = apduRunner.sendAPDU(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU);

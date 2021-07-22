@@ -48,6 +48,18 @@ public class MainActivity extends AppCompatActivity {
     private static final int AES_KEY_SIZE = 128; // in bits
     private static final int AES_COUNTER_SIZE = 16; // in bytes
 
+   /* "SN": "748452894231855071597801",
+            "data": {
+        "P1": "e2ec17cc0029ca458b1aa29b8f50ed457e20b70b480da8573306d42b53b6a23ea9199beb9d3cb006547b2b49cb03eaf432b11c72c5fbe924741001c18d4608cd1bbca874ab35b2118e8f279626533bb603aa752360a8f1348d6e3b5990fd620beb755c2c3089079e1589eda7d897d57fccd1fc59206e00baa1d1eb8de8d8c446",
+                "IV": "e8d40dde93378473dc714cc6a8710a83",
+                "CS": "57bc53323d5e09a987d5d358e5a7f2c97a0175df0c39670055535c5976feeaf6",
+                "ECS": "21de33142f089aaf15a749c1f2ff12a3f730bc430a91df235cf8ab53c8e40afe",
+                "H1": "a578eebec8db78efc4386ec28b85ee556a83f6a754323e43f6c5f5301a660216",
+                "B1": "9a2c49b03976cead49f7ef55b7db3e88c3abb9dab44ca6ccffbecb46e859e963303ce1dd3d3f5c6633dfb55904052fd1da9e7ff2a5a9390398be94a6ee914a3e1c7a40b2d0e4e2b03bb0556c177ab275b0b1b27b2927536faeda7b8d65d3dde8a3b8679759dd4881043fb08203bcdb8fa1d05acb5753b0181c3cca771721496d",
+                "H2": "59d5f576e4b69e0703c832a450886f15103f01c3f6ab0599da707b7a2406db12",
+                "H3": "954101ab6a143be0dd43bbd84b97cab24c354ca427551d155c41bb5da8b37fa3"*/
+
+
     // Hardcoded for now activation data
     private static final String SERIAL_NUMBER = "504394802433901126813236";
     private static final String COMMON_SECRET = "7256EFE7A77AFC7E9088266EF27A93CB01CD9432E0DB66D600745D506EE04AC4";
@@ -91,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
     Button buttonCheckSnANdSignForDefaultHdPath2;
     Button buttonCheckSnANdSign2;
     Button buttonVerifyPin;
+    Button buttonGetHashes;
     TextView textView;
 
     @Override
@@ -121,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
         addListenerOnCheckSnAndSignForDefaultHdPathButton2();
         addListenerOnCheckSnAndSignButton2();
         addListenerOnVerifyPinButton();
+        addListenerOnGetHashesButton();
         textView = findViewById(R.id.textView1);
         try {
             NfcApduRunner nfcApduRunner = NfcApduRunner.getInstance(MainActivity.this);
@@ -160,6 +174,17 @@ public class MainActivity extends AppCompatActivity {
                 boolean showDialog = true;
                 String pin = "5555";
                 cardCryptoApi.verifyPin(pin, new NfcCallback((result) -> textView.setText(String.valueOf(result)), System.out::println), showDialog);
+            }
+        });
+    }
+
+    public void addListenerOnGetHashesButton() {
+        buttonGetHashes = findViewById(R.id.getHashes);
+        buttonGetHashes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                boolean showDialog = true;
+                cardActivationApi.generateSeedAndGetHashes(new NfcCallback((result) -> textView.setText(String.valueOf(result)), System.out::println), showDialog);
             }
         });
     }
@@ -701,17 +726,17 @@ public class MainActivity extends AppCompatActivity {
                                 cardCoinManagerNfcApi.generateSeedAndGetJson(DEFAULT_PIN);
                             }
 
-                            String appletState = extractMessage(cardActivationApi.getTonAppletStateAndGetJson(), MESSAGE_FIELD);
-                            if (!appletState.equals(WAITE_AUTHENTICATION_MSG)) {
+                          String appletState = extractMessage(cardActivationApi.getTonAppletStateAndGetJson(), MESSAGE_FIELD);
+                          /*    if (!appletState.equals(WAITE_AUTHENTICATION_MSG)) {
                                 throw new Exception("Incorrect applet state : " + appletState);
                             }
 
-                            String hashesJsonStr = cardActivationApi.getHashesAndGetJson();
+                           String hashesJsonStr = cardActivationApi.getHashesAndGetJson();
                             String hashOfEncryptedCommonSecret = extractMessage(hashesJsonStr, ECS_HASH_FIELD);
                             String hashOfEncryptedPassword = extractMessage(hashesJsonStr, EP_HASH_FIELD);
 
                             Log.d("TAG", "hashOfEncryptedCommonSecret : " + hashOfEncryptedCommonSecret);
-                            Log.d("TAG", "hashOfEncryptedPassword : " + hashOfEncryptedPassword);
+                            Log.d("TAG", "hashOfEncryptedPassword : " + hashOfEncryptedPassword);*/
 
                             String newPin = "5555";
                             appletState = extractMessage(cardActivationApi.turnOnWalletAndGetJson(newPin, PASSWORD, COMMON_SECRET, IV),  MESSAGE_FIELD);
