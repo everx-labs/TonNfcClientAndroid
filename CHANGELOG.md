@@ -88,3 +88,9 @@ All notable changes to this project will be documented in this file.
 ### New
 
 - Add functions: checkSerialNumberAndGetPublicKeyForDefaultPath, checkSerialNumberAndGetPublicKey, checkSerialNumberAndSignForDefaultHdPath, checkSerialNumberAndSign, checkSerialNumberAndVerifyPinAndSignForDefaultHdPath, checkSerialNumberAndVerifyPinAndSign. They get SN as input and check that SN from card equals to it. If it is then it makes ed25519 operations.
+
+## [3.4.0] – 2021-07-22
+
+### New
+
+- Add generateSeedAndGetHashes + add final check state into turnOnWallet. This was done to reduce the number of card reconnects during card activation.
