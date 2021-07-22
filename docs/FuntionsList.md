@@ -305,7 +305,7 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 - **void turnOnWallet(final String newPin, final String password, final String commonSecret, final String initialVector, final NfcCallback callback, Boolean... showDialog),** <br/>
   **String turnOnWalletAndGetJson(final String newPin, final String password, final String commonSecret, final String initialVector, Boolean... showDialog)**
 
-    This function makes TON Labs wallet applet activation. After its succesfull call applet will be in working personalized state (so getTonAppletState() will return {"message":"TonWalletApplet is personalized.","status":"ok"}).
+    This function makes TON Labs wallet applet activation. After its succesfull call applet will be in working personalized state (so getTonAppletState() will return {"message":"TonWalletApplet is personalized.","status":"ok"}). At the begining of its work it reset seed and pin and generate new seed.
 
     *Arguments requirements:*
 
@@ -327,7 +327,7 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 - **void turnOnWallet(final String password, final String commonSecret, final String initialVector, final NfcCallback callback, Boolean... showDialog),** <br/>
   **String turnOnWalletAndGetJson(final String password, final String commonSecret, final String initialVector, Boolean... showDialog)**
 
-    This function makes TON Labs wallet applet activation. After its succesfull call applet will be in working personalized state (so getTonAppletState() will return {"message":"TonWalletApplet is personalized.","status":"ok"}). It uses default PIN '5555'.
+    This function makes TON Labs wallet applet activation. After its succesfull call applet will be in working personalized state (so getTonAppletState() will return {"message":"TonWalletApplet is personalized.","status":"ok"}). It uses default PIN '5555'. At the begining of its work it reset seed and pin and generate new seed.
 
     *Arguments requirements:*
 
@@ -374,7 +374,7 @@ When user gets NFC TON Labs security card at the first time, the applet on the c
 - **void generateSeedAndGetHashes(final NfcCallback callback, Boolean... showDialog),** <br/>
   **String generateSeedAndGetHashesAndGetJson(Boolean... showDialog)**
 
-    Generate seed and return SHA256 hashes of encrypted password and encrypted common secret.
+    Generate seed if it's absent and then return return SHA256 hashes of encrypted password and encrypted common secret.
 
     *Exemplary responses:*
 
