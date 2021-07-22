@@ -186,14 +186,15 @@ public class ResponsesConstants {
   public static final String ERROR_NFC_CONNECTION_INTERRUPTED = "Nfc connection was interrupted by user.";
 
   public static final List<String>  ANDROID_NFC_ERRORS = Arrays.asList(
+          ERROR_NFC_CONNECTION_INTERRUPTED,
     ERROR_MSG_NFC_CONNECT,
     ERROR_MSG_NFC_DISABLED,
     ERROR_MSG_NO_NFC,
     ERROR_MSG_NO_TAG,
     ERROR_MSG_NFC_DISCONNECT,
     ERROR_TRANSCEIVE,
-    ERROR_BAD_RESPONSE,
-          ERROR_NFC_CONNECTION_INTERRUPTED
+    ERROR_BAD_RESPONSE
+
   );
 
   /**
