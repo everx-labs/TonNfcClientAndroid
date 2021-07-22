@@ -315,17 +315,7 @@ private String extractMessage(String jsonStr, String field) throws JSONException
 And use the following code to start card activation.
 
 ``` java    
-String seedStatus = extractMessage(cardCoinManagerNfcApi.getRootKeyStatusAndGetJson(), MESSAGE_FIELD);
-if (seedStatus.equals(NOT_GENERATED_MSG)) {
-	cardCoinManagerNfcApi.generateSeedAndGetJson(DEFAULT_PIN); 
-}
-		
-String appletState = extractMessage(cardActivationApi.getTonAppletStateAndGetJson(), MESSAGE_FIELD);	
-if (!appletState.equals(WAITE_AUTHENTICATION_MSG)) {
-	throw new Exception("Incorrect applet state : " + appletState);
-}
-
-String hashesJsonStr = cardActivationApi.getHashesAndGetJson();
+String hashesJsonStr = cardActivationApi.generateSeedAndGetHashesAndGetJson();
 String hashOfEncryptedCommonSecret = extractMessage(hashesJsonStr, ECS_HASH_FIELD);
 String hashOfEncryptedPassword = extractMessage(hashesJsonStr, EP_HASH_FIELD);
 Log.d("TAG", "hashOfEncryptedCommonSecret : " + hashOfEncryptedCommonSecret);
@@ -333,11 +323,7 @@ Log.d("TAG", "hashOfEncryptedPassword : " + hashOfEncryptedPassword);
 
 String newPin = "5555";
 appletState = extractMessage(cardActivationApi.turnOnWalletAndGetJson(newPin, PASSWORD, COMMON_SECRET, IV),  MESSAGE_FIELD);
-Log.d("TAG", "Card response (state) : " + appletState);
-		
-if (!appletState.equals(PERSONALIZED_STATE_MSG)) {
-	throw new Exception("Incorrect applet state after activation : " + appletState);
-}      
+Log.d("TAG", "Card response (state) : " + appletState);     
 ```	
 	
     
