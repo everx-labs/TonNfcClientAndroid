@@ -284,12 +284,12 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_SIG_RESPONSE_LEN_INCORRECT = "Signature must have length " + SIG_LEN + ".";
   public static final String ERROR_MSG_PUBLIC_KEY_RESPONSE_LEN_INCORRECT = "Public key must have length " + PUBLIC_KEY_LEN + ".";
   public static final String ERROR_MSG_GET_NUMBER_OF_KEYS_RESPONSE_LEN_INCORRECT =  "Response from GET_NUMBER_OF_KEYS card operation must have length " + GET_NUMBER_OF_KEYS_LE + ".";
-  public static final String ERROR_MSG_NUMBER_OF_KEYS_RESPONSE_INCORRECT = "Number of keys in keychain must be >= 0 and <= " + MAX_NUMBER_OF_KEYS_IN_KEYCHAIN; //todo: fix for swift
+  public static final String ERROR_MSG_NUMBER_OF_KEYS_RESPONSE_INCORRECT = "Number of keys in keychain must be >= 0 and <= " + MAX_NUMBER_OF_KEYS_IN_KEYCHAIN + ".";
   public static final String ERROR_MSG_GET_OCCUPIED_SIZE_RESPONSE_LEN_INCORRECT = "Response from GET_OCCUPIED_SIZE card operation must have length " + GET_NUMBER_OF_KEYS_LE + ".";
   public static final String ERROR_MSG_GET_FREE_SIZE_RESPONSE_LEN_INCORRECT = "Response from GET_FREE_SIZE_RESPONSE card operation must have length " + GET_NUMBER_OF_KEYS_LE + ".";
-  public static final String ERROR_MSG_OCCUPIED_SIZE_RESPONSE_INCORRECT = "Occupied size in keychain can not be negative";
-  public static final String ERROR_MSG_FREE_SIZE_RESPONSE_INCORRECT  = "Free size in keychain can not be negative";
-  public static final String ERROR_MSG_GET_KEY_INDEX_IN_STORAGE_AND_LEN_RESPONSE_LEN_INCORRECT = "Response from GET_KEY_INDEX_IN_STORAGE_AND_LEN card operation must have length " + GET_KEY_INDEX_IN_STORAGE_AND_LEN_LE + "."; //todo: fix for swift
+  public static final String ERROR_MSG_OCCUPIED_SIZE_RESPONSE_INCORRECT = "Occupied size in keychain can not be negative.";
+  public static final String ERROR_MSG_FREE_SIZE_RESPONSE_INCORRECT  = "Free size in keychain can not be negative.";
+  public static final String ERROR_MSG_GET_KEY_INDEX_IN_STORAGE_AND_LEN_RESPONSE_LEN_INCORRECT = "Response from GET_KEY_INDEX_IN_STORAGE_AND_LEN card operation must have length " + GET_KEY_INDEX_IN_STORAGE_AND_LEN_LE + "."; 
   public static final String ERROR_MSG_KEY_INDEX_INCORRECT = "Key index must be >= 0 and <= " + (MAX_NUMBER_OF_KEYS_IN_KEYCHAIN - 1) + ".";
   public static final String ERROR_MSG_KEY_LENGTH_INCORRECT = "Key length (in keychain) must be > 0 and <= " + MAX_KEY_SIZE_IN_KEYCHAIN + ".";
   public static final String ERROR_MSG_DELETE_KEY_CHUNK_RESPONSE_LEN_INCORRECT = "Response from DELETE_KEY_CHUNK card operation must have length " + DELETE_KEY_CHUNK_LE + ".";
@@ -324,7 +324,7 @@ public class ResponsesConstants {
     ERROR_MSG_RECOVERY_DATA_LENGTH_RESPONSE_LEN_INCORRECT,
     ERROR_MSG_RECOVERY_DATA_LENGTH_RESPONSE_INCORRECT,
     ERROR_IS_RECOVERY_DATA_SET_RESPONSE_LEN_INCORRECT,
-    ERROR_RECOVERY_DATA_PORTION_INCORRECT_LEN, // todo: add this error for swift
+    ERROR_RECOVERY_DATA_PORTION_INCORRECT_LEN,
     ERROR_MSG_HASH_OF_ENCRYPTED_PASSWORD_RESPONSE_LEN_INCORRECT,
     ERROR_MSG_HASH_OF_ENCRYPTED_COMMON_SECRET_RESPONSE_LEN_INCORRECT,
     ERROR_MSG_HASH_OF_ENCRYPTED_COMMON_SECRET_RESPONSE_INCORRECT,
@@ -353,7 +353,7 @@ public class ResponsesConstants {
     ERROR_MSG_SEND_CHUNK_RESPONSE_LEN_INCORRECT,
     ERROR_MSG_GET_HMAC_RESPONSE_LEN_INCORRECT,
     ERROR_MSG_INITIATE_DELETE_KEY_RESPONSE_LEN_INCORRECT,
-    ERROR_KEY_DATA_PORTION_INCORRECT_LEN, // todo: add to swift
+    ERROR_KEY_DATA_PORTION_INCORRECT_LEN,
     ERROR_MSG_GET_SERIAL_NUMBER_RESPONSE_LEN_INCORRECT,
     ERROR_MSG_GET_PIN_TLT_OR_RTL_RESPONSE_LEN_INCORRECT,
           ERROR_MSG_GET_PIN_TLT_OR_RTL_RESPONSE_VAL_INCORRECT,
