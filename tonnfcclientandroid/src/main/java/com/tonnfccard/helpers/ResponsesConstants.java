@@ -301,7 +301,7 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_RESPONSE_LEN_INCORRECT = "Response from GET_DELETE_KEY_RECORD card operation must have length " + GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_LE + ".";
   public static final String ERROR_MSG_GET_DELETE_KEY_RECORD_NUM_OF_PACKETS_RESPONSE_INCORRECT = "Response from GET_DELETE_KEY_RECORD_NUM_OF_PACKETS card operation can not be negative.";
   public static final String ERROR_MSG_NUM_OF_KEYS_INCORRECT_AFTER_ADD = "After ADD_KEY card operation number of keys must be increased by 1.";
-  public static final String ERROR_MSG_NUM_OF_KEYS_INCORRECT_AFTER_CHANGE = "After ADD_KEY card operation number of keys must not be changed.";
+  public static final String ERROR_MSG_NUM_OF_KEYS_INCORRECT_AFTER_CHANGE = "After CHANGE_KEY card operation number of keys must not be changed.";
   public static final String ERROR_MSG_SEND_CHUNK_RESPONSE_LEN_INCORRECT = "Response from SEND_CHUNK card operation must have length " + SEND_CHUNK_LE + ".";
   public static final String ERROR_MSG_GET_HMAC_RESPONSE_LEN_INCORRECT = "Hash of key (from keychain) must have length " + SHA_HASH_SIZE + ".";
   public static final String ERROR_MSG_INITIATE_DELETE_KEY_RESPONSE_LEN_INCORRECT  = "Response from INITIATE_DELETE_KEY card operation must have length " + INITIATE_DELETE_KEY_LE + ".";
