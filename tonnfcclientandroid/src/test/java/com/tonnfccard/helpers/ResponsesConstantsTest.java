@@ -1,7 +1,5 @@
 package com.tonnfccard.helpers;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 
 import static com.tonnfccard.helpers.ResponsesConstants.*;
@@ -18,7 +16,7 @@ public class ResponsesConstantsTest {
         assertEquals(ResponsesConstants.getErrorTypeMsg(INPUT_DATA_FORMAT_ERROR_TYPE_ID), INPUT_DATA_FORMAT_ERROR_TYPE_MSG );
         assertEquals(ResponsesConstants.getErrorTypeMsg(CARD_RESPONSE_DATA_ERROR_TYPE_ID), CARD_RESPONSE_DATA_ERROR_TYPE_MSG);
         assertEquals(ResponsesConstants.getErrorTypeMsg(IMPROPER_APPLET_STATE_ERROR_TYPE_ID), IMPROPER_APPLET_STATE_ERROR_TYPE_MSG);
-        assertEquals(ResponsesConstants.getErrorTypeMsg(HMAC_KEY_ERROR_TYPE_ID), HMAC_KEY_ERROR_TYPE_MSG);
+        assertEquals(ResponsesConstants.getErrorTypeMsg(ANDROID_KEYSTORE_HMAC_KEY_ERROR_TYPE_ID), ANDROID_KEYSTORE_HMAC_KEY_ERROR_TYPE_MSG);
     }
 
     @Test

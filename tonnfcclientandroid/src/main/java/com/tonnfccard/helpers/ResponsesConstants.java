@@ -32,33 +32,35 @@ public class ResponsesConstants {
    */
 
   public static final String CARD_ERROR_TYPE_ID = "0";
-  public static final String ANDROID_INTERNAL_ERROR_TYPE_ID = "1";
-  public static final String ANDROID_NFC_ERROR_TYPE_ID = "2";
+  public static final String ANDROID_INTERNAL_ERROR_TYPE_ID = "9";
+  public static final String NFC_INTERRUPTION_TYPE_ID = "2";
+  public static final String ANDROID_NFC_ERROR_TYPE_ID = "22";
   public static final String INPUT_DATA_FORMAT_ERROR_TYPE_ID = "3";
   public static final String CARD_RESPONSE_DATA_ERROR_TYPE_ID = "4";
   public static final String IMPROPER_APPLET_STATE_ERROR_TYPE_ID = "5";
-  public static final String HMAC_KEY_ERROR_TYPE_ID = "6";
+  public static final String ANDROID_KEYSTORE_HMAC_KEY_ERROR_TYPE_ID = "8";
   public static final String WRONG_CARD_ERROR_TYPE_ID = "7";
 
-  public static final List<String>  ERROR_TYPE_IDS = Arrays.asList(CARD_ERROR_TYPE_ID, ANDROID_INTERNAL_ERROR_TYPE_ID, ANDROID_NFC_ERROR_TYPE_ID, INPUT_DATA_FORMAT_ERROR_TYPE_ID, CARD_RESPONSE_DATA_ERROR_TYPE_ID,
-    IMPROPER_APPLET_STATE_ERROR_TYPE_ID, HMAC_KEY_ERROR_TYPE_ID, WRONG_CARD_ERROR_TYPE_ID);
+  public static final List<String>  ERROR_TYPE_IDS = Arrays.asList(CARD_ERROR_TYPE_ID, ANDROID_INTERNAL_ERROR_TYPE_ID, NFC_INTERRUPTION_TYPE_ID, ANDROID_NFC_ERROR_TYPE_ID, INPUT_DATA_FORMAT_ERROR_TYPE_ID, CARD_RESPONSE_DATA_ERROR_TYPE_ID,
+    IMPROPER_APPLET_STATE_ERROR_TYPE_ID, ANDROID_KEYSTORE_HMAC_KEY_ERROR_TYPE_ID, WRONG_CARD_ERROR_TYPE_ID);
 
   public static final String CARD_ERROR_TYPE_MSG = "Applet fail: card operation error";
   public static final String ANDROID_INTERNAL_ERROR_TYPE_MSG = "Android code fail: internal error";
+  public static final String NFC_INTERRUPTION_TYPE_MSG = "Native code fail: NFC connection interruption";
   public static final String ANDROID_NFC_ERROR_TYPE_MSG = "Android code fail: NFC error";
   public static final String INPUT_DATA_FORMAT_ERROR_TYPE_MSG = "Native code fail: incorrect format of input data";
   public static final String CARD_RESPONSE_DATA_ERROR_TYPE_MSG = "Native code fail: incorrect response from card";
   public static final String IMPROPER_APPLET_STATE_ERROR_TYPE_MSG = "Native code fail: improper applet state";
-  public static final String HMAC_KEY_ERROR_TYPE_MSG = "Native code fail: hmac key issue";
+  public static final String ANDROID_KEYSTORE_HMAC_KEY_ERROR_TYPE_MSG = "Native code (Android) fail: hmac key issue";
   public static final String WRONG_CARD_ERROR_TYPE_MSG = "Native code fail: wrong card";
 
-  public static final List<String> ERROR_TYPE_MSGS = Arrays.asList(CARD_ERROR_TYPE_MSG, ANDROID_INTERNAL_ERROR_TYPE_MSG, ANDROID_NFC_ERROR_TYPE_MSG, INPUT_DATA_FORMAT_ERROR_TYPE_MSG, CARD_RESPONSE_DATA_ERROR_TYPE_MSG,
-    IMPROPER_APPLET_STATE_ERROR_TYPE_MSG, HMAC_KEY_ERROR_TYPE_MSG, WRONG_CARD_ERROR_TYPE_MSG);
+  public static final List<String> ERROR_TYPE_MSGS = Arrays.asList(CARD_ERROR_TYPE_MSG, ANDROID_INTERNAL_ERROR_TYPE_MSG, NFC_INTERRUPTION_TYPE_MSG, ANDROID_NFC_ERROR_TYPE_MSG, INPUT_DATA_FORMAT_ERROR_TYPE_MSG, CARD_RESPONSE_DATA_ERROR_TYPE_MSG,
+    IMPROPER_APPLET_STATE_ERROR_TYPE_MSG, ANDROID_KEYSTORE_HMAC_KEY_ERROR_TYPE_MSG, WRONG_CARD_ERROR_TYPE_MSG);
 
   private static Map<String, String> errorTypeIdToErrorTypeMsgMap = new HashMap<>();
 
   /**
-   * ANDROID_INTERNAL_ERROR_TYPE_ID = 1
+   * ANDROID_INTERNAL_ERROR_TYPE_ID = 9
    */
   public static final String ERROR_MSG_APDU_EMPTY = "Apdu command is null";
   public static final String ERROR_MSG_APDU_DATA_FIELD_LEN_INCORRECT = "Data field in APDU must have length > 0 and <= 255 bytes.";
@@ -174,7 +176,15 @@ public class ResponsesConstants {
 
 
   /**
-   * ANDROID_NFC_ERROR_TYPE_ID = 2
+   * NFC_ERROR_TYPE_ID = 2
+   */
+  public static final String ERROR_NFC_CONNECTION_INTERRUPTED = "Nfc connection was interrupted by user.";
+
+  public static final List<String>  NFC_INTERUPTION_ERRORS = Arrays.asList(ERROR_NFC_CONNECTION_INTERRUPTED);
+
+
+  /**
+   * ANDROID_NFC_ERROR_TYPE_ID = 22
    */
   public static final String ERROR_MSG_NFC_CONNECT = "Nfc connection establishing error.";
   public static final String ERROR_MSG_NFC_DISABLED = "Nfc is disabled.";
@@ -183,10 +193,9 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_NFC_DISCONNECT = "Error happened during NFC tag disconnection.";
   public static final String ERROR_TRANSCEIVE = "Data transfer via NFC failed. Probably NFC connection was lost.";
   public static final String ERROR_BAD_RESPONSE = "Response from the card is too short. It must contain at least 2 bytes.";
-  public static final String ERROR_NFC_CONNECTION_INTERRUPTED = "Nfc connection was interrupted by user.";
+
 
   public static final List<String>  ANDROID_NFC_ERRORS = Arrays.asList(
-          ERROR_NFC_CONNECTION_INTERRUPTED,
     ERROR_MSG_NFC_CONNECT,
     ERROR_MSG_NFC_DISABLED,
     ERROR_MSG_NO_NFC,
@@ -194,7 +203,6 @@ public class ResponsesConstants {
     ERROR_MSG_NFC_DISCONNECT,
     ERROR_TRANSCEIVE,
     ERROR_BAD_RESPONSE
-
   );
 
   /**
@@ -347,9 +355,14 @@ public class ResponsesConstants {
     ERROR_MSG_INITIATE_DELETE_KEY_RESPONSE_LEN_INCORRECT,
     ERROR_KEY_DATA_PORTION_INCORRECT_LEN, // todo: add to swift
     ERROR_MSG_GET_SERIAL_NUMBER_RESPONSE_LEN_INCORRECT,
-    ERROR_MSG_GET_PIN_TLT_OR_RTL_RESPONSE_LEN_INCORRECT, ERROR_MSG_GET_PIN_TLT_OR_RTL_RESPONSE_VAL_INCORRECT, ERROR_MSG_GET_ROOT_KEY_STATUS_RESPONSE_LEN_INCORRECT,
-    ERROR_MSG_GET_DEVICE_LABEL_RESPONSE_LEN_INCORRECT, ERROR_MSG_GET_CSN_RESPONSE_LEN_INCORRECT, ERROR_MSG_GET_SE_VERSION_RESPONSE_LEN_INCORRECT,
-    ERROR_MSG_GET_AVAILABLE_MEMORY_RESPONSE_LEN_INCORRECT, ERROR_MSG_GET_APPLET_LIST_RESPONSE_LEN_INCORRECT
+    ERROR_MSG_GET_PIN_TLT_OR_RTL_RESPONSE_LEN_INCORRECT,
+          ERROR_MSG_GET_PIN_TLT_OR_RTL_RESPONSE_VAL_INCORRECT,
+          ERROR_MSG_GET_ROOT_KEY_STATUS_RESPONSE_LEN_INCORRECT,
+    ERROR_MSG_GET_DEVICE_LABEL_RESPONSE_LEN_INCORRECT,
+          ERROR_MSG_GET_CSN_RESPONSE_LEN_INCORRECT,
+          ERROR_MSG_GET_SE_VERSION_RESPONSE_LEN_INCORRECT,
+    ERROR_MSG_GET_AVAILABLE_MEMORY_RESPONSE_LEN_INCORRECT,
+          ERROR_MSG_GET_APPLET_LIST_RESPONSE_LEN_INCORRECT
   );
 
 
@@ -359,7 +372,7 @@ public class ResponsesConstants {
   public static final String ERROR_MSG_APDU_NOT_SUPPORTED = "APDU command is not supported";
   public static final String ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHORIZATION = "Applet must be in mode that waits authorization. Now it is: ";
   public static final String ERROR_MSG_APPLET_IS_NOT_PERSONALIZED = "Applet must be in personalized mode. Now it is: ";
-  public static final String ERROR_MSG_APPLET_DOES_NOT_WAIT_TO_DELETE_KEY = "Applet must be in mode for deleting key. Now it is ";
+  public static final String ERROR_MSG_APPLET_DOES_NOT_WAIT_TO_DELETE_KEY = "Applet must be in mode for deleting key. Now it is: ";
 
 
   public static final List<String>  IMPROPER_APPLET_STATE_ERRORS = Arrays.asList(ERROR_MSG_APDU_NOT_SUPPORTED, ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHORIZATION, ERROR_MSG_APPLET_IS_NOT_PERSONALIZED,
@@ -367,12 +380,12 @@ public class ResponsesConstants {
 
 
   /**
-   * HMAC_KEY_ERROR_TYPE_ID = 6
+   * ANDROID_KEYSTORE_HMAC_KEY_ERROR_TYPE_ID = 8
    */
   public static final String ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN  = "Key for hmac signing for specified serial number does not exist.";
   public static final String ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET = "Current serial number is not set. Can not select key for hmac.";
 
-  public static final List<String> HMAC_KEY_ERRORS = Arrays.asList(ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN, ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET);
+  public static final List<String> ANDROID_KEYSTORE_HMAC_KEY_ERRORS = Arrays.asList(ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN, ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET);
 
   /**
    * WRONG_CARD_ERROR_TYPE_ID = 7
@@ -382,7 +395,7 @@ public class ResponsesConstants {
 
   public static final List<String> WRONG_CARD_ERRORS = Arrays.asList(ERROR_MSG_CARD_HAVE_INCORRECT_SN);
 
-  public static final List<List<String>> ALL_NATIVE_ERROR_MESSAGES = Arrays.asList(ANDROID_INTERNAL_ERRORS, ANDROID_NFC_ERRORS, INPUT_DATA_FORMAT_ERRORS, CARD_RESPONSE_DATA_ERRORS, IMPROPER_APPLET_STATE_ERRORS, HMAC_KEY_ERRORS, WRONG_CARD_ERRORS);
+  public static final List<List<String>> ALL_NATIVE_ERROR_MESSAGES = Arrays.asList(ANDROID_INTERNAL_ERRORS, NFC_INTERUPTION_ERRORS, ANDROID_NFC_ERRORS, INPUT_DATA_FORMAT_ERRORS, CARD_RESPONSE_DATA_ERRORS, IMPROPER_APPLET_STATE_ERRORS, ANDROID_KEYSTORE_HMAC_KEY_ERRORS, WRONG_CARD_ERRORS);
 
   private static Map<List<String>, String> errorMsgsToErrorTypeIdMap = new HashMap<>();
   private static Map<String, String> errorMsgToErrorCodeMap = new LinkedHashMap<>();
