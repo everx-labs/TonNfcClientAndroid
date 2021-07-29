@@ -150,7 +150,7 @@ public class TonWalletAppletApduCommands {
    * P2: 0x00
    * LE: 0x20
    *
-   * This command returns SHA256 hash of encrypted (by AES) activation password. Available only in WAITE_authentication_MODE state of applet.
+   * This command returns SHA256 hash of encrypted (by AES) activation password. Available only in WAITE_AUTHENTICATION_MODE state of applet.
    */
   public final static CAPDU GET_HASH_OF_ENCRYPTED_PASSWORD_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_HASH_OF_ENCRYPTED_PASSWORD, P1, P2, SHA_HASH_SIZE);
 
@@ -163,7 +163,7 @@ public class TonWalletAppletApduCommands {
    * P2: 0x00
    * LE: 0x20
    *
-   * This command returns SHA256 hash of encrypted (by AES) activation common secret. Available only in WAITE_authentication_MODE state of applet.
+   * This command returns SHA256 hash of encrypted (by AES) activation common secret. Available only in WAITE_AUTHENTICATION_MODE state of applet.
    */
   public final static CAPDU GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU = new CAPDU(WALLET_APPLET_CLA, INS_GET_HASH_OF_ENCRYPTED_COMMON_SECRET, P1, P2, SHA_HASH_SIZE);
 
@@ -369,9 +369,9 @@ public class TonWalletAppletApduCommands {
    LC: 0x90
    Data: 128 bytes of unencrypted activation password | 16 bytes of IV for AES128 CBC
 
-   This function is available only in WAITE_authentication_MODE state of applet.
-   It makes activation password verification and in the case of success it changes the state of applet: WAITE_authentication_MODE -> PERSONALIZED.
-   After 20 unsuccessful attempts to verify password this functions changes the state of applet: WAITE_authentication_MODE -> BLOCKED_MODE. In this case applet is blocked.
+   This function is available only in WAITE_AUTHENTICATION_MODE state of applet.
+   It makes activation password verification and in the case of success it changes the state of applet: WAITE_AUTHENTICATION_MODE -> PERSONALIZED.
+   After 20 unsuccessful attempts to verify password this functions changes the state of applet: WAITE_AUTHENTICATION_MODE -> BLOCKED_MODE. In this case applet is blocked.
    This is irreversible and card becomes useless.
    */
   public static CAPDU getVerifyPasswordAPDU(byte[] passwordBytes, byte[] initialVector)  {

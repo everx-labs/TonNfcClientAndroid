@@ -3,7 +3,7 @@ This specification describes all TON Wallet applet modes and APDU commands avail
 TON Wallet applet may be in one of the following states (modes):
 
 - Personalization (APP_INSTALLED = 0x07);
-- Waiting for authentication (APP_WAITE_authentication_MODE = 0x27);
+- Waiting for authentication (APP_WAITE_AUTHENTICATION_MODE = 0x27);
 - Main working mode (APP_PERSONALIZED = 0x17);
 - Blocked mode (APP_BLOCKED_MODE = 0x47);
 - Delete key from keychain mode (APP_DELETE_KEY_FROM_KEYCHAIN_MODE = (byte) 0x37).
@@ -63,7 +63,7 @@ APDU command to select TON Wallet applet.
 
 After applet loading and installation on the card it will be in mode APP_INSTALLED. It will wait for personalization. Personalization will be done at factory. The following APDU commands will be available.
 
-**Note**: After personalization is done applet state is switched into APP_WAITE_authentication_MODE. And this transition is irreversible. So the end user will not ever get the card with applet in this state.
+**Note**: After personalization is done applet state is switched into APP_WAITE_AUTHENTICATION_MODE. And this transition is irreversible. So the end user will not ever get the card with applet in this state.
 
 - **SET_SERIAL_NUMBER**
 
@@ -189,7 +189,7 @@ After applet loading and installation on the card it will be in mode APP_INSTALL
 
 - **FINISH_PERS**
 
-    This command finishes personalization and changes the state of applet. APP_WAITE_authentication_MODE state will be switched on .
+    This command finishes personalization and changes the state of applet. APP_WAITE_AUTHENTICATION_MODE state will be switched on .
 
     *Precondition:*  SET_PASSWORD_FOR_CARD_AUTHENTICATION and SET_COMMON_SECRE**T** should be called before, otherwise exception will be thrown.
 
