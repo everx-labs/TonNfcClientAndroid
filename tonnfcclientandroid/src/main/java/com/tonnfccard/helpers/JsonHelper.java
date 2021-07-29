@@ -93,7 +93,7 @@ public class JsonHelper {
     jObjectData.put(MESSAGE_FIELD, msg);
     jObjectData.put(STATUS_FIELD, FAIL_STATUS);
     String errCode = getErrorCode(msg);
-    String errTypeId = errCode == null ? ANDROID_INTERNAL_ERROR_TYPE_ID : errCode.substring(0, 1);
+    String errTypeId = errCode == null ? ANDROID_INTERNAL_ERROR_TYPE_ID : errCode.startsWith(ANDROID_NFC_ERROR_TYPE_ID ) ? ANDROID_NFC_ERROR_TYPE_ID : errCode.substring(0, 1);
     jObjectData.put(ERROR_TYPE_ID_FIELD , errTypeId);
     String errTypeMsg = getErrorTypeMsg(errTypeId);
     jObjectData.put(ERROR_TYPE_FIELD, errTypeMsg);
