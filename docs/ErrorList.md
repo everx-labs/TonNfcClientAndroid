@@ -967,6 +967,7 @@ Here there are some internal errors that may happen inside Android code. It mean
 ```
 ## NFC_INTERRUPTION_ERRORS
 
+```json
 {
   "code": "20000",
   "errorType": "Native code fail: NFC connection interruption",
@@ -974,6 +975,7 @@ Here there are some internal errors that may happen inside Android code. It mean
   "message": "Nfc connection was interrupted by user.",
   "status": "fail"
 }
+```
 
 ## ANDROID_NFC_ERRORS
 
