@@ -1,10 +1,8 @@
 package com.tonnfccard.helpers;
 
-import android.security.KeyPairGeneratorSpec;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.security.keystore.KeyProtection;
-import android.util.Log;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -13,7 +11,6 @@ import com.tonnfccard.utils.ByteArrayUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
@@ -21,12 +18,10 @@ import java.security.spec.AlgorithmParameterSpec;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import javax.security.auth.x500.X500Principal;
 
-import static com.tonnfccard.TonWalletConstants.SHA_HASH_SIZE;
 import static com.tonnfccard.helpers.HmacHelper.ANDROID_KEYSTORE;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ERR_IS_NOT_SEC_KEY_ENTRY;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYSTORE;
 import static org.junit.Assert.*;
 
 @RunWith(AndroidJUnit4.class)
@@ -43,7 +38,7 @@ public class HmacHelperTest {
         }
         catch (Exception e) {
             e.printStackTrace();
-            assertEquals(e.getMessage(), ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN);
+            assertEquals(e.getMessage(), ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYSTORE);
         }
     }
 

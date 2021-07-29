@@ -162,7 +162,7 @@ public class NfcApduRunnerTest {
                 fail();
             } catch (Exception e) {
                 System.out.println(e.getMessage());
-                assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_NFC);
+                assertEquals(e.getMessage(), ResponsesConstants.ERROR_MSG_NO_NFC_HARDWARE);
             }
         }
     }

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.nfc.tech.IsoDep;
 import android.os.Build;
 
-import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.tonnfccard.helpers.ExceptionHelper;
@@ -13,7 +12,6 @@ import com.tonnfccard.helpers.HmacHelper;
 import com.tonnfccard.helpers.JsonHelper;
 import com.tonnfccard.helpers.StringHelper;
 import com.tonnfccard.nfc.NfcApduRunner;
-import com.tonnfccard.smartcard.ApduRunner;
 import com.tonnfccard.smartcard.ErrorCodes;
 import com.tonnfccard.smartcard.RAPDU;
 import com.tonnfccard.smartcard.TonWalletAppletApduCommands;
@@ -34,7 +32,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import static com.tonnfccard.NfcMockHelper.SW_SUCCESS;
 import static com.tonnfccard.NfcMockHelper.createSault;
@@ -51,13 +48,12 @@ import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN_STR;
 import static com.tonnfccard.TonWalletConstants.IV_SIZE;
 import static com.tonnfccard.TonWalletConstants.MAX_KEY_SIZE_IN_KEYCHAIN;
 import static com.tonnfccard.TonWalletConstants.PASSWORD_SIZE;
-import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE;
 import static com.tonnfccard.TonWalletConstants.RECOVERY_DATA_MAX_SIZE;
 import static com.tonnfccard.TonWalletConstants.SHA_HASH_SIZE;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_BAD_RESPONSE;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_CONNECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_DISABLED;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_NFC;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_NFC_HARDWARE;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_TAG;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_TRANSCEIVE;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.LABEL_LENGTH;
@@ -66,11 +62,6 @@ import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_APP_INFO_
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SAULT_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SERIAL_NUMBER_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.SELECT_TON_WALLET_APPLET_APDU;
-import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getDeleteKeyChunkAPDU;
-import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getDeleteKeyRecordAPDU;
-import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getGetIndexAndLenOfKeyInKeyChainAPDU;
-import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getInitiateDeleteOfKeyAPDU;
-import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getNumberOfKeysAPDU;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -309,7 +300,7 @@ public class CommonNfcApiTest {
         IsoDep isoDep = mock(IsoDep.class);
         nfcApduRunner.setCardTag(isoDep);
         setNfcApduRunner(nfcApduRunner);
-        prepareNfcTest(ERROR_MSG_NO_NFC);
+        prepareNfcTest(ERROR_MSG_NO_NFC_HARDWARE);
     }
 
     @Test

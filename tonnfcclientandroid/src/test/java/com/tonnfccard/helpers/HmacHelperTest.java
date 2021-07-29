@@ -1,19 +1,15 @@
 package com.tonnfccard.helpers;
 
-import androidx.test.core.app.ApplicationProvider;
-
 import com.tonnfccard.utils.ByteArrayUtil;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static com.tonnfccard.TonWalletConstants.EMPTY_SERIAL_NUMBER;
 import static com.tonnfccard.TonWalletConstants.SHA_HASH_SIZE;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET_IN_ANDROID_KEYSTORE;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ERR_CURRENT_SERIAL_NUMBER_IS_NULL;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ERR_DATA_BYTES_FOR_HMAC_SHA256_IS_NULL;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_ERR_KEY_BYTES_FOR_HMAC_SHA256_IS_NULL;
@@ -84,7 +80,7 @@ public class HmacHelperTest {
             fail();
         }
         catch (Exception e) {
-            assertEquals(e.getMessage(), ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET);
+            assertEquals(e.getMessage(), ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET_IN_ANDROID_KEYSTORE);
         }
     }
 

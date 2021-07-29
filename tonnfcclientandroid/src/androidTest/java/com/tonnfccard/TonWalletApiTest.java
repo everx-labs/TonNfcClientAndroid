@@ -36,7 +36,7 @@ import static com.tonnfccard.TonWalletConstants.PASSWORD_SIZE;
 import static com.tonnfccard.TonWalletConstants.SERIAL_NUMBER_SIZE;
 import static com.tonnfccard.TonWalletConstants.SUCCESS_STATUS;
 import static com.tonnfccard.TonWalletConstants.TRUE_MSG;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYSTORE;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.*;
 
@@ -143,7 +143,7 @@ public class TonWalletApiTest {
             fail();
         }
         catch (Exception e) {
-            assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN)));
+            assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYSTORE)));
         }
     }
 
@@ -289,7 +289,7 @@ public class TonWalletApiTest {
             fail();
         }
         catch (Exception e) {
-            assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN)));
+            assertEquals(e.getMessage(), EXCEPTION_HELPER.makeFinalErrMsg(new Exception(ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYSTORE)));
 
         }
     }

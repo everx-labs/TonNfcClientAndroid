@@ -41,8 +41,16 @@ public class ResponsesConstants {
   public static final String ANDROID_KEYSTORE_HMAC_KEY_ERROR_TYPE_ID = "8";
   public static final String WRONG_CARD_ERROR_TYPE_ID = "7";
 
-  public static final List<String>  ERROR_TYPE_IDS = Arrays.asList(CARD_ERROR_TYPE_ID, ANDROID_INTERNAL_ERROR_TYPE_ID, NFC_INTERRUPTION_TYPE_ID, ANDROID_NFC_ERROR_TYPE_ID, INPUT_DATA_FORMAT_ERROR_TYPE_ID, CARD_RESPONSE_DATA_ERROR_TYPE_ID,
-    IMPROPER_APPLET_STATE_ERROR_TYPE_ID, ANDROID_KEYSTORE_HMAC_KEY_ERROR_TYPE_ID, WRONG_CARD_ERROR_TYPE_ID);
+  public static final List<String>  ERROR_TYPE_IDS = Arrays.asList(
+          CARD_ERROR_TYPE_ID,
+          ANDROID_INTERNAL_ERROR_TYPE_ID,
+          NFC_INTERRUPTION_TYPE_ID,
+          ANDROID_NFC_ERROR_TYPE_ID,
+          INPUT_DATA_FORMAT_ERROR_TYPE_ID,
+          CARD_RESPONSE_DATA_ERROR_TYPE_ID,
+    IMPROPER_APPLET_STATE_ERROR_TYPE_ID,
+          ANDROID_KEYSTORE_HMAC_KEY_ERROR_TYPE_ID,
+          WRONG_CARD_ERROR_TYPE_ID);
 
   public static final String CARD_ERROR_TYPE_MSG = "Applet fail: card operation error";
   public static final String ANDROID_INTERNAL_ERROR_TYPE_MSG = "Android code fail: internal error";
@@ -54,8 +62,16 @@ public class ResponsesConstants {
   public static final String ANDROID_KEYSTORE_HMAC_KEY_ERROR_TYPE_MSG = "Native code (Android) fail: hmac key issue";
   public static final String WRONG_CARD_ERROR_TYPE_MSG = "Native code fail: wrong card";
 
-  public static final List<String> ERROR_TYPE_MSGS = Arrays.asList(CARD_ERROR_TYPE_MSG, ANDROID_INTERNAL_ERROR_TYPE_MSG, NFC_INTERRUPTION_TYPE_MSG, ANDROID_NFC_ERROR_TYPE_MSG, INPUT_DATA_FORMAT_ERROR_TYPE_MSG, CARD_RESPONSE_DATA_ERROR_TYPE_MSG,
-    IMPROPER_APPLET_STATE_ERROR_TYPE_MSG, ANDROID_KEYSTORE_HMAC_KEY_ERROR_TYPE_MSG, WRONG_CARD_ERROR_TYPE_MSG);
+  public static final List<String> ERROR_TYPE_MSGS = Arrays.asList(
+          CARD_ERROR_TYPE_MSG,
+          ANDROID_INTERNAL_ERROR_TYPE_MSG,
+          NFC_INTERRUPTION_TYPE_MSG,
+          ANDROID_NFC_ERROR_TYPE_MSG,
+          INPUT_DATA_FORMAT_ERROR_TYPE_MSG,
+          CARD_RESPONSE_DATA_ERROR_TYPE_MSG,
+    IMPROPER_APPLET_STATE_ERROR_TYPE_MSG,
+          ANDROID_KEYSTORE_HMAC_KEY_ERROR_TYPE_MSG,
+          WRONG_CARD_ERROR_TYPE_MSG);
 
   private static Map<String, String> errorTypeIdToErrorTypeMsgMap = new HashMap<>();
 
@@ -188,7 +204,7 @@ public class ResponsesConstants {
    */
   public static final String ERROR_MSG_NFC_CONNECT = "Nfc connection establishing error.";
   public static final String ERROR_MSG_NFC_DISABLED = "Nfc is disabled.";
-  public static final String ERROR_MSG_NO_NFC = "Nfc hardware is not found for this smartphone.";
+  public static final String ERROR_MSG_NO_NFC_HARDWARE = "Nfc hardware is not found for this smartphone.";
   public static final String ERROR_MSG_NO_TAG = "Nfc tag is not found.";
   public static final String ERROR_MSG_NFC_DISCONNECT = "Error happened during NFC tag disconnection.";
   public static final String ERROR_TRANSCEIVE = "Data transfer via NFC failed. Probably NFC connection was lost.";
@@ -198,7 +214,7 @@ public class ResponsesConstants {
   public static final List<String>  ANDROID_NFC_ERRORS = Arrays.asList(
     ERROR_MSG_NFC_CONNECT,
     ERROR_MSG_NFC_DISABLED,
-    ERROR_MSG_NO_NFC,
+          ERROR_MSG_NO_NFC_HARDWARE,
     ERROR_MSG_NO_TAG,
     ERROR_MSG_NFC_DISCONNECT,
     ERROR_TRANSCEIVE,
@@ -279,8 +295,8 @@ public class ResponsesConstants {
   public static final String ERROR_RECOVERY_DATA_PORTION_INCORRECT_LEN = "Recovery data portion must have length = ";
   public static final String ERROR_MSG_HASH_OF_ENCRYPTED_PASSWORD_RESPONSE_LEN_INCORRECT = "Hash of encrypted password must have length " + SHA_HASH_SIZE + ".";
   public static final String ERROR_MSG_HASH_OF_ENCRYPTED_COMMON_SECRET_RESPONSE_LEN_INCORRECT = "Hash of encrypted common secret must have length " + SHA_HASH_SIZE + ".";
-  public static final String ERROR_MSG_HASH_OF_ENCRYPTED_COMMON_SECRET_RESPONSE_INCORRECT = "Card two-factor authorization failed: Hash of encrypted common secret is invalid.";
-  public static final String ERROR_MSG_HASH_OF_ENCRYPTED_PASSWORD_RESPONSE_INCORRECT = "Card two-factor authorization failed: Hash of encrypted password is invalid.";
+  public static final String ERROR_MSG_HASH_OF_ENCRYPTED_COMMON_SECRET_RESPONSE_INCORRECT = "Card two-factor authentication failed: Hash of encrypted common secret is invalid.";
+  public static final String ERROR_MSG_HASH_OF_ENCRYPTED_PASSWORD_RESPONSE_INCORRECT = "Card two-factor authentication failed: Hash of encrypted password is invalid.";
   public static final String ERROR_MSG_SIG_RESPONSE_LEN_INCORRECT = "Signature must have length " + SIG_LEN + ".";
   public static final String ERROR_MSG_PUBLIC_KEY_RESPONSE_LEN_INCORRECT = "Public key must have length " + PUBLIC_KEY_LEN + ".";
   public static final String ERROR_MSG_GET_NUMBER_OF_KEYS_RESPONSE_LEN_INCORRECT =  "Response from GET_NUMBER_OF_KEYS card operation must have length " + GET_NUMBER_OF_KEYS_LE + ".";
@@ -370,22 +386,22 @@ public class ResponsesConstants {
    * IMPROPER_APPLET_STATE_ERROR_TYPE_ID = 5
    */
   public static final String ERROR_MSG_APDU_NOT_SUPPORTED = "APDU command is not supported";
-  public static final String ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHORIZATION = "Applet must be in mode that waits authorization. Now it is: ";
+  public static final String ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHENTICATION = "Applet must be in mode that waits authentication. Now it is: ";
   public static final String ERROR_MSG_APPLET_IS_NOT_PERSONALIZED = "Applet must be in personalized mode. Now it is: ";
   public static final String ERROR_MSG_APPLET_DOES_NOT_WAIT_TO_DELETE_KEY = "Applet must be in mode for deleting key. Now it is: ";
 
 
-  public static final List<String>  IMPROPER_APPLET_STATE_ERRORS = Arrays.asList(ERROR_MSG_APDU_NOT_SUPPORTED, ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHORIZATION, ERROR_MSG_APPLET_IS_NOT_PERSONALIZED,
+  public static final List<String>  IMPROPER_APPLET_STATE_ERRORS = Arrays.asList(ERROR_MSG_APDU_NOT_SUPPORTED, ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHENTICATION, ERROR_MSG_APPLET_IS_NOT_PERSONALIZED,
     ERROR_MSG_APPLET_DOES_NOT_WAIT_TO_DELETE_KEY);
 
 
   /**
    * ANDROID_KEYSTORE_HMAC_KEY_ERROR_TYPE_ID = 8
    */
-  public static final String ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN  = "Key for hmac signing for specified serial number does not exist.";
-  public static final String ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET = "Current serial number is not set. Can not select key for hmac.";
+  public static final String ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYSTORE = "Key for hmac signing for specified serial number does not exist.";
+  public static final String ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET_IN_ANDROID_KEYSTORE = "Current serial number is not set. Can not select key for hmac.";
 
-  public static final List<String> ANDROID_KEYSTORE_HMAC_KEY_ERRORS = Arrays.asList(ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYCHAIN, ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET);
+  public static final List<String> ANDROID_KEYSTORE_HMAC_KEY_ERRORS = Arrays.asList(ERROR_MSG_KEY_FOR_HMAC_DOES_NOT_EXIST_IN_ANDROID_KEYSTORE, ERROR_MSG_CURRENT_SERIAL_NUMBER_IS_NOT_SET_IN_ANDROID_KEYSTORE);
 
   /**
    * WRONG_CARD_ERROR_TYPE_ID = 7
@@ -400,7 +416,7 @@ public class ResponsesConstants {
   private static Map<List<String>, String> errorMsgsToErrorTypeIdMap = new HashMap<>();
   private static Map<String, String> errorMsgToErrorCodeMap = new LinkedHashMap<>();
 
-  //error code is a numeric string of length 5,
+  //error code is a numeric string of length 5 (or 6),
   //it is built as concatenation: errorTypeId + zeros (2 or 3) + successive number of error message in the list
   private static void fillErrCodesMap(List<String> errMsgsArray) {
     String errTypeId = errorMsgsToErrorTypeIdMap.get(errMsgsArray);

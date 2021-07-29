@@ -12,9 +12,6 @@ import androidx.annotation.RestrictTo;
 import com.tonnfccard.smartcard.ApduRunner;
 import com.tonnfccard.smartcard.CAPDU;
 import com.tonnfccard.smartcard.RAPDU;
-import com.tonnfccard.utils.ByteArrayUtil;
-
-import java.io.IOException;
 
 import static android.nfc.NfcAdapter.EXTRA_TAG;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_BAD_RESPONSE;
@@ -25,7 +22,7 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_CONNECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_DISABLED;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_DISCONNECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_CONTEXT;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_NFC;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_NFC_HARDWARE;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_TAG;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_TRANSCEIVE;
 import static com.tonnfccard.smartcard.RAPDU.MAX_LENGTH;
@@ -96,7 +93,7 @@ public class NfcApduRunner extends ApduRunner {
       nfcAdapter = NfcAdapter.getDefaultAdapter(apiContext);
     }
     if (nfcAdapter == null) {
-      throw new Exception(ERROR_MSG_NO_NFC);
+      throw new Exception(ERROR_MSG_NO_NFC_HARDWARE);
     } else if (!nfcAdapter.isEnabled()) {
       throw new Exception(ERROR_MSG_NFC_DISABLED);
     } else if (nfcTag == null) {

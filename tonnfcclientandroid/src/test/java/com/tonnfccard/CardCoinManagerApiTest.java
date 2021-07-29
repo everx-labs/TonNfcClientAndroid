@@ -2,49 +2,33 @@ package com.tonnfccard;
 
 import com.tonnfccard.helpers.CardApiInterface;
 import android.content.Context;
-import android.nfc.NfcAdapter;
 import android.nfc.tech.IsoDep;
 import android.os.Build;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.tonnfccard.callback.NfcCallback;
-import com.tonnfccard.callback.NfcRejecter;
-import com.tonnfccard.callback.NfcResolver;
 import com.tonnfccard.helpers.ExceptionHelper;
-import com.tonnfccard.helpers.HmacHelper;
 import com.tonnfccard.helpers.JsonHelper;
-import com.tonnfccard.helpers.ResponsesConstants;
 import com.tonnfccard.helpers.StringHelper;
 import com.tonnfccard.nfc.NfcApduRunner;
-import com.tonnfccard.smartcard.CAPDU;
 import com.tonnfccard.smartcard.ErrorCodes;
 import com.tonnfccard.smartcard.RAPDU;
-import com.tonnfccard.smartcard.wrappers.CAPDUTest;
 import com.tonnfccard.utils.ByteArrayUtil;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.Result;
 import org.junit.runner.RunWith;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.internal.DoNotInstrument;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.Function;
 
 import static com.tonnfccard.NfcMockHelper.SW_SUCCESS;
 import static com.tonnfccard.NfcMockHelper.prepareNfcApduRunnerMock;
@@ -54,8 +38,6 @@ import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN_STR;
 import static com.tonnfccard.TonWalletConstants.DONE_MSG;
 import static com.tonnfccard.TonWalletConstants.GENERATED_MSG;
 import static com.tonnfccard.TonWalletConstants.MAX_PIN_TRIES;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_BAD_RESPONSE;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APDU_EMPTY;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DEVICE_LABEL_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DEVICE_LABEL_NOT_HEX;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_APPLET_LIST_RESPONSE_LEN_INCORRECT;
@@ -66,16 +48,9 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_PIN_TLT_OR
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_PIN_TLT_OR_RTL_RESPONSE_VAL_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_ROOT_KEY_STATUS_RESPONSE_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_SE_VERSION_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_CONNECT;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_DISABLED;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_NFC;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_TAG;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_FORMAT_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_LEN_INCORRECT;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_TRANSCEIVE;
-import static com.tonnfccard.nfc.NfcApduRunner.TIME_OUT;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_APPLET_LIST_APDU;
-import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_APPLET_LIST_DATA;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_AVAILABLE_MEMORY_APDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_CSN_APDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.GET_DEVICE_LABEL_APDU;
@@ -89,7 +64,6 @@ import static com.tonnfccard.smartcard.CoinManagerApduCommands.SELECT_COIN_MANAG
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.getChangePinAPDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.getGenerateSeedAPDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.getSetDeviceLabelAPDU;
-import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.SELECT_TON_WALLET_APPLET_APDU;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;

@@ -26,7 +26,7 @@ public final class TonWalletConstants {
      */
     public static final byte INSTALLED_STATE = (byte) 0x07;
     public static final byte PERSONALIZED_STATE = (byte) 0x17;
-    public static final byte WAITE_AUTHORIZATION_STATE = (byte) 0x27;
+    public static final byte WAITE_AUTHENTICATION_STATE = (byte) 0x27;
     public static final byte DELETE_KEY_FROM_KEYCHAIN_STATE = (byte) 0x37;
     public static final byte BLOCKED_STATE = (byte) 0x47;
     public static final String INSTALLED_STATE_MSG =  "TonWalletApplet is invalid (is not personalized)";
@@ -38,7 +38,7 @@ public final class TonWalletConstants {
     public static final Map<Byte, String> STATE_MAP =  new LinkedHashMap<Byte, String>() {{
         put(INSTALLED_STATE, INSTALLED_STATE_MSG);
         put(PERSONALIZED_STATE, PERSONALIZED_STATE_MSG);
-        put(WAITE_AUTHORIZATION_STATE, WAITE_AUTHENTICATION_MSG);
+        put(WAITE_AUTHENTICATION_STATE, WAITE_AUTHENTICATION_MSG);
         put(DELETE_KEY_FROM_KEYCHAIN_STATE, DELETE_KEY_FROM_KEYCHAIN_MSG);
         put(BLOCKED_STATE, BLOCKED_MSG);
     }};

@@ -1,7 +1,6 @@
 package com.tonnfccard;
 
 import android.content.Context;
-import android.nfc.NfcAdapter;
 import android.nfc.tech.IsoDep;
 import android.os.Build;
 
@@ -20,14 +19,11 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.internal.DoNotInstrument;
 
-import java.io.IOException;
-import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -44,28 +40,21 @@ import static com.tonnfccard.TonWalletConstants.COMMON_SECRET_SIZE;
 import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN;
 import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN_STR;
 import static com.tonnfccard.TonWalletConstants.DELETE_KEY_FROM_KEYCHAIN_STATE;
-import static com.tonnfccard.TonWalletConstants.DONE_MSG;
 import static com.tonnfccard.TonWalletConstants.ECS_HASH_FIELD;
 import static com.tonnfccard.TonWalletConstants.EP_HASH_FIELD;
-import static com.tonnfccard.TonWalletConstants.FALSE_MSG;
 import static com.tonnfccard.TonWalletConstants.INSTALLED_STATE;
 import static com.tonnfccard.TonWalletConstants.IV_SIZE;
 import static com.tonnfccard.TonWalletConstants.PASSWORD_SIZE;
 import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE;
 import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE_MSG;
-import static com.tonnfccard.TonWalletConstants.RECOVERY_DATA_MAX_SIZE;
 import static com.tonnfccard.TonWalletConstants.SERIAL_NUMBER_SIZE;
 import static com.tonnfccard.TonWalletConstants.SHA_HASH_SIZE;
 import static com.tonnfccard.TonWalletConstants.STATUS_FIELD;
 import static com.tonnfccard.TonWalletConstants.SUCCESS_STATUS;
-import static com.tonnfccard.TonWalletConstants.TRUE_MSG;
-import static com.tonnfccard.TonWalletConstants.WAITE_AUTHORIZATION_STATE;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_BAD_RESPONSE;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHORIZATION;
+import static com.tonnfccard.TonWalletConstants.WAITE_AUTHENTICATION_STATE;
+import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHENTICATION;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_COMMON_SECRET_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_COMMON_SECRET_NOT_HEX;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DEVICE_LABEL_LEN_INCORRECT;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_DEVICE_LABEL_NOT_HEX;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_GET_SERIAL_NUMBER_RESPONSE_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_HASH_OF_ENCRYPTED_COMMON_SECRET_RESPONSE_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_HASH_OF_ENCRYPTED_COMMON_SECRET_RESPONSE_LEN_INCORRECT;
@@ -73,23 +62,15 @@ import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_HASH_OF_ENCRYP
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_HASH_OF_ENCRYPTED_PASSWORD_RESPONSE_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_INITIAL_VECTOR_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_INITIAL_VECTOR_NOT_HEX;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_CONNECT;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NFC_DISABLED;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_NFC;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_NO_TAG;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PASSWORD_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PASSWORD_NOT_HEX;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_FORMAT_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_PIN_LEN_INCORRECT;
 import static com.tonnfccard.helpers.ResponsesConstants.ERROR_MSG_STATE_RESPONSE_LEN_INCORRECT;
-import static com.tonnfccard.helpers.ResponsesConstants.ERROR_TRANSCEIVE;
-import static com.tonnfccard.nfc.NfcApduRunner.TIME_OUT;
-import static com.tonnfccard.smartcard.CoinManagerApduCommands.LABEL_LENGTH;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.RESET_WALLET_APDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.SELECT_COIN_MANAGER_APDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.getChangePinAPDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.getGenerateSeedAPDU;
-import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_APPLET_STATE_APDU_LIST;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_APP_INFO_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_HASH_OF_ENCRYPTED_PASSWORD_APDU;
@@ -221,7 +202,7 @@ public class CardActivationApiTest {
     @Test
     public void testTurnOnWalletInvalidGetHashOfEncryptedCommonSecretResponse() throws Exception {
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        IsoDep tag = prepareTag(WAITE_AUTHORIZATION_STATE);
+        IsoDep tag = prepareTag(WAITE_AUTHENTICATION_STATE);
         byte[] h1 = new byte[SHA_HASH_SIZE - 1]; byte[] h2 = new byte[SHA_HASH_SIZE + 1];
         random.nextBytes(h1); random.nextBytes(h2);
         when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes()))
@@ -253,7 +234,7 @@ public class CardActivationApiTest {
     @Test
     public void testTurnOnWalletInvalidGetHashOfEncryptedPasswordResponse() throws Exception {
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        IsoDep tag = prepareTag(WAITE_AUTHORIZATION_STATE);
+        IsoDep tag = prepareTag(WAITE_AUTHENTICATION_STATE);
         when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
         byte[] h1 = new byte[SHA_HASH_SIZE - 1]; byte[] h2 = new byte[SHA_HASH_SIZE + 1];
         random.nextBytes(h1); random.nextBytes(h2);
@@ -286,7 +267,7 @@ public class CardActivationApiTest {
     @Test
     public void testTurnOnWalletInvalidGetSerialNumberResponseLength() throws Exception {
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
-        IsoDep tag = prepareTag(WAITE_AUTHORIZATION_STATE);
+        IsoDep tag = prepareTag(WAITE_AUTHENTICATION_STATE);
         when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
         when(tag.transceive(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H2), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS)));;
         when(tag.transceive(getVerifyPasswordAPDU(BYTE_ARRAY_HELPER.bytes(PASSWORD), BYTE_ARRAY_HELPER.bytes(IV)).getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS));
@@ -327,7 +308,7 @@ public class CardActivationApiTest {
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         IsoDep tag =  prepareTagMock();
         when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(SW_SUCCESS);
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, SW_SUCCESS));
+        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHENTICATION_STATE}, SW_SUCCESS));
         String hash1 = STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE);
         String hash2 = STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE);
         when(tag.transceive(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(hash1), SW_SUCCESS));
@@ -347,7 +328,7 @@ public class CardActivationApiTest {
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         IsoDep tag =  prepareTagMock();
         when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(SW_SUCCESS);
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, SW_SUCCESS));
+        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHENTICATION_STATE}, SW_SUCCESS));
         String hash = STRING_HELPER.randomHexString(2 * SHA_HASH_SIZE);
         when(tag.transceive(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(hash), SW_SUCCESS));
         when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(hash), SW_SUCCESS));
@@ -365,10 +346,10 @@ public class CardActivationApiTest {
         NfcApduRunner nfcApduRunnerMock = prepareNfcApduRunnerMock(nfcApduRunner);
         IsoDep tag = prepareTag();
         when(tag.transceive(GET_APP_INFO_APDU.getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, SW_SUCCESS))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHENTICATION_STATE}, SW_SUCCESS))
                 .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, SW_SUCCESS))
                 .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, SW_SUCCESS))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, SW_SUCCESS))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHENTICATION_STATE}, SW_SUCCESS))
                 .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, SW_SUCCESS));
         when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), SW_SUCCESS));;
         when(tag.transceive(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H2), SW_SUCCESS));;
@@ -396,7 +377,7 @@ public class CardActivationApiTest {
         IsoDep tag =  prepareTagMock();
         when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(SW_SUCCESS);
         when(tag.transceive(GET_APP_INFO_APDU.getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, SW_SUCCESS));
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHENTICATION_STATE}, SW_SUCCESS));
         when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED));
         when(tag.transceive(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED));
         nfcApduRunnerMock.setCardTag(tag);
@@ -423,7 +404,7 @@ public class CardActivationApiTest {
         IsoDep tag =  prepareTagMock();
         when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(SW_SUCCESS);
         when(tag.transceive(GET_APP_INFO_APDU.getBytes()))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, SW_SUCCESS));
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHENTICATION_STATE}, SW_SUCCESS));
         when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), SW_SUCCESS));
         when(tag.transceive(GET_HASH_OF_ENCRYPTED_PASSWORD_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_COMMAND_ABORTED));
         nfcApduRunnerMock.setCardTag(tag);
@@ -466,9 +447,9 @@ public class CardActivationApiTest {
                 .thenReturn(SW_SUCCESS);
         when(tag.transceive(GET_APP_INFO_APDU.getBytes()))
                 .thenReturn( BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, SW_SUCCESS))
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHENTICATION_STATE}, SW_SUCCESS))
                 .thenReturn( BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
-                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, SW_SUCCESS));
+                .thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHENTICATION_STATE}, SW_SUCCESS));
         when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes()))
                 .thenReturn( BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_WRONG_LENGTH))
                 .thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), SW_SUCCESS))
@@ -534,7 +515,7 @@ public class CardActivationApiTest {
                 }
                 catch (Exception e) {
                     System.out.println(e.getMessage());
-                    assertTrue(e.getMessage().contains(ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHORIZATION));
+                    assertTrue(e.getMessage().contains(ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHENTICATION));
                     assertTrue(e.getMessage().startsWith("{"));
                     assertTrue(e.getMessage().endsWith("}"));
                 }
@@ -552,7 +533,7 @@ public class CardActivationApiTest {
         when(tag.transceive(RESET_WALLET_APDU.getBytes())).thenReturn(SW_SUCCESS);
         when(tag.transceive(getGenerateSeedAPDU(DEFAULT_PIN).getBytes())).thenReturn(SW_SUCCESS);
         when(tag.transceive(SELECT_TON_WALLET_APPLET_APDU.getBytes())).thenReturn(SW_SUCCESS);
-        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, SW_SUCCESS));
+        when(tag.transceive(GET_APP_INFO_APDU.getBytes())).thenReturn(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHENTICATION_STATE}, SW_SUCCESS));
         when(tag.transceive(GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU.getBytes()))
                 .thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(SPOILED_H3), SW_SUCCESS))
                 .thenReturn(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), SW_SUCCESS))

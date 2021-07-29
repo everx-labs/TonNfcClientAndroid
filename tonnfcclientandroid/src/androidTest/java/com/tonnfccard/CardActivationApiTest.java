@@ -1,17 +1,13 @@
 package com.tonnfccard;
 
 import android.content.Context;
-import android.nfc.tech.IsoDep;
-import android.util.Log;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.tonnfccard.helpers.CardApiInterface;
-import com.tonnfccard.helpers.ExceptionHelper;
 import com.tonnfccard.helpers.HmacHelper;
 import com.tonnfccard.helpers.JsonHelper;
-import com.tonnfccard.helpers.StringHelper;
 import com.tonnfccard.nfc.NfcApduRunner;
 import com.tonnfccard.smartcard.ErrorCodes;
 import com.tonnfccard.smartcard.RAPDU;
@@ -20,12 +16,10 @@ import com.tonnfccard.utils.ByteArrayUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import java.security.KeyStore;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -33,21 +27,18 @@ import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN;
 import static com.tonnfccard.TonWalletConstants.DEFAULT_PIN_STR;
 import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE;
 import static com.tonnfccard.TonWalletConstants.PERSONALIZED_STATE_MSG;
-import static com.tonnfccard.TonWalletConstants.WAITE_AUTHORIZATION_STATE;
+import static com.tonnfccard.TonWalletConstants.WAITE_AUTHENTICATION_STATE;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.RESET_WALLET_APDU;
-import static com.tonnfccard.smartcard.CoinManagerApduCommands.SELECT_COIN_MANAGER_APDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.getChangePinAPDU;
 import static com.tonnfccard.smartcard.CoinManagerApduCommands.getGenerateSeedAPDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_APP_INFO_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_HASH_OF_ENCRYPTED_COMMON_SECRET_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_HASH_OF_ENCRYPTED_PASSWORD_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.GET_SERIAL_NUMBER_APDU;
-import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.SELECT_TON_WALLET_APPLET_APDU;
 import static com.tonnfccard.smartcard.TonWalletAppletApduCommands.getVerifyPasswordAPDU;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class CardActivationApiTest {
@@ -81,9 +72,9 @@ public class CardActivationApiTest {
         NfcApduRunner nfcApduRunnerMock = Mockito.spy(nfcApduRunner);
         Mockito.doReturn(SUCCESS_RAPDU).when(nfcApduRunnerMock).sendCoinManagerAppletAPDU(RESET_WALLET_APDU);
         Mockito.doReturn(SUCCESS_RAPDU).when(nfcApduRunnerMock).sendAPDU(getGenerateSeedAPDU(DEFAULT_PIN));
-        Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
+        Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHENTICATION_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
                 .doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
-                .doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHORIZATION_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
+                .doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{WAITE_AUTHENTICATION_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
                 .doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(new byte[]{PERSONALIZED_STATE}, BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
                 .when(nfcApduRunnerMock).sendTonWalletAppletAPDU(GET_APP_INFO_APDU);
         Mockito.doReturn(new RAPDU(BYTE_ARRAY_HELPER.bConcat(BYTE_ARRAY_HELPER.bytes(H3), BYTE_ARRAY_HELPER.bytes(ErrorCodes.SW_SUCCESS))))
