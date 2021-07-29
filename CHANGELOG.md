@@ -94,3 +94,15 @@ All notable changes to this project will be documented in this file.
 ### New
 
 - Add generateSeedAndGetHashes + add final check state into turnOnWallet. This was done to reduce the number of card reconnects during card activation.
+
+## [3.4.0] – 2021-07-22
+
+### Fixed
+
+- Put error into callback if nfc connection was interrupted.
+
+## [4.0.0] – 2021-07-29
+
+### Fixed
+
+- Fixes for error codes (to remove intersections with error codes in TonNfcClientSwift).
