@@ -318,8 +318,10 @@ And use the following code to start card activation.
 String hashesJsonStr = cardActivationApi.generateSeedAndGetHashesAndGetJson();
 String hashOfEncryptedCommonSecret = extractMessage(hashesJsonStr, ECS_HASH_FIELD);
 String hashOfEncryptedPassword = extractMessage(hashesJsonStr, EP_HASH_FIELD);
+String serialNumber = extractMessage(hashesJsonStr, SN_FIELD);
 Log.d("TAG", "hashOfEncryptedCommonSecret : " + hashOfEncryptedCommonSecret);
 Log.d("TAG", "hashOfEncryptedPassword : " + hashOfEncryptedPassword);
+Log.d("TAG", "serialNumber : " + serialNumber);
 
 String newPin = "5555";
 appletState = extractMessage(cardActivationApi.turnOnWalletAndGetJson(newPin, PASSWORD, COMMON_SECRET, IV),  MESSAGE_FIELD);
