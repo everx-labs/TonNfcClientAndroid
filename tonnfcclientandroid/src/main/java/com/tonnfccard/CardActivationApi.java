@@ -237,9 +237,11 @@ public final class CardActivationApi extends TonWalletApi {
       //long start = System.currentTimeMillis();
       String ecsHash = BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetHashOfEncryptedCommonSecret().getData());
       String epHash = BYTE_ARR_HELPER.hex(getHashOfEncryptedPassword().getData());
+      String sn = STR_HELPER.makeDigitalString(getSerialNumber());
       JSONObject jsonResponse = new JSONObject();
       jsonResponse.put(ECS_HASH_FIELD, ecsHash);
       jsonResponse.put(EP_HASH_FIELD, epHash);
+      jsonResponse.put(SN_FIELD, sn);
       jsonResponse.put(STATUS_FIELD, SUCCESS_STATUS);
       //long end = System.currentTimeMillis();
       //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );
@@ -281,9 +283,11 @@ public final class CardActivationApi extends TonWalletApi {
         throw new Exception(ERROR_MSG_APPLET_DOES_NOT_WAIT_AUTHENTICATION + appletState.getDescription());
       String ecsHash = BYTE_ARR_HELPER.hex(selectTonWalletAppletAndGetHashOfEncryptedCommonSecret().getData());
       String epHash = BYTE_ARR_HELPER.hex(getHashOfEncryptedPassword().getData());
+      String sn = STR_HELPER.makeDigitalString(getSerialNumber());
       JSONObject jsonResponse = new JSONObject();
       jsonResponse.put(ECS_HASH_FIELD, ecsHash);
       jsonResponse.put(EP_HASH_FIELD, epHash);
+      jsonResponse.put(SN_FIELD, sn);
       jsonResponse.put(STATUS_FIELD, SUCCESS_STATUS);
       //long end = System.currentTimeMillis();
       //Log.d("TAG", "!!Time = " + String.valueOf(end - start) );

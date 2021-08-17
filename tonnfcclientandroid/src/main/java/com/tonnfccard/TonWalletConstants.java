@@ -128,6 +128,7 @@ public final class TonWalletConstants {
     public static final String MESSAGE_FIELD = "message";
     public static final String CARD_INSTRUCTION_FIELD = "cardInstruction";
     public static final String APDU_FIELD = "apdu";
+    public static final String SN_FIELD = "serialNumber";
     public static final String ECS_HASH_FIELD = "ecsHash";
     public static final String EP_HASH_FIELD = "epHash";
     public static final String KEY_INDEX_FIELD = "keyIndex";
