@@ -91,9 +91,9 @@ public class CoinManagerApduCommands {
     public final static String RESET_WALLET_APDU_NAME = "RESET_WALLET";
     public final static String GET_AVAILABLE_MEMORY_APDU_NAME = "GET_AVAILABLE_MEMORY";
     public final static String GET_APPLET_LIST_APDU_NAME = "GET_APPLET_LIST";
-    public final static String GET_SE_VERSION_APDU_NAME = "GET_SE_VERSION_APDU";
-    public final static String GET_CSN_APDU_NAME = "GET_CSN_APDU";
-    public final static String GET_DEVICE_LABEL_APDU_NAME = "GET_DEVICE_LABEL_APDU";
+    public final static String GET_SE_VERSION_APDU_NAME = "GET_SE_VERSION";
+    public final static String GET_CSN_APDU_NAME = "GET_CSN";
+    public final static String GET_DEVICE_LABEL_APDU_NAME = "GET_DEVICE_LABEL";
     public final static String CHANGE_PIN_APDU_NAME = "CHANGE_PIN";
     public final static String GENERATE_SEED_APDU_NAME = "GENERATE_SEED";
     public final static String SET_DEVICE_LABEL_APDU_NAME = "SET_DEVICE_LABEL";
